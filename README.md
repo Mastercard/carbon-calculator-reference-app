@@ -1,5 +1,10 @@
 # Carbon Calculator Reference App
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_Carbon-Calculator-Reference-App&metric=alert_status)](https://sonarcloud.io/dashboard?id=Mastercard_Carbon-Calculator-Reference-App)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_Carbon-Calculator-Reference-App&metric=coverage)](https://sonarcloud.io/dashboard?id=Mastercard_Carbon-Calculator-Reference-App)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_Carbon-Calculator-Reference-App&metric=code_smells)](https://sonarcloud.io/dashboard?id=Mastercard_Carbon-Calculator-Reference-App)
+[![](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/Mastercard/carbon-calculator-reference-app/blob/master/LICENSE)
+
 ## Table of Contents
 - [Overview](#overview)
 - [Requirements](#requirements)

@@ -39,6 +39,9 @@
             **/com/mastercard/developers/carboncalculator/exception/*,
             **/com/mastercard/developers/carboncalculator/util/*,
         </sonar.coverage.exclusions>
+        <sonar.projectKey>Mastercard_Carbon-Calculator-Reference-App</sonar.projectKey>
+        <sonar.organization>mastercard</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>     
     </properties>
 
     <dependencies>

@@ -129,7 +129,7 @@ Carbon Calculator documentation can be found [here](https://stage.developer.mast
 The Swagger API specification can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/api-reference/).
 
 ## Support <a name="support"></a>
-Please send an email to **support.sustainability@mastercard.com** with any questions or feedback you may have.
+Please send an email to **carboncalculator@mastercard.com** with any questions or feedback you may have.
 
 
 ## License <a name="license"></a>

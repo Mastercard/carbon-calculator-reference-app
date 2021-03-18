@@ -7,7 +7,7 @@
 
 ## Table of Contents
 - [Overview](#overview)
-- [Requirements](#requirements)
+- [Prerequisites](#prerequisites)
 - [Frameworks/Libraries](#frameworks)
 - [Integrating with OpenAPI Generator](#OpenAPI_Generator)
 - [Configuration](#configuration)
@@ -19,9 +19,9 @@
 
 ## Overview  <a name="overview"></a>
 This is a reference application to demonstrate how Carbon Calculator APIs can be used.
-To call these APIs, consumer key and .p12 file are required from your project on Mastercard Developers.
+To call these APIs, the consumer key and .p12 file are required from your project on Mastercard Developers.
 
-## Requirements  <a name="requirements"></a>
+## Prerequisites  <a name="prerequisites"></a>
 
 - Java 11
 - IntelliJ IDEA (or any other IDE)
@@ -38,7 +38,7 @@ Check [Generating and Configuring a Mastercard API Client](https://developer.mas
 
 
 ### Configuring Payload Encryption
-The [Mastercard Encryption Library](https://github.com/Mastercard/client-encryption-java) provides interceptor class that you can use when configuring your API client. This [interceptor](https://github.com/Mastercard/client-encryption-java#usage-of-the-okhttpfieldlevelencryptioninterceptor-openapi-generator-4xy) will encrypt payload before sending the request.
+The [Mastercard Encryption Library](https://github.com/Mastercard/client-encryption-java) provides an interceptor class that you can use when configuring your API client. This [interceptor](https://github.com/Mastercard/client-encryption-java#usage-of-the-okhttpfieldlevelencryptioninterceptor-openapi-generator-4xy) will encrypt the payload before sending the request.
 
 **Encryption Config**
 ```
@@ -68,8 +68,8 @@ See also:
 6. Open ```src/main/resources/application.yml``` and configure:
     - ```mastercard.api.environment.key-file ```- Path to keystore (.p12) file, just change the name as per the downloaded file in step 5. 
     - ```mastercard.api.authentication.consumer-key``` - Copy the Consumer key from "Sandbox/Production Keys" section on your project page
-    - ```mastercard.api.authentication.keystore-alias``` - Alias of your key. Default key alias for sandbox is ```keyalias```.
-    - ```mastercard.api.authentication.keystore-password``` -  Password of your Keystore. Default keystore password for sandbox project is ```keystorepassword```.
+    - ```mastercard.api.authentication.keystore-alias``` - Alias of your key. The default key alias for sandbox is ```keyalias```.
+    - ```mastercard.api.authentication.keystore-password``` -  Password of your Keystore. The default keystore password for sandbox project is ```keystorepassword```.
     - ```mastercard.api.encryption.key-file ```- Path to encryption key (.pem) file, just change the name as per the downloaded file in step 5. 
     ```mastercard.api.encryption.fingerprint ```- Fingerprint, copy the fingerprint from Client Encryption Keys section. If you have multiple client encryption keys then copy the fingerprint of the key which you want to use.
     - ```test.data.bin``` - Update this with one of your supported BINs
@@ -91,7 +91,7 @@ Allows a registered Service Provider to add a new Payment Card under its profile
 Fetches historical transactions and their footprints for a registered payment card.
 
 6. **View Aggregate Carbon Impact**  
-Fetches carbon score for registered payment card/s and aggregates the same on daily, weekly, monthly and yearly basis. 
+Fetches carbon score for registered payment cards and aggregates the same on daily, weekly, monthly, and yearly basis. 
 
 7. **Get Service Provider**  
 Fetches service provider details.
@@ -104,8 +104,8 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
 2. There are two ways to execute the use-cases:
     1. Execute the use-cases(test cases):  
         - Go to ```src/main/java/com/mastercard/developer/carboncalculator/usecases``` folder.  
-        - Execute each test cases.
-        - In ```PaymentCardServiceTest.java```, note that a random FPAN is generated starting with your BIN while adding a new payment card and the paymentCardId of this card is used while executing other two test-cases.
+        - Execute each test case.
+        - In ```PaymentCardServiceTest.java```, note that a random FPAN is generated starting with your BIN while adding a new payment card and the paymentCardId of this card is used while executing the other two test-cases.
     
     2. Use REST API based Client( such as [Insomnia](https://insomnia.rest/download/core/) or [Postman](https://www.postman.com/downloads/))  
         - Run ```mvn spring-boot:run``` command to run the application.  

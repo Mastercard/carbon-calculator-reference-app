@@ -75,25 +75,25 @@ See also:
     - ```test.data.bin``` - Update this with one of your supported BINs
 
 ## Use-Cases <a name="use-cases"></a>
-1. **Calculate Transaction Footprints**   
+1. **Transaction Footprints Calculation**   
 Calculates carbon emission and water usage based on payment transactions.
 
-2. **Supported Currencies**    
+2. **Get Supported Currencies**    
 Provides a list of Merchant Category Code (MCC) supported by the application.
 
-3. **Supported Merchant Categories**  
+3. **Get Supported Merchant Categories**  
 Provides a list of Currencies supported by the application.
 
-4. **Enroll FPAN**  
+4. **Add Payment Card**  
 Allows a registered Service Provider to add a new Payment Card under its profile.
 
-5. **View Historical Carbon Impact**  
+5. **View Historical Transaction Footprints**  
 Fetches historical transactions and their footprints for a registered payment card.
 
-6. **View Aggregate Carbon Impact**  
+6. **View Aggregate Transaction Footprints**  
 Fetches carbon score for registered payment cards and aggregates the same on daily, weekly, monthly, and yearly basis. 
 
-7. **Get Service Provider**  
+7. **View Service Provider Details**  
 Fetches service provider details.
 
 More details can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/use-cases/).    

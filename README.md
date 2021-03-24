@@ -18,8 +18,8 @@
 - [Support](#support)
 
 ## Overview  <a name="overview"></a>
-This is a reference application to demonstrate how Carbon Calculator APIs can be used.
-To call these APIs, the consumer key and .p12 file are required from your project on Mastercard Developers.
+This is a reference application to demonstrate how Carbon Calculator API can be used.
+To call these API, the consumer key and .p12 file are required from your project on Mastercard Developers.
 
 ## Prerequisites  <a name="prerequisites"></a>
 
@@ -34,7 +34,7 @@ To call these APIs, the consumer key and .p12 file are required from your projec
 ## Integrating with OpenAPI Generator <a name="OpenAPI_Generator"></a>
 
 OpenAPI Generator generates API client libraries from OpenAPI Specs. It provides generators and library templates for supporting multiple languages and frameworks.
-Check [Generating and Configuring a Mastercard API Client](https://developer.mastercard.com/platform/documentation/security-and-authentication/generating-and-configuring-a-mastercard-api-client/) to know more about how to generate a simple API client for consuming APIs.
+Check [Generating and Configuring a Mastercard API Client](https://developer.mastercard.com/platform/documentation/security-and-authentication/generating-and-configuring-a-mastercard-api-client/) to know more about how to generate a simple API client for consuming API.
 
 
 ### Configuring Payload Encryption
@@ -109,14 +109,14 @@ More details can be found [here](https://developer.mastercard.com/carbon-calcula
     
     2. Use REST API based Client( such as [Insomnia](https://insomnia.rest/download/core/) or [Postman](https://www.postman.com/downloads/))  
         - Run ```mvn spring-boot:run``` command to run the application.  
-        - Use any REST API based Client to test the functionality. Below are the APIs exposed by this reference application:  
-                - POST <Host>/demo/transaction-footprints      
-                - GET <Host>/demo/supported-mccs  
-                - GET <Host>/demo/supported-currencies  
-                - POST <Host>/demo/payment-cards      
-                - POST <Host>/demo/aggregate-transaction-footprints  
-                - GET <Host>/demo/historical/{paymentcard_id}/transaction-footprints  
-                - GET <Host>/demo/service-providers             
+        - Use any REST API based Client to test the functionality. Below are the endpoints exposed by this reference application, use ```locahost:8080``` as the Host:  
+                - POST {Host}/demo/transaction-footprints      
+                - GET {Host}/demo/supported-mccs  
+                - GET {Host}/demo/supported-currencies  
+                - POST {Host}/demo/payment-cards      
+                - POST {Host}/demo/aggregate-transaction-footprints  
+                - GET {Host}/demo/historical/{paymentcard_id}/transaction-footprints  
+                - GET {Host}/demo/service-providers             
              
                                                                                
 ## Service Documentation <a name="documentation"></a>

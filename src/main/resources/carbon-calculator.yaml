@@ -1,10 +1,11 @@
 openapi: 3.0.3
 info:
-  title: Carbon Calculator
+  title: Carbon Calculator API
   description: OpenAPI Specification for Carbon Calculator. For additional documentation and use cases, go to [Mastercard Developers](https://developer.mastercard.com/product/carbon-calculator).
   contact:
     name: API Support
     email: apisupport@mastercard.com
+    url: https://developer.mastercard.com/support
   version: '1.1.0'
 externalDocs:
   description: ISO 4217 - Currency Code
@@ -14,6 +15,27 @@ servers:
     description: Sandbox
   - url: https://api.mastercard.com/carbon
     description: Production
+tags:
+  - name: Service Provider
+    description: >-
+      APIs for getting and/or updating issuer onboarding
+      details.
+  - name: Payment Card
+    description: >-
+      APIs for payment cards onboarding and
+      retrieving the transaction footprints of those cards.
+  - name: Notification
+    description: >-
+      APIs for sending the near real time notification
+      to the issuer about auth transaction footprints of onboarded cards.
+  - name: Environmental Impact
+    description: >-
+      APIs for calculating carbon emission and water
+      usage based on provided payment transactions.
+  - name: Supported Parameters
+    description: >-
+      APIs for fetching the supported merchants and
+      currencies by the system.
 paths:
   /service-providers:
     get:
@@ -23,12 +45,34 @@ paths:
       description: Allows a registered Service Provider to fetch its information from the server.
       operationId: GetServiceProviderById
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ServiceProvider'
-        403:
+        '403':
           $ref: '#/components/responses/ServiceProviderSuspendedError'
-        404:
+        '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
+    put:
+      tags:
+        - Service Provider
+      summary: Updates Service Provider Information
+      description: >-
+        Allows a registered Service Provider to update its configuration on the server.
+        A Service Provider should mandatorily call this API first after their successful
+        project creation on Mastercard Developers Platform before they can successfully call other APIs.
+      operationId: UpdateServiceProvider
+      requestBody:
+        $ref: '#/components/requestBodies/ServiceProviderConfig'
+      responses:
+        '200':
+          $ref: '#/components/responses/ServiceProvider'
+        '400':
+          $ref: '#/components/responses/ServiceProviderBadRequestError'
+        '403':
+          $ref: '#/components/responses/ServiceProviderSuspendedError'
+        '404':
+          $ref: '#/components/responses/ServiceProviderNotFoundError'
+
+
   /payment-cards:
     post:
       tags:
@@ -44,13 +88,13 @@ paths:
             schema:
               $ref: '#/components/schemas/PaymentCard'
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/PaymentCardReference'
-        400:
+        '400':
           $ref: '#/components/responses/PaymentCardBadRequestError'
-        403:
+        '403':
           $ref: '#/components/responses/ServiceProviderSuspendedError'
-        404:
+        '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
 
   /payment-cards/{payment_card_id}/transaction-footprints:
@@ -97,13 +141,13 @@ paths:
             minimum: 5
             maximum: 50
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/HistoricalTransactionFootprints'
-        400:
+        '400':
           $ref: '#/components/responses/TransactionHistoryBadRequestError'
-        403:
+        '403':
           $ref: '#/components/responses/ServiceProviderSuspendedError'
-        404:
+        '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
 
   /payment-cards/aggregate-transaction-footprints:
@@ -131,19 +175,19 @@ paths:
             schema:
               $ref: '#/components/schemas/AggregateSearchCriteria'
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/AggregateTransactionFootprints'
-        400:
+        '400':
           $ref: '#/components/responses/AggregateTransactionBadRequestError'
-        403:
+        '403':
           $ref: '#/components/responses/ServiceProviderSuspendedError'
-        404:
+        '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
 
   /payment-cards/notify-transaction-footprints:
     post:
       tags:
-        - Payment Card
+        - Notification
       summary: Notifies Transaction Footprints in Near Real-time
       description: Allows a Service Provider to receive near real-time transaction footprint of a corresponding Authorization transaction for a registered payment card. <br><br>To receive this notification from Mastercard, a Service Provider has to implement this API and register the URL with Mastercard. Service Provider should make sure that there is no downtime for this API since Mastercard will not be retrying for any lost notification.
       operationId: NotifyTransactionFootprints
@@ -155,8 +199,61 @@ paths:
               $ref: '#/components/schemas/NotifyTransactionFootprint'
         required: true
       responses:
-        200:
+        '200':
           description: OK
+  /payment-card-deletions:
+    post:
+      tags:
+        - Payment Card
+      summary: Delete one or more Payment Cards
+      description: >
+        Allows a registered Service Provider to delete one or more Payment Cards
+        from its profile. Any data associated with a requested paymentCardId
+        will also be deleted permanently.
+
+
+        On successful response from server, a Service Provider should remove all
+        the requested paymentCardIds from his system.
+
+
+        Once a request has been received from a Service Provider, data deletion
+        will happen at least after 24-hours.
+      operationId: PaymentCardDeletions
+      requestBody:
+        $ref: '#/components/requestBodies/PaymentCardIds'
+      responses:
+        '202':
+          $ref: '#/components/responses/Accepted'
+        '400':
+          $ref: '#/components/responses/PaymentCardDeletionsBadRequestError'
+        '403':
+          $ref: '#/components/responses/ServiceProviderSuspendedError'
+        '404':
+          $ref: '#/components/responses/ServiceProviderNotFoundError'
+  /payment-card-enrolments:
+    post:
+      tags:
+        - Payment Card
+      summary: Batch Registration of Payment Cards
+      description: >-
+        Allows a registered Service Provider to add list of new Payment Cards
+        under its profile. This endpoint uses [Mastercard payload
+        encryption](https://mstr.cd/2UPfda0). Please refer to the [Payload
+        Encryption](https://developer.mastercard.com/carbon-calculator/documentation/tutorials-and-guides/payload-encryption/)
+        page for implementation details.
+      operationId: BatchRegisterPaymentCards
+      requestBody:
+        $ref: '#/components/requestBodies/PaymentCards'
+      responses:
+        '200':
+          $ref: '#/components/responses/PaymentCardEnrolments'
+        '400':
+          $ref: '#/components/responses/PaymentCardEnrolmentsBadRequestError'
+        '403':
+          $ref: '#/components/responses/ServiceProviderSuspendedError'
+        '404':
+          $ref: '#/components/responses/ServiceProviderNotFoundError'
+
   /transaction-footprints:
     post:
       tags:
@@ -172,11 +269,11 @@ paths:
               $ref: '#/components/schemas/Transactions'
         required: true
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/TransactionFootprints'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequestError'
-        415:
+        '415':
           $ref: '#/components/responses/UnsupportedMediaTypeError'
   /supported-currencies:
     get:
@@ -186,7 +283,7 @@ paths:
       description: Provides the list of currencies supported by the application. While sending a transaction amount in Amount object, 'currencyCode' should be from one of the supported currencies. It is recommended to cache this list and use it for checking before sending transactions for footprint calculation.<br><br>Generally this list doesn't change that often but it is recommended to refresh this data every 24-hours.
       operationId: GetSupportedCurrencies
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/SupportedCurrencies'
   /supported-merchant-categories:
     get:
@@ -196,10 +293,78 @@ paths:
       description: Provides list of merchant category codes supported by the application. While sending a transaction data in Transaction object, 'mcc' should be from one of the supported merchant categories. It is recommended to cache this list and use it for checking before sending transactions for footprint calculation.<br><br>Generally this list doesn't change that often but it is recommended to refresh this data every 24-hours.
       operationId: GetSupportedMerchantCategories
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/SupportedMerchantCategories'
 components:
   schemas:
+    PaymentCardEnrolments:
+      title: PaymentCardEnrolments
+      type: array
+      minItems: 1
+      maxItems: 500
+      description: >-
+        List of payment card enrolments corresponding to each of the payment
+        card. This information should be used to identify the success and
+        failure enrolments and take appropriate next steps.
+      items:
+        $ref: '#/components/schemas/PaymentCardEnrolment'
+    PaymentCardEnrolment:
+      title: PaymentCardEnrolment
+      type: object
+      description: The response object which contains Payment Card information.
+      properties:
+        paymentCardId:
+          $ref: '#/components/schemas/PaymentCardId'
+        bin:
+          type: string
+          minLength: 4
+          maxLength: 8
+          pattern: '^\d{4,8}'
+          description: >-
+            First 4 or 8 digits of BIN will be present in response only in case
+            of success/already exists card and if valid supported FPAN bin
+            range.
+          example: '545502'
+        last4fpan:
+          type: string
+          minLength: 4
+          maxLength: 4
+          pattern: '^\d{4}'
+          description: >-
+            Last 4 digit of a payment card number will be present only if the
+            card number in the request is valid.
+          example: '8351'
+        status:
+          type: string
+          minLength: 6
+          maxLength: 7
+          description: >-
+            Status of a Payment Card on the server. Possible values are ACTIVE &
+            DELETED.
+          example: ACTIVE
+        errorCode:
+          title: errorCode
+          type: string
+          minLength: 10
+          maxLength: 30
+          example: PAYMENT_CARD_ALREADY_EXISTS
+          description: >-
+            Error code in case of registration failed. Possible values are,
+
+            * INVALID_FPAN = The card number in the request is either invalid or
+            it does not match with your currently supported account range. Try
+            again with a valid card number or update the supported account
+            range.
+
+            * INVALID_CARD_BASE_CURRENCY = The card base currency in the request
+            is either invalid or it does not match with your currently supported
+            card base currency range. Try again with a valid card base currency.
+
+            * UNSUPPORTED_CURRENCY = The currency in the request is not
+            supported, try again with a different one.
+
+            * PAYMENT_CARD_ALREADY_EXISTS = The card number in the request is
+            already registered on the server, try again with a different one.
     CurrencyCode:
       type: string
       description: Currency code as per ISO 4217
@@ -247,6 +412,7 @@ components:
           description: Merchant category code of a payment transaction that uniquely defines a merchant business.
           minLength: 1
           maxLength: 4
+          example: 3997
           pattern: ^\d{1,4}
         amount:
           $ref: '#/components/schemas/Amount'
@@ -292,6 +458,7 @@ components:
           description: Merchant category code of a payment transaction that uniquely defines a merchant business (same as in request).
           minLength: 1
           maxLength: 4
+          example: 3997
           pattern: ^\d{1,4}
         category:
           $ref: '#/components/schemas/Category'
@@ -304,18 +471,22 @@ components:
           title: carbonEmissionInGrams
           type: number
           description: The transaction's CO2 emission in grams.
+          example: 48.52
         carbonEmissionInOunces:
           title: carbonEmissionInOunces
           type: number
+          example: 1.71
           description: The transaction's CO2 emission in ounces.
         waterUseInCubicMeters:
           title: waterUseInCubicMeters
           type: number
+          example: 57.5
           description: The transaction's water use in cubic meters.
         waterUseInGallons:
           title: waterUseInGallons
           type: number
           description: The transaction's water use in US gallons.
+          example: 15190.24
         carbonSocialCost:
           $ref: '#/components/schemas/CarbonSocialCost'
         waterUseSocialCost:
@@ -356,12 +527,15 @@ components:
         count:
           description: The number of items in this batch (the size of the item array).
           type: integer
+          example: 10
         offset:
           description: The number of items you asked the start of the list to be offset from.
           type: integer
+          example: 0
         limit:
           description: The number of items you asked the list to be limited to.
           type: integer
+          example: 10
         total:
           description: The total number of items in the collection.
           type: integer
@@ -764,6 +938,31 @@ components:
           minLength: 6
           maxLength: 9
           description: Status of a Service Provider on the server. Possible values are ACTIVE & SUSPENDED.
+    ServiceProviderConfig:
+      title: ServiceProviderConfig
+      type: object
+      description: Configuration details for a Service Provider
+      properties:
+        customerName:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: ^[\w\s]{1,200}
+          description: Name with which a Service Provider is registered and will be identified on the server. This doesn't have to be a legal name.
+          example: 'ABC Bank'
+        supportedAccountRange:
+          type: string
+          minLength: 4
+          maxLength: 1000
+          pattern: ^[\d\,]{4,1000}
+          description: Comma separated account range supported by a Service Provider.
+          example: '534403, 518145, 518152, 5403, 5424'
+        callbackUrl:
+          type: string
+          minLength: 0
+          maxLength: 2083
+          description: A service URL that can receive transaction score information from Mastercard in near real-time.
+          example: 'https://www.abcbank.com/payment-cards/notify-transaction-footprints'
     ErrorWrapper:
       title: ErrorWrapper
       type: object
@@ -817,7 +1016,97 @@ components:
           description: (Optional) Where appropriate, indicates detailed information about data received and calculated during request processing, to help the user with diagnosing errors.
           minLength: 0
           maxLength: 5000
+  requestBodies:
+    PaymentCards:
+      required: true
+      description: List of payment cards to be enroled.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/PaymentCard'
+            minItems: 1
+            maxItems: 500
+    ServiceProviderConfig:
+      description: Configuration details for service provider which needs to be update. It should contain only those parameters which you want to update. If you are calling this API for the first time then it is recommended to send all the parameters.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServiceProviderConfig'
+
+    PaymentCardIds:
+      description: >-
+        List of paymentCardIds for which all associated data needs to be
+        deleted.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/PaymentCardId'
+            minItems: 1
+            maxItems: 500
+          example:
+            - c5d88571-ac15-465a-a0d8-1ad1327b9a06
+            - 8a581a55-bcea-4c3e-8e0f-9b4726e5e6d3
+            - 328b62d4-287c-4c9f-a05d-6d4a67f208d8
+            - b86fd2ba-c095-4acb-b9df-f3805655ba24
   responses:
+    PaymentCardDeletionsBadRequestError:
+      description: >-
+        This response code is returned when either a request is invalid or one
+        or more paymentCardIds are invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            PaymentCardDeletionsRequestValidationError:
+              $ref: '#/components/examples/PaymentCardDeletionsRequestValidationError'
+            PaymentCardDeletionsInvalidCardIdError:
+              $ref: '#/components/examples/PaymentCardDeletionsInvalidCardIdError'
+    PaymentCardEnrolments:
+      description: >-
+        The response object that contains list of Payment Cards information
+        after batch registration.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentCardEnrolments'
+          examples:
+            PaymentCardEnrolments:
+              $ref: '#/components/examples/PaymentCardEnrolments'
+    PaymentCardEnrolmentsBadRequestError:
+      description: >-
+        This response code is returned when a request is invalid, or data in the
+        request is not valid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            PaymentCardEnrolmentsRequestValidationError:
+              $ref: '#/components/examples/RegisterPaymentCardRequestValidationError'
+            PaymentCardEnrolmentsRequestDecryptionError:
+              $ref: '#/components/examples/RegisterPaymentCardRequestDecryptionError'
+
+    ServiceProviderBadRequestError:
+      description: This response code is returned when either a request is invalid or data provided in the request is in invalid format.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            ServiceProviderInvalidRequestParameterError:
+              $ref: '#/components/examples/ServiceProviderInvalidRequestParameterError'
+            ServiceProviderInvalidAccountRangeError:
+              $ref: '#/components/examples/ServiceProviderInvalidAccountRangeError'
+            ServiceProviderInvalidCallbackUrlError:
+              $ref: '#/components/examples/ServiceProviderInvalidCallbackUrlError'
+
     TransactionFootprints:
       description: This response code is returned when a request is accepted and successfully processed. A corresponding response will be returned for the API caller.
       content:
@@ -968,6 +1257,9 @@ components:
           examples:
             ServiceProviderNotFoundError:
               $ref: '#/components/examples/ServiceProviderNotFoundError'
+    Accepted:
+      description: Accepted
+
   examples:
     TransactionFootprints:
       value:
@@ -1491,5 +1783,75 @@ components:
             - Source: 'Service-Provider'
               ReasonCode: 'ACCOUNT_NOT_FOUND'
               Description: 'We cannot find the account which you are using to access this service. Kindly register your account or contact your Mastercard associate if you have already registered with us earlier.'
+              Recoverable: false
+              Details: ''
+    ServiceProviderInvalidRequestParameterError:
+      value:
+        Errors:
+          Error:
+            - Source: 'Service-Provider'
+              ReasonCode: 'INVALID_REQUEST_PARAMETER'
+              Description: 'One of the request parameters is either invalid or is missing, try again with correct request.'
+              Recoverable: false
+              Details: 'supportedAccountRange must match "^[\d\,]{4,1000}"'
+            - Source: 'Service-Provider'
+              ReasonCode: 'INVALID_REQUEST_PARAMETER'
+              Description: 'One of the request parameters is either invalid or is missing, try again with correct request.'
+              Recoverable: false
+              Details: 'customerName must match "^[\w\s]{1,200}"'
+    ServiceProviderInvalidAccountRangeError:
+      value:
+        Errors:
+          Error:
+            - Source: 'Service-Provider'
+              ReasonCode: 'INVALID_REQUEST_PARAMETER'
+              Description: 'The Account Range you are trying to register is already associated with a different Service Provider. If you think that there has been some error then kindly contact your Mastercard associate.'
+              Recoverable: false
+              Details: ''
+    ServiceProviderInvalidCallbackUrlError:
+      value:
+        Errors:
+          Error:
+            - Source: 'Service-Provider'
+              ReasonCode: 'INVALID_REQUEST_PARAMETER'
+              Description: 'The callbackUrl you have provided is invalid. Try again with a valid URL. If you think that there has been some error then kindly contact your Mastercard associate.'
+              Recoverable: false
+              Details: ''
+    PaymentCardEnrolments:
+      value:
+        - bin: '545502'
+          last4fpan: '8351'
+          status: ACTIVE
+          paymentCardId: 9f12f385-0b47-4cca-9e9d-baced21bca63
+        - bin: '545502'
+          last4fpan: '0762'
+          status: ACTIVE
+          paymentCardId: f506521c-38c6-4e87-bf1a-14023ce10d4e
+        - bin: '545502'
+          last4fpan: '2834'
+          errorCode: PAYMENT_CARD_ALREADY_EXISTS
+        - bin: '545502'
+          last4fpan: '2824'
+          errorCode: INVALID_FPAN
+    PaymentCardDeletionsRequestValidationError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: >-
+                One of the request parameters is invalid, try again with correct
+                request.
+              Recoverable: false
+              Details: ''
+    PaymentCardDeletionsInvalidCardIdError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: >-
+                One or more payment card Ids in the request are invalid, try
+                again by sending valid Ids.
               Recoverable: false
               Details: ''

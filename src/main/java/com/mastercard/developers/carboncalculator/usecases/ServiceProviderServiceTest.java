@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.model.ServiceProvider;
+import org.openapitools.client.model.ServiceProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,8 @@ class ServiceProviderServiceTest {
     @Autowired
     private ServiceProviderService serviceProviderService;
 
-
     /**
-     * Use case 7. Get Service Provider
+     * Use case 5. Get Service Provider
      */
     @Test
     @DisplayName("Get Service Provider")
@@ -61,4 +61,34 @@ class ServiceProviderServiceTest {
         }
 
     }
+
+
+    /**
+     * Use case 6. Update Service Provider
+     */
+    @Test
+    @DisplayName("Update a Service Provider")
+    void updateServiceProviderTest() {
+
+        try {
+            ServiceProviderConfig serviceProviderConfig = new ServiceProviderConfig();
+            serviceProviderConfig.setCustomerName("New Customer Name");
+            serviceProviderConfig.setCallbackUrl("https://www.abcbank.com/payment-cards/notify-transaction-footprints");
+            serviceProviderConfig.setSupportedAccountRange("534403");
+
+            ServiceProvider serviceProviderInfo = serviceProviderService.updateServiceProvider(serviceProviderConfig);
+
+            LOGGER.info("{}", serviceProviderInfo);
+
+            assertNotNull(serviceProviderInfo);
+            assertNotNull(serviceProviderInfo.getClientId());
+
+        } catch (ServiceException e) {
+            LOGGER.info("Update Service Provider API call failed with error msg {}", e.getServiceErrors());
+            Assertions.fail(e.getMessage());
+        }
+
+    }
+
+
 }

@@ -24,6 +24,7 @@ import java.util.List;
 import static com.mastercard.developers.carboncalculator.service.MockData.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -164,6 +165,7 @@ class CarbonCalculatorControllerTest {
         assertNotNull(response3);
     }
 
+
     @Test
     void getServiceProvider() throws Exception {
         when(serviceProviderApi.getServiceProvider()).thenReturn(serviceProvider());
@@ -174,6 +176,33 @@ class CarbonCalculatorControllerTest {
         String response = mvcResult.getResponse().getContentAsString();
         assertNotNull(response);
     }
+
+    @Test
+    void deletePaymentCards() throws Exception {
+        doNothing().when(paymentCardService).deletePaymentCards(any());
+
+        this.mockMvc.perform(post("/demo/payment-card-deletions").contentType(
+                MediaType.APPLICATION_JSON).content(
+                gson.toJson(listPaymentCards()))).andExpect(
+                status().isAccepted()).andReturn();
+    }
+
+    @Test
+    void batchRegistrationPaymentCards() throws Exception {
+
+
+        when(addCardService.registerBatchPaymentCards(any())).thenReturn(
+                batchPaymentEnrollment());
+
+        MvcResult mvcResult = this.mockMvc.perform(post("/demo/payment-card-enrolments").contentType(
+                MediaType.APPLICATION_JSON).content(
+                gson.toJson(listPaymentCardReference())))
+                .andExpect(status().isOk()).andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        assertNotNull(response);
+    }
+
 
     private LinkedMultiValueMap<String, String> prepareRequestParams() {
         LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();

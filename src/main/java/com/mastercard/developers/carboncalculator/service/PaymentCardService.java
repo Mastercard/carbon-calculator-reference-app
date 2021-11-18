@@ -15,7 +15,10 @@
  */
 package com.mastercard.developers.carboncalculator.service;
 
+import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
+import com.mastercard.developers.carboncalculator.configuration.ApiConfiguration;
 import com.mastercard.developers.carboncalculator.exception.ServiceException;
+import okhttp3.OkHttpClient;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.PaymentCardApi;
@@ -42,9 +45,18 @@ public class PaymentCardService {
 
 
     @Autowired
-    public PaymentCardService(ApiClient client) {
+    public PaymentCardService(ApiConfiguration apiConfiguration)  {
         LOGGER.info("Initializing Payment Card API");
-        paymentCardApi = new PaymentCardApi(client);
+        paymentCardApi = new PaymentCardApi(setup(apiConfiguration));
+    }
+
+    private ApiClient setup(ApiConfiguration apiConfiguration)  {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .addInterceptor(
+                        new OkHttpOAuth1Interceptor(apiConfiguration.getConsumerKey(), apiConfiguration.getSigningKey()))
+                .build();
+
+        return new ApiClient().setHttpClient(client).setBasePath(apiConfiguration.getBasePath());
     }
 
     public List<AggregateTransactionFootprint> getPaymentCardAggregateTransactions(AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
@@ -85,5 +97,17 @@ public class PaymentCardService {
         return LocalDate.parse(stringDate);
     }
 
+    public void deletePaymentCards(List <String> paymentCards) throws ServiceException {
+        LOGGER.info("Deleting payment card/s {}", paymentCards);
+        try {
+
+            paymentCardApi.paymentCardDeletions(paymentCards);
+
+            LOGGER.info("Deleting payment cards completed");
+        } catch (ApiException e) {
+            throw new ServiceException(e);
+        }
+
+    }
 
 }

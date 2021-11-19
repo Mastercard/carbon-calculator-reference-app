@@ -26,7 +26,7 @@
         <threetenbp-version>1.4.3</threetenbp-version>
         <javax-annotation-version>1.3.2</javax-annotation-version>
         <oauth1-signer-version>1.5.0</oauth1-signer-version>
-        <client-encryption-version>1.5.0</client-encryption-version>
+        <client-encryption-version>1.7.0</client-encryption-version>
         <junit-version>4.13.1</junit-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.coverage.exclusions>

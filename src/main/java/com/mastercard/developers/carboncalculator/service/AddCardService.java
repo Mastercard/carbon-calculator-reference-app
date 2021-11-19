@@ -25,11 +25,14 @@ import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.PaymentCardApi;
 import org.openapitools.client.model.PaymentCard;
+import org.openapitools.client.model.PaymentCardEnrolment;
 import org.openapitools.client.model.PaymentCardReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.mastercard.developers.carboncalculator.util.JSON.deserializeErrors;
 
@@ -70,6 +73,19 @@ public class AddCardService {
                         paymentCardInfo.getLast4fpan());
 
             return paymentCardInfo;
+        } catch (ApiException e) {
+            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
+        }
+
+    }
+
+    public List<PaymentCardEnrolment> registerBatchPaymentCards(List<PaymentCard> paymentCard) throws ServiceException {
+
+        try {
+            LOGGER.info("Calling Register Batch Payment Cards");
+            List<PaymentCardEnrolment> paymentCardEnrolments = paymentCardApi.batchRegisterPaymentCards(paymentCard);
+
+            return paymentCardEnrolments;
         } catch (ApiException e) {
             throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
         }

@@ -18,6 +18,7 @@ package com.mastercard.developers.carboncalculator.controller;
 import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import com.mastercard.developers.carboncalculator.service.*;
 import org.openapitools.client.model.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,5 +91,20 @@ public class CarbonCalculatorController {
         return ResponseEntity.ok(serviceProviderService.getServiceProvider());
     }
 
+    @PostMapping("/payment-card-deletions")
+    public ResponseEntity<String> deletePaymentCards(@RequestBody List<String> paymentCards) throws ServiceException {
+        paymentCardService.deletePaymentCards(paymentCards);
+         return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    @PutMapping("/service-providers")
+        public ResponseEntity<ServiceProvider> updateServiceProvider( @RequestBody ServiceProviderConfig serviceProviderConfig ) throws ServiceException {
+        return ResponseEntity.ok(serviceProviderService.updateServiceProvider(serviceProviderConfig));
+    }
+
+    @PostMapping("/payment-card-enrolments")
+    public ResponseEntity<List<PaymentCardEnrolment>> addBulkPaymentCards(@RequestBody List<PaymentCard> paymentCards ) throws ServiceException {
+        return ResponseEntity.ok(addCardService.registerBatchPaymentCards(paymentCards));
+    }
 
 }

@@ -15,11 +15,15 @@
  */
 package com.mastercard.developers.carboncalculator.service;
 
+import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
+import com.mastercard.developers.carboncalculator.configuration.ApiConfiguration;
 import com.mastercard.developers.carboncalculator.exception.ServiceException;
+import okhttp3.OkHttpClient;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.ServiceProviderApi;
 import org.openapitools.client.model.ServiceProvider;
+import org.openapitools.client.model.ServiceProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,10 +37,21 @@ public class ServiceProviderService {
 
     private final ServiceProviderApi serviceProviderApi;
 
-    public ServiceProviderService(ApiClient client) {
+    public ServiceProviderService(ApiConfiguration apiConfiguration) {
         LOGGER.info("Initializing Service Provider API");
-        serviceProviderApi = new ServiceProviderApi(client);
+        serviceProviderApi = new ServiceProviderApi(setup(apiConfiguration));
     }
+
+
+    private ApiClient setup(ApiConfiguration apiConfiguration)  {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .addInterceptor(
+                        new OkHttpOAuth1Interceptor(apiConfiguration.getConsumerKey(), apiConfiguration.getSigningKey()))
+                .build();
+
+        return new ApiClient().setHttpClient(client).setBasePath(apiConfiguration.getBasePath());
+    }
+
 
 
     public ServiceProvider getServiceProvider() throws ServiceException {
@@ -52,4 +67,15 @@ public class ServiceProviderService {
         }
     }
 
+
+    public ServiceProvider updateServiceProvider(ServiceProviderConfig serviceProviderConfig) throws ServiceException {
+        LOGGER.info("Updating service provider");
+        try {
+            ServiceProvider serviceProvider = serviceProviderApi.updateServiceProvider( serviceProviderConfig);
+            LOGGER.info("Returning updated service provider");
+            return serviceProvider;
+        } catch (ApiException e) {
+            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
+        }
+    }
 }

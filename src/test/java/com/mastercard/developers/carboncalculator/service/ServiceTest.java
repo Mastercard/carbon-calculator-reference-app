@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.mastercard.developers.carboncalculator.service.MockData.*;
+import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -108,6 +109,23 @@ class ServiceTest {
     }
 
     @Test
+    void updateProvider() throws Exception {
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
+                new ApiResponse<>(200, new HashMap<>(), MockData.serviceProvider()));
+
+        ServiceProviderConfig serviceProviderConfig = new ServiceProviderConfig();
+        serviceProviderConfig.setCustomerName("Customer1");
+
+        ServiceProvider serviceProvider = serviceProviderService.updateServiceProvider(serviceProviderConfig);
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        assertNotNull(serviceProvider);
+    }
+
+    @Test
     void historical() throws Exception {
         when(apiClient.escapeString(anyString())).thenReturn("randomString");
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
@@ -163,5 +181,19 @@ class ServiceTest {
             Assertions.assertEquals(SOURCE, error.getSource());
             Assertions.assertFalse(error.getRecoverable());
         });
+    }
+
+    @Test
+    void deleteCards() throws Exception {
+        when(apiClient.execute(any(Call.class))).thenReturn(
+                new ApiResponse<>(201, new HashMap<>(),"SUCCESS"));
+        final List<String> cardIds = of("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9");
+
+        paymentCardService.deletePaymentCards(cardIds);
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
     }
 }

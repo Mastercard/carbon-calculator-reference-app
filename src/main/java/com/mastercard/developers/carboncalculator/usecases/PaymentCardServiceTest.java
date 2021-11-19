@@ -19,6 +19,8 @@ import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import com.mastercard.developers.carboncalculator.service.AddCardService;
 import com.mastercard.developers.carboncalculator.service.PaymentCardService;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
+import org.openapitools.client.ApiClient;
 import org.openapitools.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +28,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static com.mastercard.developers.carboncalculator.usecases.helper.PanGenerator.generateFPAN;
+import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -38,12 +44,16 @@ class PaymentCardServiceTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentCardServiceTest.class);
     private static final String ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG = "Add Card API call failed with error msg {}";
+    private static final String DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG = "Delete Card API call failed with error msg {}";
 
     @Autowired
     private PaymentCardService paymentCardService;
 
     @Autowired
     private AddCardService addCardService;
+
+    @Autowired
+    private ApiClient apiClient;
 
     @Value("${test.data.bin}")
     private String bin;
@@ -144,4 +154,64 @@ class PaymentCardServiceTest {
     private static void setPaymentCardId(String paymentCardId) {
         PaymentCardServiceTest.paymentCardId = paymentCardId;
     }
+
+
+    /**
+     * Use case 4. Delete Payment Cards
+     */
+    @Test
+    @DisplayName("Delete Registered payment cards")
+    @Order(4)
+    void deletePaymentCards() {
+
+        final List<String> cardIds = of(PaymentCardServiceTest.paymentCardId);
+
+        try {
+            PaymentCardService paymentCardService1 =  Mockito.spy(paymentCardService);
+            paymentCardService1.deletePaymentCards(cardIds);
+            verify(paymentCardService1,times(1)).deletePaymentCards(cardIds);
+
+        } catch (ServiceException e) {
+            LOGGER.info(DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+
+    /**
+     * Use case 10. Enrol bulk FPAN
+     */
+    @Test
+    @DisplayName("Enroll bulk payment cards")
+    void enrollBulkPaymentCards() {
+
+        PaymentCard paymentCard1 = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
+        PaymentCard paymentCard2 = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
+
+        List<PaymentCard> paymentCards = new ArrayList<>();
+        paymentCards.add(paymentCard1);
+        paymentCards.add(paymentCard2);
+
+        try {
+            List<PaymentCardEnrolment> paymentCardEnrolmentList = addCardService.registerBatchPaymentCards(paymentCards);
+
+            LOGGER.info("Enrolled payment cards are {}", paymentCardEnrolmentList);
+
+            assertNotNull(paymentCardEnrolmentList);
+
+            paymentCardEnrolmentList
+                    .stream()
+                    .forEach(paymentCardEnrolment -> {
+                        assertNotNull(paymentCardEnrolment.getPaymentCardId());
+                        assertNotNull(paymentCardEnrolment.getLast4fpan());
+                    }
+            );
+
+
+        } catch (ServiceException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+
 }

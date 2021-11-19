@@ -121,4 +121,24 @@ public class MockData {
         ErrorWrapper response = new ErrorWrapper().errors(new Errors().addErrorItem(error));
         return serializeErrors(response);
     }
+
+    public static List<String> listPaymentCards(){
+        List<String> paymentCards = new ArrayList<>();
+        paymentCards.add("c5d88571-ac15-465a-a0d8-1ad1327b9a06");
+        return paymentCards;
+    }
+
+    public static List<PaymentCardEnrolment> batchPaymentEnrollment() {
+
+        List <PaymentCardEnrolment> paymentCardEnrolment = new ArrayList<>();
+        paymentCardEnrolment.add(new PaymentCardEnrolment().bin("5425").last4fpan("5306").paymentCardId(
+                "paymentCardId").status("ACTIVE"));
+        return paymentCardEnrolment;
+    }
+
+    public static List<PaymentCard> listPaymentCardReference() {
+        List<PaymentCard> paymentCards = new ArrayList<>();
+        paymentCards.add(new PaymentCard().fpan("5344035171229750").cardBaseCurrency("EUR"));
+        return paymentCards;
+    }
 }

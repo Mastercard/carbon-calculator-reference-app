@@ -16,6 +16,7 @@
 - [Service Documentation](#documentation)
 - [API Reference](#api-reference)
 - [Support](#support)
+- [License](#license)
 
 ## Overview  <a name="overview"></a>
 This is a reference application to demonstrate how Carbon Calculator API can be used.
@@ -96,7 +97,16 @@ Fetches carbon score for registered payment cards and aggregates the same on dai
 7. **View Service Provider Details**  
 Fetches service provider details.
 
-More details can be found [here](https://developer.mastercard.com/carbon-calculator/documentation/use-cases/).    
+8. **Update Service Provider**<br/>
+Allows a registered Service Provider to update its configuration on the server. A Service Provider should mandatorily call this API first after their successful project creation on Mastercard Developers Platform before they can successfully call other APIs. 
+
+9. **Delete FPAN** <br/>
+Allows a registered Service Provider to delete one or more Payment Cards from its profile. Any data associated with a requested paymentCardId will also be deleted permanently.
+
+10. **Bulk Enroll FPAN**  
+Allows a registered Service Provider to add list of new Payment Cards under its profile
+
+More details can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/use-cases/).    
 
 
 ## Execute the Use-Cases   <a name="execute-the-use-cases"></a>
@@ -109,14 +119,15 @@ More details can be found [here](https://developer.mastercard.com/carbon-calcula
     
     2. Use REST API based Client( such as [Insomnia](https://insomnia.rest/download/core/) or [Postman](https://www.postman.com/downloads/))  
         - Run ```mvn spring-boot:run``` command to run the application.  
-        - Use any REST API based Client to test the functionality. Below are the endpoints exposed by this reference application, use ```locahost:8080``` as the Host:  
-                - POST {Host}/demo/transaction-footprints      
-                - GET {Host}/demo/supported-mccs  
-                - GET {Host}/demo/supported-currencies  
-                - POST {Host}/demo/payment-cards      
-                - POST {Host}/demo/aggregate-transaction-footprints  
-                - GET {Host}/demo/historical/{paymentcard_id}/transaction-footprints  
-                - GET {Host}/demo/service-providers             
+        - Use any REST API based Client to test the functionality. Below are the APIs exposed by this application:  
+                - POST <Host>/demo/transaction-footprints      
+                - GET <Host>/demo/supported-mccs  
+                - GET <Host>/demo/supported-currencies  
+                - POST <Host>/demo/payment-cards      
+                - POST <Host>/demo/aggregate-transaction-footprints  
+                - GET <Host>/demo/historical/{paymentcard_id}/transaction-footprints  
+                - GET <Host>/demo/service-providers  
+                - POST <Host>/demo/payment-card-enrolments           
              
                                                                                
 ## Service Documentation <a name="documentation"></a>
@@ -129,3 +140,14 @@ The Swagger API specification can be found [here](https://developer.mastercard.c
 
 ## Support <a name="support"></a>
 Please send an email to **carboncalculator@mastercard.com** with any questions or feedback you may have.
+
+
+## License <a name="license"></a>
+<p>Copyright 2021 Mastercard</p>
+<p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at:</p>
+<pre><code>   http://www.apache.org/licenses/LICENSE-2.0
+</code></pre>
+<p>Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.</p>

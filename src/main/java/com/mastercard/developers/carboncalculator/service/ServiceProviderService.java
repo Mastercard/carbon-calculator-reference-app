@@ -37,21 +37,10 @@ public class ServiceProviderService {
 
     private final ServiceProviderApi serviceProviderApi;
 
-    public ServiceProviderService(ApiConfiguration apiConfiguration) {
+    public ServiceProviderService(ApiClient client) {
         LOGGER.info("Initializing Service Provider API");
-        serviceProviderApi = new ServiceProviderApi(setup(apiConfiguration));
+        serviceProviderApi = new ServiceProviderApi(client);
     }
-
-
-    private ApiClient setup(ApiConfiguration apiConfiguration)  {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .addInterceptor(
-                        new OkHttpOAuth1Interceptor(apiConfiguration.getConsumerKey(), apiConfiguration.getSigningKey()))
-                .build();
-
-        return new ApiClient().setHttpClient(client).setBasePath(apiConfiguration.getBasePath());
-    }
-
 
 
     public ServiceProvider getServiceProvider() throws ServiceException {

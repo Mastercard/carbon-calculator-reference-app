@@ -79,11 +79,11 @@ See also:
 1. **Transaction Footprints Calculation**   
 Calculates carbon emission and water usage based on payment transactions.
 
-2. **Get Supported Currencies**    
-Provides a list of Merchant Category Code (MCC) supported by the application.
+2. **Get Supported Currencies**
+Provides a list of Currencies supported by the application.    
 
 3. **Get Supported Merchant Categories**  
-Provides a list of Currencies supported by the application.
+Provides a list of Merchant Category Code (MCC) supported by the application.
 
 4. **Add Payment Card**  
 Allows a registered Service Provider to add a new Payment Card under its profile.
@@ -127,7 +127,9 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
                 - POST <Host>/demo/aggregate-transaction-footprints  
                 - GET <Host>/demo/historical/{paymentcard_id}/transaction-footprints  
                 - GET <Host>/demo/service-providers  
-                - POST <Host>/demo/payment-card-enrolments           
+                - POST <Host>/demo/payment-card-enrolments
+                - PUT <Host>/demo/service-providers
+                - POST <Host>/demo/payment-card-deletions
              
                                                                                
 ## Service Documentation <a name="documentation"></a>

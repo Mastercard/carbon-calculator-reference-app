@@ -45,19 +45,11 @@ public class PaymentCardService {
 
 
     @Autowired
-    public PaymentCardService(ApiConfiguration apiConfiguration)  {
+    public PaymentCardService(ApiClient client) {
         LOGGER.info("Initializing Payment Card API");
-        paymentCardApi = new PaymentCardApi(setup(apiConfiguration));
+        paymentCardApi = new PaymentCardApi(client);
     }
 
-    private ApiClient setup(ApiConfiguration apiConfiguration)  {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .addInterceptor(
-                        new OkHttpOAuth1Interceptor(apiConfiguration.getConsumerKey(), apiConfiguration.getSigningKey()))
-                .build();
-
-        return new ApiClient().setHttpClient(client).setBasePath(apiConfiguration.getBasePath());
-    }
 
     public List<AggregateTransactionFootprint> getPaymentCardAggregateTransactions(AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
 

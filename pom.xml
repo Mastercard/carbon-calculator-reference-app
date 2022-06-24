@@ -6,14 +6,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.4.2</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>com.mastercard.developers</groupId>
     <artifactId>carbon-calculator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>carbon-calculator</name>
     <description>Carbon Calculator Reference Application</description>
-
     <properties>
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>

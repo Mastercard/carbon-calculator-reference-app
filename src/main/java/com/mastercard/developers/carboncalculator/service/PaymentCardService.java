@@ -82,7 +82,7 @@ public class PaymentCardService {
     }
 
     public void deletePaymentCards(List <String> paymentCards) throws ServiceException {
-        LOGGER.info("Deleting payment card/s {}", paymentCards);
+
         try {
 
             paymentCardApi.paymentCardDeletions(paymentCards);

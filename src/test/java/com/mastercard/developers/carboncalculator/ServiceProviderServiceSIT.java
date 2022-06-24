@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mastercard.developers.carboncalculator.usecases;
+package com.mastercard.developers.carboncalculator;
 
 import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import com.mastercard.developers.carboncalculator.service.ServiceProviderService;
@@ -33,13 +33,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @ContextConfiguration
-class ServiceProviderServiceTest {
+class ServiceProviderServiceSIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceProviderServiceTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceProviderServiceSIT.class);
 
     @Autowired
     private ServiceProviderService serviceProviderService;
-
 
     /**
      * Use case 5. Get Service Provider
@@ -49,7 +48,7 @@ class ServiceProviderServiceTest {
     void getServiceProvider() {
 
         try {
-            ServiceProvider serviceProviderInfo = serviceProviderService.getServiceProvider();
+            var serviceProviderInfo = serviceProviderService.getServiceProvider();
 
             LOGGER.info("{}", serviceProviderInfo);
 

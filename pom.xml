@@ -40,7 +40,7 @@
         </sonar.coverage.exclusions>
         <sonar.projectKey>Mastercard_Carbon-Calculator-Reference-App</sonar.projectKey>
         <sonar.organization>mastercard</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>     
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencies>
@@ -107,6 +107,19 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test-autoconfigure</artifactId>
+        </dependency>
+
+        <!-- junit 5 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

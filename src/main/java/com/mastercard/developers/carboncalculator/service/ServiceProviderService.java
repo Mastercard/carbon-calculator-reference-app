@@ -15,10 +15,7 @@
  */
 package com.mastercard.developers.carboncalculator.service;
 
-import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
-import com.mastercard.developers.carboncalculator.configuration.ApiConfiguration;
 import com.mastercard.developers.carboncalculator.exception.ServiceException;
-import okhttp3.OkHttpClient;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.ServiceProviderApi;
@@ -42,12 +39,11 @@ public class ServiceProviderService {
         serviceProviderApi = new ServiceProviderApi(client);
     }
 
-
     public ServiceProvider getServiceProvider() throws ServiceException {
         LOGGER.info("Fetching service provider");
 
         try {
-            ServiceProvider serviceProviderInfo = serviceProviderApi.getServiceProviderById();
+            var serviceProviderInfo = serviceProviderApi.getServiceProviderById();
 
             LOGGER.info("Returning service provider information");
             return serviceProviderInfo;

@@ -67,7 +67,7 @@ public class ApiConfiguration {
 
     @Bean
     public ApiClient setupApiClient() {
-        ApiClient apiClient = new ApiClient();
+        var apiClient = new ApiClient();
 
         apiClient.setBasePath(basePath);
         apiClient.setHttpClient(

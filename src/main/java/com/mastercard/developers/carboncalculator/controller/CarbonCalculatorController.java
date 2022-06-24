@@ -55,7 +55,7 @@ public class CarbonCalculatorController {
     }
 
     @PostMapping("/transaction-footprints")
-    public ResponseEntity<List<TransactionFootprint>> calculateFootprints(@RequestBody List<Transaction> mcTransactions) throws ServiceException {
+    public ResponseEntity<List<TransactionFootprintData>> calculateFootprints(@RequestBody List<TransactionData> mcTransactions) throws ServiceException {
         return ResponseEntity.ok(environmentalImpactService.calculateFootprints(mcTransactions));
 
     }
@@ -94,11 +94,11 @@ public class CarbonCalculatorController {
     @PostMapping("/payment-card-deletions")
     public ResponseEntity<String> deletePaymentCards(@RequestBody List<String> paymentCards) throws ServiceException {
         paymentCardService.deletePaymentCards(paymentCards);
-         return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @PutMapping("/service-providers")
-        public ResponseEntity<ServiceProvider> updateServiceProvider( @RequestBody ServiceProviderConfig serviceProviderConfig ) throws ServiceException {
+    public ResponseEntity<ServiceProvider> updateServiceProvider( @RequestBody ServiceProviderConfig serviceProviderConfig ) throws ServiceException {
         return ResponseEntity.ok(serviceProviderService.updateServiceProvider(serviceProviderConfig));
     }
 

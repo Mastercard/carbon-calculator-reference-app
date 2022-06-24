@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mastercard.developers.carboncalculator.usecases;
+package com.mastercard.developers.carboncalculator;
 
 import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import com.mastercard.developers.carboncalculator.service.EnvironmentalImpactService;
@@ -36,9 +36,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @SpringBootTest
-class EnvironmentalImpactServiceTest {
+class EnvironmentalImpactServiceSIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EnvironmentalImpactServiceTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EnvironmentalImpactServiceSIT.class);
 
     @Autowired
     private EnvironmentalImpactService environmentalImpactService;
@@ -53,7 +53,7 @@ class EnvironmentalImpactServiceTest {
     @DisplayName("Calculate transaction footprints")
     void calculateFootprints() {
 
-        List<TransactionFootprint> mcTransactionFootprints;
+        List<TransactionFootprintData> mcTransactionFootprints;
         try {
             mcTransactionFootprints = environmentalImpactService.calculateFootprints(
                     mockTransactions());
@@ -111,10 +111,10 @@ class EnvironmentalImpactServiceTest {
 
     }
 
-    private static List<Transaction> mockTransactions() {
-        List<Transaction> mcTransactions = new ArrayList<>();
-        mcTransactions.add(new Transaction().transactionId("TX-1")
-                                   .mcc("3000").amount(
+    private static List<TransactionData> mockTransactions() {
+        List<TransactionData> mcTransactions = new ArrayList<>();
+        mcTransactions.add(new TransactionData().transactionId("TX-1")
+                .mcc("3000").amount(
                         new Amount().currencyCode("USD").value(new BigDecimal(150))));
         return mcTransactions;
     }

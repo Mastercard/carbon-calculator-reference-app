@@ -15,10 +15,7 @@
  */
 package com.mastercard.developers.carboncalculator.service;
 
-import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
-import com.mastercard.developers.carboncalculator.configuration.ApiConfiguration;
 import com.mastercard.developers.carboncalculator.exception.ServiceException;
-import okhttp3.OkHttpClient;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.PaymentCardApi;
@@ -30,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static com.mastercard.developers.carboncalculator.util.JSON.deserializeErrors;
@@ -54,7 +50,7 @@ public class PaymentCardService {
     public List<AggregateTransactionFootprint> getPaymentCardAggregateTransactions(AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
 
         LOGGER.info("Calculating aggregate carbon score for paymentCardIds {}",
-                    aggregateSearchCriteria.getPaymentCardIds());
+                aggregateSearchCriteria.getPaymentCardIds());
 
         try {
             List<AggregateTransactionFootprint> aggregateTransactionFootprintList = paymentCardApi.getPaymentCardAggregateTransactions(
@@ -72,21 +68,17 @@ public class PaymentCardService {
     public HistoricalTransactionFootprints getPaymentCardTransactionHistory(String paymentCardId, String fromDate, String toDate, int offset, int limit) throws ServiceException {
         try {
             LOGGER.info("Fetching historical transaction footprint data for paymentCardId {}",
-                        paymentCardId);
+                    paymentCardId);
 
             HistoricalTransactionFootprints historicalTransactionFootprintList = paymentCardApi.getPaymentCardTransactionHistory(
-                    paymentCardId, parseDate(fromDate), parseDate(toDate), offset, limit);
+                    paymentCardId, fromDate, toDate, offset, limit);
 
             LOGGER.info("Returning historical transaction footprint data.");
 
             return historicalTransactionFootprintList;
         } catch (ApiException e) {
-            throw new ServiceException(e);
+            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
         }
-    }
-
-    private LocalDate parseDate(String stringDate) {
-        return LocalDate.parse(stringDate);
     }
 
     public void deletePaymentCards(List <String> paymentCards) throws ServiceException {

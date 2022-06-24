@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mastercard.developers.carboncalculator.usecases;
+package com.mastercard.developers.carboncalculator;
 
 import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import com.mastercard.developers.carboncalculator.service.AddCardService;
@@ -21,7 +21,10 @@ import com.mastercard.developers.carboncalculator.service.PaymentCardService;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.openapitools.client.ApiClient;
-import org.openapitools.client.model.*;
+import org.openapitools.client.model.AggregateSearchCriteria;
+import org.openapitools.client.model.AggregateTransactionFootprint;
+import org.openapitools.client.model.PaymentCard;
+import org.openapitools.client.model.PaymentCardEnrolment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +43,9 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class PaymentCardServiceTest {
+class PaymentCardServiceSIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentCardServiceTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentCardServiceSIT.class);
     private static final String ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG = "Add Card API call failed with error msg {}";
     private static final String DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG = "Delete Card API call failed with error msg {}";
 
@@ -71,11 +74,11 @@ class PaymentCardServiceTest {
     @Order(1)
     void registerPaymentCard() {
 
-        PaymentCard paymentCard = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
+        var paymentCard = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
 
         try {
 
-            PaymentCardReference paymentCardReference = addCardService.registerPaymentCard(paymentCard);
+            var paymentCardReference = addCardService.registerPaymentCard(paymentCard);
 
             assertNotNull(paymentCardReference);
             assertNotNull(paymentCardReference.getPaymentCardId());
@@ -124,7 +127,7 @@ class PaymentCardServiceTest {
     void historicalTransactionFootprints() {
 
         try {
-            HistoricalTransactionFootprints historicalTransactionFootprints = paymentCardService.getPaymentCardTransactionHistory(
+            var historicalTransactionFootprints = paymentCardService.getPaymentCardTransactionHistory(
                     paymentCardId, "2020-09-19", "2020-10-01", 0, 50);
 
             assertNotNull(historicalTransactionFootprints);
@@ -148,11 +151,11 @@ class PaymentCardServiceTest {
     private static AggregateSearchCriteria mockAggregateSearchCriteria(String paymentCardId) {
 
         List<String> paymentCardIds = Collections.singletonList(paymentCardId);
-        return new AggregateSearchCriteria().paymentCardIds(paymentCardIds).aggregateType(0);
+        return new AggregateSearchCriteria().paymentCardIds(paymentCardIds).aggregateType(2);
     }
 
     private static void setPaymentCardId(String paymentCardId) {
-        PaymentCardServiceTest.paymentCardId = paymentCardId;
+        PaymentCardServiceSIT.paymentCardId = paymentCardId;
     }
 
 
@@ -164,7 +167,7 @@ class PaymentCardServiceTest {
     @Order(4)
     void deletePaymentCards() {
 
-        final List<String> cardIds = of(PaymentCardServiceTest.paymentCardId);
+        final List<String> cardIds = of(PaymentCardServiceSIT.paymentCardId);
 
         try {
             PaymentCardService paymentCardService1 =  Mockito.spy(paymentCardService);

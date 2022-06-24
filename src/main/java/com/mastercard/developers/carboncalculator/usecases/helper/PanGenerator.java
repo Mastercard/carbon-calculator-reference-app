@@ -37,12 +37,12 @@ public class PanGenerator {
      */
     public static String generateFPAN(String bin) {
 
-        int length = 16; //Length of FPAN
+        var length = 16; //Length of FPAN
         int randomNumberLength = length - (bin.length() + 1);
 
-        StringBuilder builder = new StringBuilder(bin);
-        for (int i = 0; i < randomNumberLength; i++) {
-            int digit = random.nextInt(10);
+        var builder = new StringBuilder(bin);
+        for (var i = 0; i < randomNumberLength; i++) {
+            var digit = random.nextInt(10);
             builder.append(digit);
         }
 
@@ -54,10 +54,10 @@ public class PanGenerator {
 
     private static int getCheckDigit(String number) {
 
-        int sum = 0;
-        for (int i = 0; i < number.length(); i++) {
+        var sum = 0;
+        for (var i = 0; i < number.length(); i++) {
 
-            int digit = Integer.parseInt(number.substring(i, (i + 1)));
+            var digit = Integer.parseInt(number.substring(i, (i + 1)));
 
             if ((i % 2) == 0) {
                 digit = digit * 2;

@@ -69,8 +69,8 @@ public class AddCardService {
             PaymentCardReference paymentCardInfo = paymentCardApi.registerPaymentCard(paymentCard);
 
             LOGGER.info("Add Card API call successful, payment card with id {} and fpan suffix {} added successfully .",
-                        paymentCardInfo.getPaymentCardId(),
-                        paymentCardInfo.getLast4fpan());
+                    paymentCardInfo.getPaymentCardId(),
+                    paymentCardInfo.getLast4fpan());
 
             return paymentCardInfo;
         } catch (ApiException e) {
@@ -83,9 +83,7 @@ public class AddCardService {
 
         try {
             LOGGER.info("Calling Register Batch Payment Cards");
-            List<PaymentCardEnrolment> paymentCardEnrolments = paymentCardApi.batchRegisterPaymentCards(paymentCard);
-
-            return paymentCardEnrolments;
+            return paymentCardApi.batchRegisterPaymentCards(paymentCard);
         } catch (ApiException e) {
             throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
         }

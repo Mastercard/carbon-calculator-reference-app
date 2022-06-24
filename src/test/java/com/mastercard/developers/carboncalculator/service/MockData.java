@@ -14,15 +14,29 @@ public class MockData {
 
     private static final String SOURCE = "Carbon-Calculator";
 
-    public static List<Transaction> transactions() {
-        List<Transaction> mcTransactions = new ArrayList<>();
-        mcTransactions.add(new Transaction().transactionId("TX-1")
-                                   .mcc("3000").amount(
+    public static List<TransactionData> transactions() {
+        List<TransactionData> mcTransactions = new ArrayList<>();
+        mcTransactions.add(new TransactionData().transactionId("TX-1")
+                .mcc("3000").amount(
                         new Amount().currencyCode("EUR").value(new BigDecimal(150))));
         return mcTransactions;
     }
 
-    public static List<TransactionFootprint> transactionFootprints() {
+    public static List<TransactionFootprintData> transactionFootprints() {
+
+        TransactionFootprintData transactionFootprint = new TransactionFootprintData().transactionId(
+                "TX-1").category(new Category().mainCategory("Transportation").subCategory(
+                "Flights").sector(
+                "Airlines").sectorCode(
+                "505")).mcc("3000").carbonEmissionInGrams(BigDecimal.valueOf(205688.73)).carbonEmissionInOunces(
+                BigDecimal.valueOf(7255.46)).carbonSocialCost(
+                null);
+
+        return Collections.singletonList(transactionFootprint);
+
+    }
+
+    public static List<TransactionFootprint> historicalTransactionFootprints() {
 
         TransactionFootprint transactionFootprint = new TransactionFootprint().transactionId(
                 "TX-1").category(new Category().mainCategory("Transportation").subCategory(
@@ -30,13 +44,11 @@ public class MockData {
                 "Airlines").sectorCode(
                 "505")).mcc("3000").carbonEmissionInGrams(BigDecimal.valueOf(205688.73)).carbonEmissionInOunces(
                 BigDecimal.valueOf(7255.46)).carbonSocialCost(
-                null).waterUseInCubicMeters(BigDecimal.valueOf(1.5)).waterUseInGallons(
-                BigDecimal.valueOf(396.2)).waterUseSocialCost(null);
+                null);
 
         return Collections.singletonList(transactionFootprint);
 
     }
-
 
     public static List<MerchantCategory> merchantCategories() {
 
@@ -77,8 +89,7 @@ public class MockData {
         FootprintAggregation footprintAggregation = new FootprintAggregation().aggregateValue("2020");
         footprintAggregation.carbonEmissionInGrams(BigDecimal.valueOf(205688.73)).carbonEmissionInOunces(
                 BigDecimal.valueOf(7255.46)).carbonSocialCost(
-                null).waterUseInCubicMeters(BigDecimal.valueOf(1.5)).waterUseInGallons(
-                BigDecimal.valueOf(396.2)).waterUseSocialCost(null);
+                null);
 
         AggregateTransactionFootprint aggregateTransactionFootprint = new AggregateTransactionFootprint();
         aggregateTransactionFootprint.paymentCardId("testPaymentCardId").addFootprintAggregationsItem(
@@ -90,8 +101,8 @@ public class MockData {
     public static HistoricalTransactionFootprints historicalTransactionFootprint() {
 
         HistoricalTransactionFootprint historicalTransactionFootprint = new HistoricalTransactionFootprint().transactionFootprint(
-                transactionFootprints().get(0)).transactionMetadata(
-                new TransactionMetadata().amount(150.0).currencyCode("USD").indicator("RFT").retrievalRefNumber(
+                historicalTransactionFootprints().get(0)).transactionMetadata(
+                new TransactionMetadata().amount(BigDecimal.valueOf(150.0)).currencyCode("USD").indicator("RFT").retrievalRefNumber(
                         "83Y071x35").processingCode("16"));
 
         return new HistoricalTransactionFootprints().count(1).limit(1).offset(0).total(1).addItemsItem(
@@ -107,10 +118,10 @@ public class MockData {
                 "paymentCardId").status("ACTIVE");
     }
 
-    public static List<Transaction> invalidTransactionRequest() {
-        List<Transaction> mcTransactions = new ArrayList<>();
-        mcTransactions.add(new Transaction().transactionId("TX-1")
-                                   .mcc("12345").amount(
+    public static List<TransactionData> invalidTransactionRequest() {
+        List<TransactionData> mcTransactions = new ArrayList<>();
+        mcTransactions.add(new TransactionData().transactionId("TX-1")
+                .mcc("12345").amount(
                         new Amount().currencyCode("EUR").value(new BigDecimal(150))));
         return mcTransactions;
     }

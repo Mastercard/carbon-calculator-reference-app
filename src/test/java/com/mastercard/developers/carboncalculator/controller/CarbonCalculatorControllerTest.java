@@ -4,9 +4,7 @@ import com.google.gson.Gson;
 import com.mastercard.developers.carboncalculator.configuration.ApiConfiguration;
 import com.mastercard.developers.carboncalculator.service.*;
 import org.junit.jupiter.api.Test;
-import org.openapitools.client.model.AggregateSearchCriteria;
-import org.openapitools.client.model.HistoricalTransactionFootprints;
-import org.openapitools.client.model.Transaction;
+import org.openapitools.client.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -59,6 +57,9 @@ class CarbonCalculatorControllerTest {
     @MockBean
     private ServiceProviderService serviceProviderApi;
 
+    @MockBean
+    private ServiceProviderConfig serviceProviderConfig;
+
     @Value("${test.data.bin}")
     String bin;
 
@@ -68,7 +69,7 @@ class CarbonCalculatorControllerTest {
     @Test
     void calculateFootprints() throws Exception {
 
-        List<Transaction> mcTransactions = transactions();
+        List<TransactionData> mcTransactions = transactions();
 
         when(environmentalImpactService.calculateFootprints(mcTransactions)).thenReturn(
                 transactionFootprints());
@@ -140,8 +141,8 @@ class CarbonCalculatorControllerTest {
 
         MvcResult mvcResult2 = this.mockMvc
                 .perform(post("/demo/aggregate-transaction-footprints")
-                                 .contentType(
-                                         MediaType.APPLICATION_JSON).content(
+                        .contentType(
+                                MediaType.APPLICATION_JSON).content(
                                 gson.toJson(aggregateSearchCriteria))).andExpect(
                         status().isOk()).andReturn();
 
@@ -152,13 +153,13 @@ class CarbonCalculatorControllerTest {
     @Test
     void historicalTransactionFootprints() throws Exception {
         when(paymentCardService.getPaymentCardTransactionHistory("paymentCardId", "2020-09-19",
-                                                                 "2020-10-01", 0,
-                                                                 1)).thenReturn(
+                "2020-10-01", 0,
+                1)).thenReturn(
                 new HistoricalTransactionFootprints());
         MvcResult mvcResult3 = this.mockMvc
                 .perform(get("/demo/historical/{paymentcard_id}/transaction-footprints".replace("{paymentcard_id}",
-                                                                                                "paymentCardId"))
-                                 .params(prepareRequestParams()))
+                        "paymentCardId"))
+                        .params(prepareRequestParams()))
                 .andExpect(status().isOk()).andReturn();
 
         String response3 = mvcResult3.getResponse().getContentAsString();
@@ -198,6 +199,17 @@ class CarbonCalculatorControllerTest {
                 gson.toJson(listPaymentCardReference())))
                 .andExpect(status().isOk()).andReturn();
 
+        String response = mvcResult.getResponse().getContentAsString();
+        assertNotNull(response);
+    }
+
+    @Test
+    void updateServiceProvider() throws Exception {
+        when(serviceProviderApi.updateServiceProvider(serviceProviderConfig)).thenReturn(serviceProvider());
+
+        MvcResult mvcResult = this.mockMvc
+                .perform(get("/demo/service-providers"))
+                .andExpect(status().isOk()).andReturn();
         String response = mvcResult.getResponse().getContentAsString();
         assertNotNull(response);
     }

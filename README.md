@@ -1,13 +1,8 @@
 # Carbon Calculator Reference App
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_Carbon-Calculator-Reference-App&metric=alert_status)](https://sonarcloud.io/dashboard?id=Mastercard_Carbon-Calculator-Reference-App)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_Carbon-Calculator-Reference-App&metric=coverage)](https://sonarcloud.io/dashboard?id=Mastercard_Carbon-Calculator-Reference-App)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_Carbon-Calculator-Reference-App&metric=code_smells)](https://sonarcloud.io/dashboard?id=Mastercard_Carbon-Calculator-Reference-App)
-[![](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/Mastercard/carbon-calculator-reference-app/blob/master/LICENSE)
-
 ## Table of Contents
 - [Overview](#overview)
-- [Prerequisites](#prerequisites)
+- [Requirements](#requirements)
 - [Frameworks/Libraries](#frameworks)
 - [Integrating with OpenAPI Generator](#OpenAPI_Generator)
 - [Configuration](#configuration)
@@ -19,10 +14,10 @@
 - [License](#license)
 
 ## Overview  <a name="overview"></a>
-This is a reference application to demonstrate how Carbon Calculator API can be used.
-To call these API, the consumer key and .p12 file are required from your project on Mastercard Developers.
+This is a reference application to demonstrate how Carbon Calculator APIs can be used.
+To call these APIs, consumer key and .p12 file are required from your project on Mastercard Developers.
 
-## Prerequisites  <a name="prerequisites"></a>
+## Requirements  <a name="requirements"></a>
 
 - Java 11
 - IntelliJ IDEA (or any other IDE)
@@ -35,11 +30,11 @@ To call these API, the consumer key and .p12 file are required from your project
 ## Integrating with OpenAPI Generator <a name="OpenAPI_Generator"></a>
 
 OpenAPI Generator generates API client libraries from OpenAPI Specs. It provides generators and library templates for supporting multiple languages and frameworks.
-Check [Generating and Configuring a Mastercard API Client](https://developer.mastercard.com/platform/documentation/security-and-authentication/generating-and-configuring-a-mastercard-api-client/) to know more about how to generate a simple API client for consuming API.
+Check [Generating and Configuring a Mastercard API Client](https://developer.mastercard.com/platform/documentation/security-and-authentication/generating-and-configuring-a-mastercard-api-client/) to know more about how to generate a simple API client for consuming APIs.
 
 
 ### Configuring Payload Encryption
-The [Mastercard Encryption Library](https://github.com/Mastercard/client-encryption-java) provides an interceptor class that you can use when configuring your API client. This [interceptor](https://github.com/Mastercard/client-encryption-java#usage-of-the-okhttpfieldlevelencryptioninterceptor-openapi-generator-4xy) will encrypt the payload before sending the request.
+The [Mastercard Encryption Library](https://github.com/Mastercard/client-encryption-java) provides interceptor class that you can use when configuring your API client. This [interceptor](https://github.com/Mastercard/client-encryption-java#usage-of-the-okhttpfieldlevelencryptioninterceptor-openapi-generator-4xy) will encrypt payload before sending the request.
 
 **Encryption Config**
 ```
@@ -69,32 +64,32 @@ See also:
 6. Open ```src/main/resources/application.yml``` and configure:
     - ```mastercard.api.environment.key-file ```- Path to keystore (.p12) file, just change the name as per the downloaded file in step 5. 
     - ```mastercard.api.authentication.consumer-key``` - Copy the Consumer key from "Sandbox/Production Keys" section on your project page
-    - ```mastercard.api.authentication.keystore-alias``` - Alias of your key. The default key alias for sandbox is ```keyalias```.
-    - ```mastercard.api.authentication.keystore-password``` -  Password of your Keystore. The default keystore password for sandbox project is ```keystorepassword```.
+    - ```mastercard.api.authentication.keystore-alias``` - Alias of your key. Default key alias for sandbox is ```keyalias```.
+    - ```mastercard.api.authentication.keystore-password``` -  Password of your Keystore. Default keystore password for sandbox project is ```keystorepassword```.
     - ```mastercard.api.encryption.key-file ```- Path to encryption key (.pem) file, just change the name as per the downloaded file in step 5. 
     ```mastercard.api.encryption.fingerprint ```- Fingerprint, copy the fingerprint from Client Encryption Keys section. If you have multiple client encryption keys then copy the fingerprint of the key which you want to use.
     - ```test.data.bin``` - Update this with one of your supported BINs
 
 ## Use-Cases <a name="use-cases"></a>
-1. **Transaction Footprints Calculation**   
+1. **Calculate Transaction Footprints**   
 Calculates carbon emission and water usage based on payment transactions.
 
-2. **Get Supported Currencies**
-Provides a list of Currencies supported by the application.    
+2. **Supported Currencies**    
+Provides a list of Currencies supported by the application.
 
-3. **Get Supported Merchant Categories**  
-Provides a list of Merchant Category Code (MCC) supported by the application.
+3. **Supported Merchant Categories**
+Provides a list of Merchant Category Code (MCC) supported by the application.  
 
-4. **Add Payment Card**  
+4. **Enroll FPAN**  
 Allows a registered Service Provider to add a new Payment Card under its profile.
 
-5. **View Historical Transaction Footprints**  
+5. **View Historical Carbon Impact**  
 Fetches historical transactions and their footprints for a registered payment card.
 
-6. **View Aggregate Transaction Footprints**  
-Fetches carbon score for registered payment cards and aggregates the same on daily, weekly, monthly, and yearly basis. 
+6. **View Aggregate Carbon Impact**  
+Fetches carbon score for registered payment card/s and aggregates the same on daily, weekly, monthly and yearly basis. 
 
-7. **View Service Provider Details**  
+7. **Get Service Provider**  
 Fetches service provider details.
 
 8. **Update Service Provider**<br/>
@@ -113,9 +108,9 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
 1. Run ```mvn clean install``` from the root of the project directory.
 2. There are two ways to execute the use-cases:
     1. Execute the use-cases(test cases):  
-        - Go to ```src/main/java/com/mastercard/developer/carboncalculator/usecases``` folder.  
-        - Execute each test case.
-        - In ```PaymentCardServiceTest.java```, note that a random FPAN is generated starting with your BIN while adding a new payment card and the paymentCardId of this card is used while executing the other two test-cases.
+        - Go to ```src/test/java/com/mastercard/developers/carboncalculator/``` folder.  
+        - Execute each test cases.
+        - In ```PaymentCardServiceSIT.java```, note that a random FPAN is generated starting with your BIN while adding a new payment card and the paymentCardId of this card is used while executing other two test-cases.
     
     2. Use REST API based Client( such as [Insomnia](https://insomnia.rest/download/core/) or [Postman](https://www.postman.com/downloads/))  
         - Run ```mvn spring-boot:run``` command to run the application.  
@@ -127,22 +122,21 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
                 - POST <Host>/demo/aggregate-transaction-footprints  
                 - GET <Host>/demo/historical/{paymentcard_id}/transaction-footprints  
                 - GET <Host>/demo/service-providers  
-                - POST <Host>/demo/payment-card-enrolments <br>
+                - POST <Host>/demo/payment-card-enrolments           
                 - PUT <Host>/demo/service-providers <br>
-                - POST <Host>/demo/payment-card-deletions
-             
+                - POST <Host>/demo/payment-card-deletions             
                                                                                
 ## Service Documentation <a name="documentation"></a>
 
-Carbon Calculator documentation can be found [here](https://developer.mastercard.com/carbon-calculator/documentation/).
+Carbon Calculator documentation can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/).
 
 
 ## API Reference <a name="api-reference"></a>
-The Swagger API specification can be found [here](https://developer.mastercard.com/carbon-calculator/documentation/api-reference/).
+The Swagger API specification can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/api-reference/).
 
 ## Support <a name="support"></a>
-Please send an email to **carboncalculator@mastercard.com** with any questions or feedback you may have.<br>
-Contact the Customer Implementation Support (CIS) representative for any query to integrate Carbon Calculator APIs.
+Please send an email to **apisupport@mastercard.com** with any questions or feedback you may have.
+
 
 ## License <a name="license"></a>
 <p>Copyright 2021 Mastercard</p>

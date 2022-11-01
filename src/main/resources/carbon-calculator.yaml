@@ -1906,17 +1906,6 @@ components:
                 request.
               Recoverable: false
               Details: ''
-    PaymentCardDeletionsInvalidCardIdError:
-      value:
-        Errors:
-          Error:
-            - Source: Service-Provider
-              ReasonCode: INVALID_REQUEST_PARAMETER
-              Description: >-
-                One or more payment card IDs in the request are invalid, try
-                again by sending valid Ids.
-              Recoverable: false
-              Details: ''
     ServiceProviderNotFoundError:
       value:
         Errors:

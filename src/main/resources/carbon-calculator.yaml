@@ -119,7 +119,7 @@ paths:
         '400':
           $ref: '#/components/responses/PaymentCardDeletionsBadRequestError'
         '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'
+          $ref: '#/components/responses/PaymentCardDeletionsNotFoundError'
   /payment-card-enrolments:
     post:
       tags:
@@ -1290,8 +1290,6 @@ components:
           examples:
             PaymentCardDeletionsRequestValidationError:
               $ref: '#/components/examples/PaymentCardDeletionsRequestValidationError'
-            PaymentCardDeletionsInvalidCardIdError:
-              $ref: '#/components/examples/PaymentCardDeletionsInvalidCardIdError'
     HistoricalTransactionFootprints:
       description: >-
         This response code is returned when a request is accepted and
@@ -1462,6 +1460,19 @@ components:
               $ref: '#/components/examples/ServiceProviderInvalidRequestParameterError'
             ServiceProviderInvalidCallbackUrlError:
               $ref: '#/components/examples/ServiceProviderInvalidCallbackUrlError'
+    PaymentCardDeletionsNotFoundError:
+      description: >-
+        This response code is returned when the server cannot find the account or one or more paymentcards which
+        has been used to call this API.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            ServiceProviderNotFoundError:
+              $ref: '#/components/examples/ServiceProviderNotFoundError'
+            PaymentCardNotFoundError:
+              $ref: '#/components/examples/PaymentCardNotFoundError'
     Accepted:
       description: Accepted
     Ok:
@@ -1939,5 +1950,15 @@ components:
             - Source: 'Service-Provider'
               ReasonCode: 'INVALID_REQUEST_PARAMETER'
               Description: 'The callbackUrl you have provided is invalid. Try again with a valid URL. If you think that there has been some error, then kindly contact your Mastercard associate.'
+              Recoverable: false
+              Details: ''
+    PaymentCardNotFoundError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider
+              ReasonCode: PAYMENT_CARD_NOT_FOUND
+              Description: >-
+                Paymentcards not found for the given payment card ids.
               Recoverable: false
               Details: ''

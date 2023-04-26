@@ -367,17 +367,71 @@ components:
       items:
         $ref: '#/components/schemas/TransactionData'
       example:
-        - transactionId: ee421c25-f928-4bf6-b884-3600b76b860d
-          mcc: 3997
+        - transactionId: 'ee421c25-f928-4bf6-b884-3600b76b860d'
+          mcc: '3000'
           amount:
-            value: 100
-            currencyCode: USD
-          cardBrand: OTH
-        - transactionId: fdc4626c-f51e-4ba6-9728-c79ac1d9aec8
-          mcc: 5962
+            value: 500
+            currencyCode: 'GBP'
+          cardBrand: 'MA'    
+          additionalInformation: [
+            {
+             "key": "merchantDBAName",
+             "value": "SEARS HARDWARE 5736"
+            },
+            {
+             "key": "city",
+             "value": "THE WOODLANDS"
+            },
+            {
+             "key": "stateOrCountryCode",
+             "value": "USA"
+            }
+          ]
+        - transactionId: 'a213c72c-f13a-4930-a5f9-8cf765d42ca1'
+          mcc: '3000'
+          amount:
+            value: 500
+            currencyCode: 'GBP'
+          cardBrand: 'OTH'    
+          additionalInformation: [
+            {
+             "key": "merchantDBAName",
+             "value": "SEARS HARDWARE 5736"
+            },
+            {
+             "key": "city",
+             "value": "THE WOODLANDS"
+            },
+            {
+             "key": "stateOrCountryCode",
+             "value": "USA"
+            }
+          ]
+        - transactionId: 'e7463834-01fe-4f91-9562-484d10053390'
+          mcc: '3000'
+          amount:
+            value: 500
+            currencyCode: 'GBP'
+          cardBrand: 'NC'    
+          additionalInformation: [
+            {
+             "key": "merchantDBAName",
+             "value": "SEARS HARDWARE 5736"
+            },
+            {
+             "key": "city",
+             "value": "THE WOODLANDS"
+            },
+            {
+             "key": "stateOrCountryCode",
+             "value": "USA"
+            }
+          ]  
+        - transactionId: 'fdc4626c-f51e-4ba6-9728-c79ac1d9aec8'
+          mcc: '5962'
           amount:
             value: 50
-            currencyCode: EUR
+            currencyCode: 'EUR'
     TransactionData:
       title: TransactionData
       type: object
@@ -414,7 +468,7 @@ components:
       type: string
       minLength: 1
       maxLength: 3
-      pattern: '^(MA|OTH)$'
+      pattern: '^(MA|OTH|NC)$'
       example: 'MA'
       description: >-
         Brand type of the payment card through which transaction done. Possible values are,
@@ -422,6 +476,8 @@ components:
         * MA = Mastercard branded payment card.
 
         * OTH = Payment card brand other than Mastercard.
+        
+        * NC = Non card based transaction.
     Amount:
       title: Amount
       type: object
@@ -1418,8 +1474,7 @@ components:
             InvalidPaymentCardError:
               $ref: '#/components/examples/InvalidPaymentCardError'
             AggregateTransactionInvalidAggregateTypeError:
-              $ref: >-
-                #/components/examples/AggregateTransactionInvalidAggregateTypeError
+              $ref: '#/components/examples/AggregateTransactionInvalidAggregateTypeError'
     RegisterPaymentCardBadRequestError:
       description: >-
         This response code is returned when a request is invalid or data in the
@@ -1432,8 +1487,7 @@ components:
             RegisterPaymentCardRequestValidationError:
               $ref: '#/components/examples/RegisterPaymentCardRequestValidationError'
             RegisterPaymentCardUnsupportedCardCurrencyError:
-              $ref: >-
-                #/components/examples/RegisterPaymentCardUnsupportedCardCurrencyError
+              $ref: '#/components/examples/RegisterPaymentCardUnsupportedCardCurrencyError'
             RegisterPaymentCardInvalidFPANError:
               $ref: '#/components/examples/RegisterPaymentCardInvalidFPANError'
             RegisterPaymentCardAlreadyRegisteredError:
@@ -1486,25 +1540,28 @@ components:
     TransactionFootprintsData:
       value:
         - transactionId: ee421c25-f928-4bf6-b884-3600b76b860d
-          mcc: 3997
+          mcc: '3000'
+          cardBrand: MA
+          scoreReference: MID
+          carbonEmissionInGrams: 469343.47
+          carbonEmissionInOunces: 16555.62
+        - transactionId: a213c72c-f13a-4930-a5f9-8cf765d42ca1
+          mcc: '3000'
           cardBrand: OTH
-          carbonEmissionInGrams: 48.52
-          carbonEmissionInOunces: 1.71
-          carbonSocialCost:
-            value: 14.01
-            currencyCode: USD
-          category:
-            mainCategory: Leisure & Entertainment
-            subCategory: Hotels & Vacation
-            sector: 'Hotels, Motels & Resorts'
-            sectorCode: '604'
+          scoreReference: MID
+          carbonEmissionInGrams: 469343.47
+          carbonEmissionInOunces: 16555.62
+        - transactionId: e7463834-01fe-4f91-9562-484d10053390
+          mcc: '3000'
+          cardBrand: NC
+          scoreReference: MID
+          carbonEmissionInGrams: 469343.47
+          carbonEmissionInOunces: 16555.62  
         - transactionId: fdc4626c-f51e-4ba6-9728-c79ac1d9aec8
-          mcc: 5962
-          carbonEmissionInGrams: 27.98
-          carbonEmissionInOunces: 0.99
-          carbonSocialCost:
-            value: 7.98
-            currencyCode: EUR
+          mcc: '5962'
+          scoreReference: MCC
+          carbonEmissionInGrams: 11905.70
+          carbonEmissionInOunces: 419.96
           category:
             mainCategory: Shopping
             subCategory: Department Store

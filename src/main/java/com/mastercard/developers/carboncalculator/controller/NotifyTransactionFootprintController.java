@@ -36,7 +36,7 @@ public class NotifyTransactionFootprintController {
         this.receiveTransactionNotificationService = receiveTransactionNotificationService;
     }
 
-    @PostMapping("/payment-cards/notify-transaction-footprints")
+    @PostMapping("/payment-cards/transaction-footprints/notifications")
     public String transactionFootPrintsNotification(@RequestBody NotifyTransactionFootprint mcNotifyTransactionFootprint) {
         return receiveTransactionNotificationService.notifyTransactionFootprint(mcNotifyTransactionFootprint);
     }

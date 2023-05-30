@@ -106,5 +106,10 @@ public class CarbonCalculatorController {
     public ResponseEntity<List<PaymentCardEnrolment>> addBulkPaymentCards(@RequestBody List<PaymentCard> paymentCards ) throws ServiceException {
         return ResponseEntity.ok(addCardService.registerBatchPaymentCards(paymentCards));
     }
+    
+    @PostMapping("/service-providers/payment-cards")
+    public ResponseEntity<List<PaymentCardEnrolment>> addBatchPaymentCards(@RequestBody List<PaymentCard> paymentCards ) throws ServiceException {
+    	 return ResponseEntity.ok(addCardService.registerBatchPaymentCardsServiceProvider(paymentCards));
+    }
 
 }

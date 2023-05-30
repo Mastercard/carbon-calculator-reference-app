@@ -223,6 +223,20 @@ class CarbonCalculatorControllerTest {
         requestParams.add("limit", "1");
         return requestParams;
     }
+    
+    @Test
+    void bulkRegistrationPaymentCards() throws Exception {
+    	when(addCardService.registerBatchPaymentCards(any())).thenReturn(
+                batchPaymentEnrollment());
+
+        MvcResult mvcResult = this.mockMvc.perform(post("/demo/service-providers/payment-cards").contentType(
+                MediaType.APPLICATION_JSON).content(
+                gson.toJson(listPaymentCardReference())))
+                .andExpect(status().isOk()).andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        assertNotNull(response);
+    }
 
 
 }

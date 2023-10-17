@@ -1015,6 +1015,10 @@ components:
             Status of a Service Provider on the server. Possible values are
             ACTIVE, INACTIVE & TERMINATED.
           example: ACTIVE
+        cardHolderBase:
+          type: string
+          description: Total cardholder base of the service provider.
+          example: '9900000'
     ServiceProviderConfig:
       title: ServiceProviderConfig
       type: object
@@ -1039,6 +1043,14 @@ components:
           maxLength: 2083
           description: A service URL that can receive transaction score information from Mastercard in near real-time.
           example: 'https://www.abcbank.com/payment-cards/notify-transaction-footprints'
+        cardHolderBase:
+          type: string
+          pattern: '^\d+'
+          minimum: 1
+          maximum: 999999999999999
+          exclusiveMinimum: false
+          description: Total card holder base details of issuer.
+          example: '9900000'
     ErrorWrapper:
       title: ErrorWrapper
       type: object
@@ -1738,6 +1750,7 @@ components:
         callbackUrl: ''
         email: John.Doe@mail.com
         status: ACTIVE
+        cardHolderBase: '9900000'
     ServiceProviderWithCallbackUrl:
       value:
         clientId: fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5
@@ -1746,7 +1759,20 @@ components:
         supportedAccountRange: '534403, 518145, 518152, 5403, 5424'
         callbackUrl: 'https://www.abcbank.com/payment-cards/notify-transaction-footprints'
         email: John.Doe@mail.com
+        status: ACTIVE,
+        cardHolderBase: '9900000'
+    ServiceProviderDetails:
+      value:
+        clientId: fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5
+        customerId: ''
+        customerName: ABC Bank
+        supportedAccountRange: '534403, 518145, 518152, 5403, 5424'
+        callbackUrl: 'https://www.abcbank.com/payment-cards/notify-transaction-footprints'
+        email: John.Doe@mail.com
         status: ACTIVE
+        senderId: cc-fp@anz
+        ica: '24528'
+        cardHolderBase: '9900000'
     BadRequestError:
       value:
         Errors:

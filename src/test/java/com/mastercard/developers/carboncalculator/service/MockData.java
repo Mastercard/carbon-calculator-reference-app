@@ -29,8 +29,7 @@ public class MockData {
                 "Flights").sector(
                 "Airlines").sectorCode(
                 "505")).mcc("3000").carbonEmissionInGrams(BigDecimal.valueOf(205688.73)).carbonEmissionInOunces(
-                BigDecimal.valueOf(7255.46)).carbonSocialCost(
-                null);
+                BigDecimal.valueOf(7255.46));
 
         return Collections.singletonList(transactionFootprint);
 
@@ -43,8 +42,7 @@ public class MockData {
                 "Flights").sector(
                 "Airlines").sectorCode(
                 "505")).mcc("3000").carbonEmissionInGrams(BigDecimal.valueOf(205688.73)).carbonEmissionInOunces(
-                BigDecimal.valueOf(7255.46)).carbonSocialCost(
-                null);
+                BigDecimal.valueOf(7255.46));
 
         return Collections.singletonList(transactionFootprint);
 
@@ -84,18 +82,19 @@ public class MockData {
         return new AggregateSearchCriteria().paymentCardIds(paymentCardIds).aggregateType(0);
     }
 
-    public static List<AggregateTransactionFootprint> aggregateTransactionFootprint() {
+    public static AggregateTransactionFootprints aggregateTransactionFootprint() {
 
         FootprintAggregation footprintAggregation = new FootprintAggregation().aggregateValue("2020");
         footprintAggregation.carbonEmissionInGrams(BigDecimal.valueOf(205688.73)).carbonEmissionInOunces(
-                BigDecimal.valueOf(7255.46)).carbonSocialCost(
-                null);
+                BigDecimal.valueOf(7255.46));
 
         AggregateTransactionFootprint aggregateTransactionFootprint = new AggregateTransactionFootprint();
         aggregateTransactionFootprint.paymentCardId("testPaymentCardId").addFootprintAggregationsItem(
                 footprintAggregation);
-
-        return Collections.singletonList(aggregateTransactionFootprint);
+        
+        AggregateTransactionFootprints aggri = new AggregateTransactionFootprints();
+        aggri.addAggregateTransactionFootprintItem(aggregateTransactionFootprint);
+        return aggri;
     }
 
     public static HistoricalTransactionFootprints historicalTransactionFootprint() {
@@ -103,7 +102,7 @@ public class MockData {
         HistoricalTransactionFootprint historicalTransactionFootprint = new HistoricalTransactionFootprint().transactionFootprint(
                 historicalTransactionFootprints().get(0)).transactionMetadata(
                 new TransactionMetadata().amount(BigDecimal.valueOf(150.0)).currencyCode("USD").indicator("RFT").retrievalRefNumber(
-                        "83Y071x35").processingCode("16"));
+                        "83Y071x35").processingCode("16").traceId("9f52386ce297173ecfeb9120aabb0805bbeeb1350ce1de640864852e800bd206").banknetReferenceNumber("MPL0R6B2R").banknetDate("0525"));
 
         return new HistoricalTransactionFootprints().count(1).limit(1).offset(0).total(1).addItemsItem(
                 historicalTransactionFootprint);

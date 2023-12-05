@@ -22,7 +22,6 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.model.AggregateSearchCriteria;
-import org.openapitools.client.model.AggregateTransactionFootprint;
 import org.openapitools.client.model.AggregateTransactionFootprints;
 import org.openapitools.client.model.PaymentCard;
 import org.openapitools.client.model.PaymentCardEnrolment;

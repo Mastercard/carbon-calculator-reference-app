@@ -204,7 +204,7 @@ class ServiceTest {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(201, new HashMap<>(), MockData.aggregateTransactionFootprint()));
 
-        List<AggregateTransactionFootprint> aggregateTransactionFootprints = paymentCardService.getPaymentCardAggregateTransactions(
+        AggregateTransactionFootprints aggregateTransactionFootprints = paymentCardService.getPaymentCardAggregateTransactions(
                 aggregateSearchCriteria("testPaymentCardId"));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),

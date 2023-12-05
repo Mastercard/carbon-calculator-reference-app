@@ -76,7 +76,7 @@ public class CarbonCalculatorController {
     }
 
     @PostMapping("/aggregate-transaction-footprints")
-    public ResponseEntity<List<AggregateTransactionFootprint>> getPaymentCardAggregateTransactions(@RequestBody AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
+    public ResponseEntity<AggregateTransactionFootprints> getPaymentCardAggregateTransactions(@RequestBody AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
         return ResponseEntity.ok(paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria));
     }
 

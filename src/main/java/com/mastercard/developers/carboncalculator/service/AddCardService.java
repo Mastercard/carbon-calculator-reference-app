@@ -46,13 +46,11 @@ public class AddCardService {
 
     private PaymentCardApi paymentCardApi;
     
-    private ServiceProviderApi serviceProviderApi;
-
     @Autowired
     public AddCardService(ApiConfiguration apiConfiguration) throws ServiceException {
         LOGGER.info("Initializing Add Card Service");
         paymentCardApi = new PaymentCardApi(setup(apiConfiguration));
-        serviceProviderApi = new ServiceProviderApi(setup(apiConfiguration));
+        new ServiceProviderApi(setup(apiConfiguration));
 
     }
 
@@ -99,7 +97,7 @@ public class AddCardService {
     public List<PaymentCardEnrolment> registerBatchPaymentCardsServiceProvider(List<PaymentCard> paymentCard) throws ServiceException {
         try {
             LOGGER.info("Calling Service Provider Register Batch Payment Cards");
-            return serviceProviderApi.bulkRegisterPaymentCards(paymentCard);
+            return paymentCardApi.bulkRegisterPaymentCards(paymentCard);
         } catch (ApiException e) {
             throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
         }

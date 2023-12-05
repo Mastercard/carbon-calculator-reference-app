@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -137,7 +136,7 @@ class CarbonCalculatorControllerTest {
                 Collections.singletonList("paymentCardId")).aggregateType(0);
 
         when(paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria)).thenReturn(
-                new ArrayList<>());
+                new AggregateTransactionFootprints());
 
         MvcResult mvcResult2 = this.mockMvc
                 .perform(post("/demo/aggregate-transaction-footprints")

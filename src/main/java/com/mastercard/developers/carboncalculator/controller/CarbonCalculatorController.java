@@ -79,6 +79,12 @@ public class CarbonCalculatorController {
     public ResponseEntity<AggregateTransactionFootprints> getPaymentCardAggregateTransactions(@RequestBody AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
         return ResponseEntity.ok(paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria));
     }
+    
+    @PostMapping("/payment-cards/transaction-footprints/aggregates")
+    public ResponseEntity<AggregateTransactionFootprints> getPaymentCardAggregateTransaction(@RequestHeader("x-openapi-clientid") String clientId,
+            @RequestBody AggregateSearchCriteria aggregateSearchCriteria, @RequestHeader("channel") String channel, @RequestHeader("origMcApiClientId") String origMcApiClientId) throws ServiceException {
+        return ResponseEntity.ok(environmentalImpactService.getPaymentCardAggregateTransactions(clientId, aggregateSearchCriteria, channel, origMcApiClientId));
+    }
 
     @GetMapping("/historical/{paymentcard_id}/transaction-footprints")
     public ResponseEntity<HistoricalTransactionFootprints> getPaymentCardTransactionHistory(@PathVariable("paymentcard_id") String paymentCardId, @RequestParam(value = "from_date") String fromDate, @RequestParam(value = "from_date") String toDate, @RequestParam(value = "offset") int offset, @RequestParam(value = "limit", required = false, defaultValue = "50") int limit) throws ServiceException {

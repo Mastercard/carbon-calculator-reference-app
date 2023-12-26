@@ -94,5 +94,18 @@ public class PaymentCardService {
         }
 
     }
+    
+    public void deletePaymentCard(String paymentCard, String clientId, String channel, String origMcApiClientId) throws ServiceException {
+        LOGGER.info("Deleting payment card {}", paymentCard);
+        try {
+
+            paymentCardApi.paymentCardDeletion(paymentCard, clientId, channel, origMcApiClientId);
+
+            LOGGER.info("Deleting payment cardId completed");
+        } catch (ApiException e) {
+            throw new ServiceException(e);
+        }
+
+    }
 
 }

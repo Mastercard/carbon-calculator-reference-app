@@ -140,6 +140,36 @@ paths:
           $ref: '#/components/responses/PaymentCardDeletionsBadRequestError'
         '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
+  /service-providers/payment-cards/{payment_card_id}:
+    delete:
+      tags:
+        - Payment Card
+      summary: Delete a Payment Card
+      description: >-
+        Allows a registered Service Provider to delete single Payment Card at a time
+        from its profile. Any data associated with a requested paymentCardId
+        will also be deleted permanently.
+
+
+        On the successful response from the server, a Service Provider should remove all
+        the requested paymentCardIds from the system.
+
+
+        Once a request has been received from a Service Provider, data deletion
+        will happen immediately.
+      operationId: PaymentCardDeletion
+      parameters:
+        - $ref: '#/components/parameters/PaymentCardId'
+        - $ref: '#/components/parameters/XOpenapiClientId'
+        - $ref: '#/components/parameters/Channel'
+        - $ref: '#/components/parameters/OrigMcApiClientId'
+      responses:
+        '202':
+          $ref: '#/components/responses/Accepted'
+        '400':
+          $ref: '#/components/responses/PaymentCardDeletionsBadRequestError'
+        '404':
+          $ref: '#/components/responses/PaymentCardByIdNotFoundError'        
   /payment-card-enrolments:
     post:
       tags:
@@ -186,6 +216,44 @@ paths:
           $ref: '#/components/responses/TransactionHistoryBadRequestError'
         '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
+  /payment-cards/transaction-footprints/aggregates:
+    post:
+      tags:
+        - Environmental Impact
+      summary: >-
+        Fetches carbon score for payment cards and aggregates the same on a
+        weekly and monthly basis. The result will be in descending
+        order.
+      description: >
+        Allows a Service Provider to fetch aggregate carbon score for a single
+        or multiple payment cards. A payment card has to be registered first
+        using /service-providers/payment-cards endpoint before this endpoint can be called. The
+        aggregate can be requested weekly, or monthly. Note
+        that **ONLY** cleared transactions will be returned.
+
+
+        If any of the paymentCardIds is not valid or not registered, then the entire
+        request will be rejected, and no aggregate will be returned.
+
+
+        If no transaction is found for a particular paymentCardId then the response
+        will have an empty list against that paymentCardId.
+      operationId: GetPaymentCardAggregateTransaction
+      parameters:
+        - $ref: '#/components/parameters/XOpenapiClientId'
+        - $ref: '#/components/parameters/Channel'
+        - $ref: '#/components/parameters/OrigMcApiClientId'
+      requestBody:
+        $ref: '#/components/requestBodies/AggregateSearchCriteria'
+      responses:
+        '200':
+          $ref: '#/components/responses/AggregateTransactionFootprints'
+        '400':
+          $ref: '#/components/responses/AggregateTransactionBadRequestError'
+        '403':
+          $ref: '#/components/responses/ServiceProviderICAValidationError'
+        '404':
+          $ref: '#/components/responses/ServiceProviderNotFoundError'        
   /payment-cards/aggregate-transaction-footprints:
     post:
       tags:
@@ -1461,6 +1529,42 @@ components:
         default: 50
         minimum: 5
         maximum: 50
+    XOpenapiClientId:
+      in: header
+      name: x-openapi-clientid
+      description: Unique Client Id as assigned by Mastercard Developers after creating a project. This will also be a unique Id of your Service Provider record.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 200
+        pattern: ^[\w\d\-\_]{1,200}
+        example: 'fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5'
+    Channel:
+      in: header
+      name: channel
+      description: Channel of onboarding from which service provider onboarded and now the API call has been initiated. Possible values are,
+
+        * CC = Indicates that service provider is onboarded directly on Carbon Calculator. And API calls has been initiated directly.
+
+        * CT = Indicates that service provider is onboarded via Carbon Tracker/Carbon Calculator Experience. And API calls has been initiated via CT/CCE.
+
+      required: false
+      schema:
+        type: string
+        enum: [ CC, CT ]
+        example: 'CT'
+    OrigMcApiClientId:
+      in: header
+      name: origMcApiClientId
+      description: Client Id of originator issuer from where the API call has been initiated.
+      required: false
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 200
+        pattern: ^[\w\d\-\_]{1,200}
+        example: 'fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5'    
   requestBodies:
     ServiceProviderConfig:
       description: Configuration details for service provider which needs to be update. It should contain only those parameters which you want to update. If you are calling this API for the first time then it is recommended to send all the parameters.
@@ -1820,7 +1924,18 @@ components:
             maxItems: 500
           examples:
             TipsAndEquivalencies:
-              $ref: '#/components/examples/TipsAndEquivalencies'    
+              $ref: '#/components/examples/TipsAndEquivalencies' 
+    PaymentCardByIdNotFoundError:
+      description: >-
+        This response code is returned when the server cannot find the paymentcard which
+        has been used to call this API.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            PaymentCardByIdNotFoundError:
+              $ref: '#/components/examples/PaymentCardByIdNotFoundError'             
     Accepted:
       description: Accepted
     Ok:
@@ -2368,3 +2483,23 @@ components:
               Description: 'Your activity ICA is either pending or not validated. Kindly reach out to support team.'
               Recoverable: false
               Details: ''
+    PaymentCardByIdNotFoundError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider
+              ReasonCode: PAYMENT_CARD_NOT_FOUND
+              Description: >-
+                Paymentcard Not Found for the given payment card id in the path.
+              Recoverable: false
+              Details: ''
+    PaymentCardNotFoundError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider
+              ReasonCode: PAYMENT_CARD_NOT_FOUND
+              Description: >-
+                Paymentcards not found for the given payment card ids.
+              Recoverable: false
+              Details: ''          

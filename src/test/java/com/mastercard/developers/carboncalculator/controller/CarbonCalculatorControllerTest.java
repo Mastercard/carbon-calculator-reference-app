@@ -21,11 +21,13 @@ import java.util.List;
 import static com.mastercard.developers.carboncalculator.service.MockData.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 
 @SpringBootTest
@@ -64,6 +66,10 @@ class CarbonCalculatorControllerTest {
 
     @Value("${test.data.card-base-currency}")
     String cardBaseCurrency;
+    
+    private static final String CLIENTID = "cNU2Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
+    private static final String ORIG_CLIENTID = "wfe232Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
+    private static final String CHANNEL = "CC";
 
     @Test
     void calculateFootprints() throws Exception {
@@ -130,7 +136,7 @@ class CarbonCalculatorControllerTest {
     }
 
     @Test
-    void aggregateTransactionFootprints() throws Exception {
+    void oldaggregateTransactionFootprints() throws Exception {
 
         AggregateSearchCriteria aggregateSearchCriteria = new AggregateSearchCriteria().paymentCardIds(
                 Collections.singletonList("paymentCardId")).aggregateType(0);
@@ -147,6 +153,39 @@ class CarbonCalculatorControllerTest {
 
         String response2 = mvcResult2.getResponse().getContentAsString();
         assertNotNull(response2);
+    }
+    
+    @Test
+    void aggregateTransactionFootprints() throws Exception {
+
+        AggregateSearchCriteria aggregateSearchCriteria = new AggregateSearchCriteria().paymentCardIds(
+                Collections.singletonList("paymentCardId")).aggregateType(1);
+
+        when(environmentalImpactService.getPaymentCardAggregateTransactions(CLIENTID, aggregateSearchCriteria,
+                CHANNEL, ORIG_CLIENTID)).thenReturn(
+                new AggregateTransactionFootprints());
+
+        MvcResult mvcResult2 = this.mockMvc
+                .perform(post("/demo/payment-cards/transaction-footprints/aggregates")
+                        .contentType(
+                                MediaType.APPLICATION_JSON).content(
+                                gson.toJson(aggregateSearchCriteria))
+                        .header("x-openapi-clientid", CLIENTID)
+                        .header("channel", CHANNEL).header("origMcApiClientId",ORIG_CLIENTID)).andExpect(
+                        status().isOk()).andReturn();
+
+        String response2 = mvcResult2.getResponse().getContentAsString();
+        assertNotNull(response2);
+    }
+    
+    @Test
+    void deletePaymentCard() throws Exception {
+        doNothing().when(paymentCardService).deletePaymentCard(anyString(), anyString(), anyString(), anyString());
+
+        this.mockMvc.perform(delete("/demo/service-providers/payment-cards/{paymentcard_id}"
+                .replace("{paymentcard_id}", "paymentCardId")).header("x-openapi-clientid", CLIENTID)
+                .header("channel", CHANNEL).header("origMcApiClientId",ORIG_CLIENTID))
+                .andExpect(status().isAccepted()).andReturn();
     }
 
     @Test

@@ -17,6 +17,7 @@ import org.openapitools.client.model.Error;
 import org.openapitools.client.model.*;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -50,6 +51,10 @@ class ServiceTest {
 
     @Mock
     private PaymentCardApi paymentCardApi;
+    
+    private static final String CLIENTID = "cNU2Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
+    private static final String ORIG_CLIENTID = "wfe232Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
+    private static final String CHANNEL = "CC";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -200,7 +205,7 @@ class ServiceTest {
     }
 
     @Test
-    void aggregate() throws Exception {
+    void oldAggregate() throws Exception {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(201, new HashMap<>(), MockData.aggregateTransactionFootprint()));
 
@@ -212,6 +217,51 @@ class ServiceTest {
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
 
         assertNotNull(aggregateTransactionFootprints);
+    }
+    
+    @Test
+    void aggregate() throws Exception {
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
+                new ApiResponse<>(201, new HashMap<>(), MockData.aggregateTransactionFootprint()));
+
+        AggregateSearchCriteria aggregateSearchCriteria= new AggregateSearchCriteria();
+        aggregateSearchCriteria.setPaymentCardIds(Arrays.asList("testPaymentCardId"));
+
+        AggregateTransactionFootprints aggregateTransactionFootprints = environmentalImpactService.getPaymentCardAggregateTransactions(CLIENTID, aggregateSearchCriteria, CHANNEL, ORIG_CLIENTID);
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        assertNotNull(aggregateTransactionFootprints);
+    }
+
+    @Test
+    void aggregateFootprintsErrorScenario() throws Exception {
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenThrow(new ApiException(400, new HashMap<>(),
+                getErrorResponseBody(
+                        "INVALID_REQUEST_PARAMETER",
+                        "Invalid aggregate type. Please try again with a valid value.",
+                        false,
+                        "")));
+
+        AggregateSearchCriteria aggregateSearchCriteria= new AggregateSearchCriteria();
+        aggregateSearchCriteria.setPaymentCardIds(Arrays.asList("testPaymentCardId"));
+
+        ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
+                () -> environmentalImpactService.getPaymentCardAggregateTransactions(CLIENTID, aggregateSearchCriteria, CHANNEL, ORIG_CLIENTID));
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        Assertions.assertNotNull(serviceException.getServiceErrors());
+        List<Error> errors = serviceException.getServiceErrors().getErrors().getError();
+        Assertions.assertFalse(errors.isEmpty());
+        errors.forEach(error -> {
+            Assertions.assertEquals(SOURCE, error.getSource());
+            Assertions.assertFalse(error.getRecoverable());
+        });
     }
 
     @Test
@@ -312,7 +362,7 @@ class ServiceTest {
     }
 
     @Test
-    void deleteCards() throws Exception {
+    void oldDeleteCards() throws Exception {
         when(apiClient.execute(any(Call.class))).thenReturn(
                 new ApiResponse<>(201, new HashMap<>(),"SUCCESS"));
         final List<String> cardIds = of("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9");
@@ -323,6 +373,39 @@ class ServiceTest {
                 anyMap(), anyMap(), any(), any());
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
 
+    }
+    
+    @Test
+    void deleteCards() throws Exception {
+        when(apiClient.escapeString(anyString())).thenReturn("randomString");
+        when(apiClient.execute(any(Call.class))).thenReturn(
+                new ApiResponse<>(201, new HashMap<>(),"SUCCESS"));
+
+        paymentCardService.deletePaymentCard("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9", CLIENTID, CHANNEL, ORIG_CLIENTID);
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+    }
+
+    @Test
+    void deleteCardErrorScenario() throws Exception {
+
+        when(apiClient.execute(any(Call.class))).thenThrow(new ApiException(404, new HashMap<>(),
+                getErrorResponseBody(
+                        "'INVALID_DATE_RANGE'",
+                        "Requested date range is either invalid or exceeds three-year limits. Try again with a valid date range.",
+                        false,
+                        "")));
+        when(apiClient.escapeString(anyString())).thenReturn("randomString");
+
+        ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
+                () -> paymentCardService.deletePaymentCard("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9", CLIENTID, CHANNEL, ORIG_CLIENTID));
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
     }
 
     @Test

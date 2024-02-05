@@ -20,7 +20,6 @@ import com.mastercard.developers.carboncalculator.service.EnvironmentalImpactSer
 import com.mastercard.developers.carboncalculator.service.SupportedParametersService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.model.*;
 import org.slf4j.Logger;
@@ -48,9 +47,6 @@ class EnvironmentalImpactServiceSIT {
     @Autowired
     private SupportedParametersService supportedParametersService;
     
-    private static final String X_OPENAPI_CLIENTID = "x-openapi-clientid";
-    private static final String CLIENTID = "cNU2Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
-    private static final String CHANNEL = "CC";
     private static final String ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG = "Add Card API call failed with error msg {}";
 
     /**
@@ -131,12 +127,12 @@ class EnvironmentalImpactServiceSIT {
      */
     @Test
     @DisplayName("Fetch the aggregate carbon score for the transactions")
-    @Order(2)
+    //@Order(2)
     void aggregateTransactionFootprints() {
 
         try {
             AggregateTransactionFootprints aggregateTransactionFootprints = environmentalImpactService.getPaymentCardAggregateTransactions(
-                    X_OPENAPI_CLIENTID, mockAggregateSearchCriteria("3b40b264-6ae6-4dd2-aa79-a984c81d138"), CHANNEL, CLIENTID);
+                    mockAggregateSearchCriteria("49f29176-8b3e-4a6e-9681-4ea37d70eaef"));
 
             assertNotNull(aggregateTransactionFootprints);
 

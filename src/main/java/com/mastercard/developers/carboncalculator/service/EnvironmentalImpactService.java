@@ -63,15 +63,14 @@ public class EnvironmentalImpactService {
 
     }
     
-    public AggregateTransactionFootprints getPaymentCardAggregateTransactions(String clientId,
-            AggregateSearchCriteria aggregateSearchCriteria, String channel, String origMcApiClientId) throws ServiceException {
+    public AggregateTransactionFootprints getPaymentCardAggregateTransactions(AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
 
             LOGGER.info("Calculating new aggregate API carbon score for paymentCardIds {}",
                     aggregateSearchCriteria.getPaymentCardIds());
 
             try {
-                AggregateTransactionFootprints aggregateTransactionFootprintList = environmentalImpactApi.getPaymentCardAggregateTransaction(clientId,
-                        aggregateSearchCriteria, channel, origMcApiClientId);
+                AggregateTransactionFootprints aggregateTransactionFootprintList = environmentalImpactApi.getPaymentCardAggregateTransaction(
+                        aggregateSearchCriteria);
                 LOGGER.info("Returning aggregate carbon score.");
 
                 return aggregateTransactionFootprintList;

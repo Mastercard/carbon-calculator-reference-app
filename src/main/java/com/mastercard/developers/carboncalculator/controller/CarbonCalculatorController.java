@@ -81,9 +81,8 @@ public class CarbonCalculatorController {
     }
     
     @PostMapping("/payment-cards/transaction-footprints/aggregates")
-    public ResponseEntity<AggregateTransactionFootprints> getPaymentCardAggregateTransaction(@RequestHeader("x-openapi-clientid") String clientId,
-            @RequestBody AggregateSearchCriteria aggregateSearchCriteria, @RequestHeader("channel") String channel, @RequestHeader("origMcApiClientId") String origMcApiClientId) throws ServiceException {
-        return ResponseEntity.ok(environmentalImpactService.getPaymentCardAggregateTransactions(clientId, aggregateSearchCriteria, channel, origMcApiClientId));
+    public ResponseEntity<AggregateTransactionFootprints> getPaymentCardAggregateTransaction(@RequestBody AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
+        return ResponseEntity.ok(environmentalImpactService.getPaymentCardAggregateTransactions(aggregateSearchCriteria));
     }
 
     @GetMapping("/historical/{paymentcard_id}/transaction-footprints")
@@ -114,8 +113,14 @@ public class CarbonCalculatorController {
     }
     
     @PostMapping("/service-providers/payment-cards")
-    public ResponseEntity<List<PaymentCardEnrolment>> addBatchPaymentCards(@RequestBody List<PaymentCard> paymentCards ) throws ServiceException {
+    public ResponseEntity<List<PaymentCardEnrolment>> addBatchPaymentCards(@RequestBody List<PaymentCard> paymentCards) throws ServiceException {
     	 return ResponseEntity.ok(addCardService.registerBatchPaymentCardsServiceProvider(paymentCards));
+    }
+
+    @DeleteMapping("/service-providers/payment-cards/{payment_card_id}")
+    public ResponseEntity<String> deletePaymentCards(@PathVariable("payment_card_id") String paymentCardId) throws ServiceException {
+        paymentCardService.deletePaymentCard(paymentCardId);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
 }

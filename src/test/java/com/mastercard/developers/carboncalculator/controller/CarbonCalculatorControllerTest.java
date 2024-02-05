@@ -66,10 +66,6 @@ class CarbonCalculatorControllerTest {
 
     @Value("${test.data.card-base-currency}")
     String cardBaseCurrency;
-    
-    private static final String CLIENTID = "cNU2Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
-    private static final String ORIG_CLIENTID = "wfe232Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
-    private static final String CHANNEL = "CC";
 
     @Test
     void calculateFootprints() throws Exception {
@@ -161,17 +157,14 @@ class CarbonCalculatorControllerTest {
         AggregateSearchCriteria aggregateSearchCriteria = new AggregateSearchCriteria().paymentCardIds(
                 Collections.singletonList("paymentCardId")).aggregateType(1);
 
-        when(environmentalImpactService.getPaymentCardAggregateTransactions(CLIENTID, aggregateSearchCriteria,
-                CHANNEL, ORIG_CLIENTID)).thenReturn(
+        when(environmentalImpactService.getPaymentCardAggregateTransactions(aggregateSearchCriteria)).thenReturn(
                 new AggregateTransactionFootprints());
 
         MvcResult mvcResult2 = this.mockMvc
                 .perform(post("/demo/payment-cards/transaction-footprints/aggregates")
                         .contentType(
                                 MediaType.APPLICATION_JSON).content(
-                                gson.toJson(aggregateSearchCriteria))
-                        .header("x-openapi-clientid", CLIENTID)
-                        .header("channel", CHANNEL).header("origMcApiClientId",ORIG_CLIENTID)).andExpect(
+                                gson.toJson(aggregateSearchCriteria))).andExpect(
                         status().isOk()).andReturn();
 
         String response2 = mvcResult2.getResponse().getContentAsString();
@@ -180,11 +173,10 @@ class CarbonCalculatorControllerTest {
     
     @Test
     void deletePaymentCard() throws Exception {
-        doNothing().when(paymentCardService).deletePaymentCard(anyString(), anyString(), anyString(), anyString());
+        doNothing().when(paymentCardService).deletePaymentCard(anyString());
 
         this.mockMvc.perform(delete("/demo/service-providers/payment-cards/{paymentcard_id}"
-                .replace("{paymentcard_id}", "paymentCardId")).header("x-openapi-clientid", CLIENTID)
-                .header("channel", CHANNEL).header("origMcApiClientId",ORIG_CLIENTID))
+                .replace("{paymentcard_id}", "paymentCardId")))
                 .andExpect(status().isAccepted()).andReturn();
     }
 

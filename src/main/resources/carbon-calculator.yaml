@@ -139,7 +139,7 @@ paths:
         '400':
           $ref: '#/components/responses/PaymentCardDeletionsBadRequestError'
         '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'
+          $ref: '#/components/responses/PaymentCardDeletionsNotFoundError'
   /service-providers/payment-cards/{payment_card_id}:
     delete:
       tags:
@@ -160,16 +160,13 @@ paths:
       operationId: PaymentCardDeletion
       parameters:
         - $ref: '#/components/parameters/PaymentCardId'
-        - $ref: '#/components/parameters/XOpenapiClientId'
-        - $ref: '#/components/parameters/Channel'
-        - $ref: '#/components/parameters/OrigMcApiClientId'
       responses:
         '202':
           $ref: '#/components/responses/Accepted'
         '400':
           $ref: '#/components/responses/PaymentCardDeletionsBadRequestError'
         '404':
-          $ref: '#/components/responses/PaymentCardByIdNotFoundError'        
+          $ref: '#/components/responses/PaymentCardByIdNotFoundError'
   /payment-card-enrolments:
     post:
       tags:
@@ -239,10 +236,6 @@ paths:
         If no transaction is found for a particular paymentCardId then the response
         will have an empty list against that paymentCardId.
       operationId: GetPaymentCardAggregateTransaction
-      parameters:
-        - $ref: '#/components/parameters/XOpenapiClientId'
-        - $ref: '#/components/parameters/Channel'
-        - $ref: '#/components/parameters/OrigMcApiClientId'
       requestBody:
         $ref: '#/components/requestBodies/AggregateSearchCriteria'
       responses:
@@ -253,7 +246,7 @@ paths:
         '403':
           $ref: '#/components/responses/ServiceProviderICAValidationError'
         '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'        
+          $ref: '#/components/responses/ServiceProviderNotFoundError'
   /payment-cards/aggregate-transaction-footprints:
     post:
       tags:
@@ -364,28 +357,6 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/SupportedMerchantCategories'
-  /tips:
-    post:
-      tags:
-        - Tips & Equivalencies
-      summary: Retrieve and provide tips and equivalency based on the input.
-      description: >-
-         Tips and Equivalency provides users with informational insights that relate to specific purchases to make them more tangible and relevant to their behaviour. Two kinds of tips are added in the response to this API.
-          <li><b>Category Tips - </b> Category tips are suggestions based on the MCC. These tips will give ideas on reducing the carbon footprints.</li>
-          <li><b>Equivalency -</b> Equivalencies will give insight about the carbon emissions by giving the real world examples.</li>
-          <br>
-          Below is the approach to deliver tips and equivalencies based on the request.
-          <li><b>If only MCC provided in the request :</b> Three randomly selected tips will be delivered.</li>
-          <li><b>If only Co2 provided in the request :</b> Three randomly selected equivalencies will be delivered.</li>
-          <li><b>If MCC and Co2 are both provided in the request:</b> One randomly selected tip and two randomly selected equivalencies will be delivered.</li>
-      operationId: GetTransactionTips
-      requestBody:
-       $ref: '#/components/requestBodies/TransactionsData'
-      responses:
-        '200':
-          $ref: '#/components/responses/TipsAndEquivalencies'
-        '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'   
 components:
   schemas:
     PaymentCardEnrolments:
@@ -487,19 +458,19 @@ components:
           amount:
             value: 500
             currencyCode: 'GBP'
-          cardBrand: 'MA'    
+          cardBrand: 'MA'
           additionalInformation: [
             {
-             "key": "merchantDBAName",
-             "value": "SEARS HARDWARE 5736"
+              "key": "merchantDBAName",
+              "value": "SEARS HARDWARE 5736"
             },
             {
-             "key": "city",
-             "value": "THE WOODLANDS"
+              "key": "city",
+              "value": "THE WOODLANDS"
             },
             {
-             "key": "stateOrCountryCode",
-             "value": "USA"
+              "key": "stateOrCountryCode",
+              "value": "USA"
             }
           ]
         - transactionId: 'a213c72c-f13a-4930-a5f9-8cf765d42ca1'
@@ -507,19 +478,19 @@ components:
           amount:
             value: 500
             currencyCode: 'GBP'
-          cardBrand: 'OTH'    
+          cardBrand: 'OTH'
           additionalInformation: [
             {
-             "key": "merchantDBAName",
-             "value": "SEARS HARDWARE 5736"
+              "key": "merchantDBAName",
+              "value": "SEARS HARDWARE 5736"
             },
             {
-             "key": "city",
-             "value": "THE WOODLANDS"
+              "key": "city",
+              "value": "THE WOODLANDS"
             },
             {
-             "key": "stateOrCountryCode",
-             "value": "USA"
+              "key": "stateOrCountryCode",
+              "value": "USA"
             }
           ]
         - transactionId: 'e7463834-01fe-4f91-9562-484d10053390'
@@ -527,21 +498,21 @@ components:
           amount:
             value: 500
             currencyCode: 'GBP'
-          cardBrand: 'NC'    
+          cardBrand: 'NC'
           additionalInformation: [
             {
-             "key": "merchantDBAName",
-             "value": "SEARS HARDWARE 5736"
+              "key": "merchantDBAName",
+              "value": "SEARS HARDWARE 5736"
             },
             {
-             "key": "city",
-             "value": "THE WOODLANDS"
+              "key": "city",
+              "value": "THE WOODLANDS"
             },
             {
-             "key": "stateOrCountryCode",
-             "value": "USA"
+              "key": "stateOrCountryCode",
+              "value": "USA"
             }
-          ]  
+          ]
         - transactionId: 'fdc4626c-f51e-4ba6-9728-c79ac1d9aec8'
           mcc: 5962
           amount:
@@ -556,22 +527,6 @@ components:
       properties:
         cardBrand:
           $ref: '#/components/schemas/CardBrand'
-    TransactionsData:
-      title: TransactionsData
-      type: object
-      description: Request Object to get the Tips & Equivalencies. Either `mcc` or carbon emission(`carbonEmissionInGrams` or `carbonEmissionInOunces`) or both should be provided to get tips and equivalency.
-      required:
-        - sequence
-      allOf:
-        - $ref: '#/components/schemas/CarbonUsage'
-      properties:
-        sequence:
-          title: sequence
-          type: number
-          description: Sequence Number of Object.
-          example: 1
-        mcc:
-          $ref: '#/components/schemas/mcc'
     Transaction:
       title: Transaction
       type: object
@@ -582,8 +537,6 @@ components:
       properties:
         transactionId:
           $ref: '#/components/schemas/TransactionId'
-        type:
-          $ref: '#/components/schemas/Type'  
         mcc:
           type: string
           description: >-
@@ -598,105 +551,7 @@ components:
         additionalInformation:
           type: array
           items:
-            $ref: '#/components/schemas/AdditionalInformation'  
-    TipsAndEquivalencies:
-      title: TipsAndEquivalencies
-      type: object
-      description: Response object which contains the Transaction Tips & Equivalencies.
-      required:
-        - sequence
-      allOf:
-        - $ref: '#/components/schemas/TransactionsData'
-      properties:
-        status:
-          title: status
-          type: string
-          minLength: 7
-          maxLength: 30
-          description: >-
-            Status of the provided request,
-            
-            * SUCCESS = Request is Valid.
-
-            * INVALID_MCC = The MCC provided in the request is invalid. Try
-            again with a valid MCC.
-
-            * INVALID_REQUEST_PARAMETER = Either mcc or carbon emission(carbonEmissionInGrams or carbonEmissionInOunces) or both must be present in the request. Try again with the correct request.
-          example: 'INVALID_REQUEST_PARAMETER'
-        tips:
-          type: array
-          maxItems: 3
-          items:
-            $ref: '#/components/schemas/Tip'
-        equivalencies:
-          type: array
-          maxItems: 3
-          items:
-            $ref: '#/components/schemas/Equivalency'    
-    Tip:
-      title: Tip
-      type: object
-      description: >-
-        Object to hold the tip.
-      required:
-        - number
-        - tip
-      properties:
-        number:
-          title: number
-          type: string
-          description: 'serial number of tip'
-          minLength: 1
-          maxLength: 2
-          example: '1'
-        tipDescription:
-          title: tipDescription
-          type: string
-          description: 'Description of tip'
-          minLength: 1
-          maxLength: 1000
-          example: 'Watching a film via your game console uses 10 times more energy because they aren''t optimized to play films.'
-    Equivalency:
-      title: Equivalency
-      type: object
-      description: >-
-        Object to hold the Equivalency.
-      required:
-        - number
-        - equivalency
-      properties:
-        number:
-          title: number
-          type: string
-          description: 'serial number of equivalency'
-          minLength: 1
-          maxLength: 2
-          example: '1'
-        equivalencyDescription:
-          title: equivalencyDescription
-          type: string
-          description: 'Description of Equivalency'
-          minLength: 1
-          maxLength: 1000
-          example: 'Flying a plane 1.147 miles.'
-    Type:
-      title: Type
-      type: string
-      minLength: 3
-      maxLength: 4
-      example: 'AIIA'
-      description: >-
-        Type defines transaction scoring type, 
-        based on which score has been generated.Allowed value is AIIA.      
-    mcc:
-      type: string
-      description: >-
-        Merchant category code of a payment transaction that uniquely
-        defines a merchant business.
-      minLength: 1
-      maxLength: 4
-      pattern: '^\d{1,4}'
-      example: '3997'
+            $ref: '#/components/schemas/AdditionalInformation'
     CardBrand:
       title: CardBrand
       type: string
@@ -734,19 +589,19 @@ components:
       title: AdditionalInformation
       description: Additional Information object with key value pair.
       type: object
-      properties: 
-            key: 
-              type: string
-              minLength: 1
-              maxLength: 50
-              example: 'aiiaCode'
-              description: A unique key within `AdditionalInformation` which describes a specific input. For example aiiaCode.
-            value: 
-              type: string
-              minLength: 1
-              maxLength: 50
-              example: '115'
-              description: A value against particular key.      
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: 'aiiaCode'
+          description: A unique key within `AdditionalInformation` which describes a specific input. For example aiiaCode.
+        value:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: '115'
+          description: A value against particular key.
     TransactionFootprintsData:
       title: TransactionFootprintsData
       type: array
@@ -798,7 +653,7 @@ components:
                 Score Reference defines transaction scoring type, 
                 based on which score has been generated. Possible values are MCC, MID or AIIA.
               minLength: 3
-              maxLength: 3  
+              maxLength: 3
     AggregateSearchCriteria:
       title: AggregateSearchCriteria
       type: object
@@ -1385,6 +1240,10 @@ components:
             Status of a Service Provider on the server. Possible values are
             ACTIVE, INACTIVE & TERMINATED.
           example: ACTIVE
+        cardHolderBase:
+          type: string
+          description: Total cardholder base of the service provider.
+          example: '9900000'
     ServiceProviderConfig:
       title: ServiceProviderConfig
       type: object
@@ -1408,7 +1267,15 @@ components:
           minLength: 0
           maxLength: 2083
           description: A service URL that can receive transaction score information from Mastercard in near real-time.
-          example: 'https://www.abcbank.com/payment-cards/notify-transaction-footprints'
+          example: 'https://www.abcbank.com/payment-cards/transaction-footprints/notifications'
+        cardHolderBase:
+          type: string
+          pattern: '^\d+'
+          minimum: 1
+          maximum: 999999999999999
+          exclusiveMinimum: false
+          description: Total card holder base details of issuer.
+          example: '9900000'
     ErrorWrapper:
       title: ErrorWrapper
       type: object
@@ -1529,42 +1396,6 @@ components:
         default: 50
         minimum: 5
         maximum: 50
-    XOpenapiClientId:
-      in: header
-      name: x-openapi-clientid
-      description: Unique Client Id as assigned by Mastercard Developers after creating a project. This will also be a unique Id of your Service Provider record.
-      required: true
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 200
-        pattern: ^[\w\d\-\_]{1,200}
-        example: 'fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5'
-    Channel:
-      in: header
-      name: channel
-      description: Channel of onboarding from which service provider onboarded and now the API call has been initiated. Possible values are,
-
-        * CC = Indicates that service provider is onboarded directly on Carbon Calculator. And API calls has been initiated directly.
-
-        * CT = Indicates that service provider is onboarded via Carbon Tracker/Carbon Calculator Experience. And API calls has been initiated via CT/CCE.
-
-      required: false
-      schema:
-        type: string
-        enum: [ CC, CT ]
-        example: 'CT'
-    OrigMcApiClientId:
-      in: header
-      name: origMcApiClientId
-      description: Client Id of originator issuer from where the API call has been initiated.
-      required: false
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 200
-        pattern: ^[\w\d\-\_]{1,200}
-        example: 'fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5'    
   requestBodies:
     ServiceProviderConfig:
       description: Configuration details for service provider which needs to be update. It should contain only those parameters which you want to update. If you are calling this API for the first time then it is recommended to send all the parameters.
@@ -1651,35 +1482,6 @@ components:
           schema:
             $ref: '#/components/schemas/Transactions'
       required: true
-    TransactionsData:
-      description: >-
-        The request should contain a list of objects as per following. At least one of the below is mandatory.
-          <li> Carbon in Grams
-          <li> Carbon in Ounces
-          <li> MCC
-      required: true
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/TransactionsData'
-            minItems: 1
-            maxItems: 500
-            example:
-              - sequence: 1
-                mcc: 3997
-              - sequence: 2
-                carbonEmissionInGrams: 27.98
-              - sequence: 3
-                carbonEmissionInGrams: 48.52
-                mcc: 5962
-              - sequence: 4
-              - sequence: 5
-                carbonEmissionInGrams: 27.98
-                carbonEmissionInOunces: 0.99
-              - sequence: 6
-                carbonEmissionInOunces: 0.99
   responses:
     PaymentCardEnrolments:
       description: >-
@@ -1728,8 +1530,6 @@ components:
           examples:
             PaymentCardDeletionsRequestValidationError:
               $ref: '#/components/examples/PaymentCardDeletionsRequestValidationError'
-            PaymentCardDeletionsInvalidCardIdError:
-              $ref: '#/components/examples/PaymentCardDeletionsInvalidCardIdError'
     HistoricalTransactionFootprints:
       description: >-
         This response code is returned when a request is accepted and
@@ -1902,6 +1702,19 @@ components:
               $ref: '#/components/examples/ServiceProviderInvalidRequestParameterError'
             ServiceProviderInvalidCallbackUrlError:
               $ref: '#/components/examples/ServiceProviderInvalidCallbackUrlError'
+    PaymentCardDeletionsNotFoundError:
+      description: >-
+        This response code is returned when the server cannot find the account or one or more paymentcards which
+        has been used to call this API.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            ServiceProviderNotFoundError:
+              $ref: '#/components/examples/ServiceProviderNotFoundError'
+            PaymentCardNotFoundError:
+              $ref: '#/components/examples/PaymentCardNotFoundError'
     ServiceProviderICAValidationError:
       description: This response code is returned when activity ICA validation is enabled and ICA of that service provider is unvalidated.
       content:
@@ -1911,20 +1724,6 @@ components:
           examples:
             ServiceProviderICAValidationError:
               $ref: '#/components/examples/ServiceProviderICAValidationError'
-    TipsAndEquivalencies:
-      description: >- 
-        The response object that contains either the category tips or equivalency or both as per the request object.
-      content: 
-        application/json:
-          schema: 
-            type: array
-            items: 
-              $ref: '#/components/schemas/TipsAndEquivalencies'
-            minItems: 1
-            maxItems: 500
-          examples:
-            TipsAndEquivalencies:
-              $ref: '#/components/examples/TipsAndEquivalencies' 
     PaymentCardByIdNotFoundError:
       description: >-
         This response code is returned when the server cannot find the paymentcard which
@@ -1935,7 +1734,7 @@ components:
             $ref: '#/components/schemas/ErrorWrapper'
           examples:
             PaymentCardByIdNotFoundError:
-              $ref: '#/components/examples/PaymentCardByIdNotFoundError'             
+              $ref: '#/components/examples/PaymentCardByIdNotFoundError'
     Accepted:
       description: Accepted
     Ok:
@@ -1976,7 +1775,7 @@ components:
           cardBrand: NC
           scoreReference: MID
           carbonEmissionInGrams: 469343.47
-          carbonEmissionInOunces: 16555.62  
+          carbonEmissionInOunces: 16555.62
         - transactionId: fdc4626c-f51e-4ba6-9728-c79ac1d9aec8
           mcc: 5962
           scoreReference: MCC
@@ -1987,48 +1786,6 @@ components:
             subCategory: Department Store
             sector: Specialty Retail & Services
             sectorCode: '302'
-    TipsAndEquivalencies:
-      value:
-        - sequence: 1
-          mcc: 3997
-          tips:
-            - number: '1'
-              tipDescription: 'Watching a film via your game console uses 10 times more energy because they aren''t optimized to play films.'
-          status: "SUCCESS"
-        - sequence: 2
-          carbonEmissionInGrams: 27.98
-          carbonEmissionInOunces: 0.99
-          equivalencies:
-            - number: '1'
-              equivalencyDescription: 'Flying a plane 1.147 miles.'
-          status: "SUCCESS"
-        - sequence: 3
-          carbonEmissionInGrams: 48.52
-          carbonEmissionInOunces: 1.71
-          mcc: 5962
-          tips: 
-            - number: '1'
-              tipDescription: 'Watching a film via your game console uses 10 times more energy because they aren''t optimized to play films.'
-          equivalencies:
-            - number: '1'
-              equivalencyDescription: 'Flying a plane 1.147 miles.'
-          status: "SUCCESS"
-        - sequence: 4
-          status: "INVALID_REQUEST_PARAMETER"
-        - sequence: 5
-          carbonEmissionInGrams: 27.98
-          carbonEmissionInOunces: 0.99
-          equivalencies:
-            - number: '1'
-              equivalencyDescription: 'Flying a plane 1.147 miles.'
-          status: "SUCCESS"
-        - sequence: 6
-          carbonEmissionInGrams: 27.98
-          carbonEmissionInOunces: 0.99
-          equivalencies:
-            - number: '1'
-              equivalencyDescription: 'Flying a plane 1.147 miles.'
-          status: "SUCCESS"
     HistoricalTransactionFootprints:
       value:
         count: 2
@@ -2261,6 +2018,7 @@ components:
         callbackUrl: ''
         email: John.Doe@mail.com
         status: ACTIVE
+        cardHolderBase: '9900000'
     ServiceProviderWithCallbackUrl:
       value:
         clientId: fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5
@@ -2269,7 +2027,8 @@ components:
         supportedAccountRange: '534403, 518145, 518152, 5403, 5424'
         callbackUrl: 'https://www.abcbank.com/payment-cards/notify-transaction-footprints'
         email: John.Doe@mail.com
-        status: ACTIVE
+        status: ACTIVE,
+        cardHolderBase: '9900000'
     BadRequestError:
       value:
         Errors:
@@ -2426,17 +2185,6 @@ components:
               Description: >-
                 One of the request parameters is invalid, try again with the correct
                 request.
-              Recoverable: false
-              Details: ''
-    PaymentCardDeletionsInvalidCardIdError:
-      value:
-        Errors:
-          Error:
-            - Source: Service-Provider
-              ReasonCode: INVALID_REQUEST_PARAMETER
-              Description: >-
-                One or more payment card IDs in the request are invalid, try
-                again by sending valid Ids.
               Recoverable: false
               Details: ''
     ServiceProviderNotFoundError:

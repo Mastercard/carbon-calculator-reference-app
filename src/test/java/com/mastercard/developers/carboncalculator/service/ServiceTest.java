@@ -51,10 +51,6 @@ class ServiceTest {
 
     @Mock
     private PaymentCardApi paymentCardApi;
-    
-    private static final String CLIENTID = "cNU2Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
-    private static final String ORIG_CLIENTID = "wfe232Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
-    private static final String CHANNEL = "CC";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -227,7 +223,7 @@ class ServiceTest {
         AggregateSearchCriteria aggregateSearchCriteria= new AggregateSearchCriteria();
         aggregateSearchCriteria.setPaymentCardIds(Arrays.asList("testPaymentCardId"));
 
-        AggregateTransactionFootprints aggregateTransactionFootprints = environmentalImpactService.getPaymentCardAggregateTransactions(CLIENTID, aggregateSearchCriteria, CHANNEL, ORIG_CLIENTID);
+        AggregateTransactionFootprints aggregateTransactionFootprints = environmentalImpactService.getPaymentCardAggregateTransactions(aggregateSearchCriteria);
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -249,7 +245,7 @@ class ServiceTest {
         aggregateSearchCriteria.setPaymentCardIds(Arrays.asList("testPaymentCardId"));
 
         ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
-                () -> environmentalImpactService.getPaymentCardAggregateTransactions(CLIENTID, aggregateSearchCriteria, CHANNEL, ORIG_CLIENTID));
+                () -> environmentalImpactService.getPaymentCardAggregateTransactions(aggregateSearchCriteria));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -381,7 +377,7 @@ class ServiceTest {
         when(apiClient.execute(any(Call.class))).thenReturn(
                 new ApiResponse<>(201, new HashMap<>(),"SUCCESS"));
 
-        paymentCardService.deletePaymentCard("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9", CLIENTID, CHANNEL, ORIG_CLIENTID);
+        paymentCardService.deletePaymentCard("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9");
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -401,7 +397,7 @@ class ServiceTest {
         when(apiClient.escapeString(anyString())).thenReturn("randomString");
 
         ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
-                () -> paymentCardService.deletePaymentCard("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9", CLIENTID, CHANNEL, ORIG_CLIENTID));
+                () -> paymentCardService.deletePaymentCard("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9"));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());

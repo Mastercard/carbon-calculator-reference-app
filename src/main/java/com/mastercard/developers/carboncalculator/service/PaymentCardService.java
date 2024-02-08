@@ -20,7 +20,7 @@ import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.PaymentCardApi;
 import org.openapitools.client.model.AggregateSearchCriteria;
-import org.openapitools.client.model.AggregateTransactionFootprint;
+import org.openapitools.client.model.AggregateTransactionFootprints;
 import org.openapitools.client.model.HistoricalTransactionFootprints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,17 +47,17 @@ public class PaymentCardService {
     }
 
 
-    public List<AggregateTransactionFootprint> getPaymentCardAggregateTransactions(AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
+    public AggregateTransactionFootprints getPaymentCardAggregateTransactions(AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
 
         LOGGER.info("Calculating aggregate carbon score for paymentCardIds {}",
                 aggregateSearchCriteria.getPaymentCardIds());
 
         try {
-            List<AggregateTransactionFootprint> aggregateTransactionFootprintList = paymentCardApi.getPaymentCardAggregateTransactions(
+            AggregateTransactionFootprints aggregateTransactionFootprints = paymentCardApi.getPaymentCardAggregateTransactions(
                     aggregateSearchCriteria);
             LOGGER.info("Returning aggregate carbon score.");
 
-            return aggregateTransactionFootprintList;
+            return aggregateTransactionFootprints;
         } catch (ApiException e) {
             throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
         }
@@ -88,6 +88,19 @@ public class PaymentCardService {
             paymentCardApi.paymentCardDeletions(paymentCards);
 
             LOGGER.info("Deleting payment cards completed");
+        } catch (ApiException e) {
+            throw new ServiceException(e);
+        }
+
+    }
+    
+    public void deletePaymentCard(String paymentCardId) throws ServiceException {
+        LOGGER.info("Deleting payment card {}", paymentCardId);
+        try {
+
+            paymentCardApi.paymentCardDeletion(paymentCardId);
+
+            LOGGER.info("Deleting payment cardId completed");
         } catch (ApiException e) {
             throw new ServiceException(e);
         }

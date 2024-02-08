@@ -29,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -45,6 +46,8 @@ class EnvironmentalImpactServiceSIT {
 
     @Autowired
     private SupportedParametersService supportedParametersService;
+    
+    private static final String ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG = "Add Card API call failed with error msg {}";
 
     /**
      * Use case 1. Calculate Transaction Footprints
@@ -117,6 +120,40 @@ class EnvironmentalImpactServiceSIT {
                 .mcc("3000").amount(
                         new Amount().currencyCode("USD").value(new BigDecimal(150))));
         return mcTransactions;
+    }
+    
+    /**
+     * Use case 7. View Aggregate Transaction Carbon Footprints
+     */
+    @Test
+    @DisplayName("Fetch the aggregate carbon score for the transactions")
+    //@Order(2)
+    void aggregateTransactionFootprints() {
+
+        try {
+            AggregateTransactionFootprints aggregateTransactionFootprints = environmentalImpactService.getPaymentCardAggregateTransactions(
+                    mockAggregateSearchCriteria("49f29176-8b3e-4a6e-9681-4ea37d70eaef"));
+
+            assertNotNull(aggregateTransactionFootprints);
+
+            LOGGER.info("{}", aggregateTransactionFootprints);
+        } catch (ServiceException e) {
+            LOGGER.info(ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
+            Assertions.fail(e.getMessage());
+        }
+
+    }
+    
+    /**
+     * Test with different Aggregate type, supported values are as follows:
+     * 1=weekly
+     * 2=monthly
+     * 3=monthly category wise
+     */
+    private static AggregateSearchCriteria mockAggregateSearchCriteria(String paymentCardId) {
+
+        List<String> paymentCardIds = Collections.singletonList(paymentCardId);
+        return new AggregateSearchCriteria().paymentCardIds(paymentCardIds).aggregateType(2);
     }
 
 }

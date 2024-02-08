@@ -15,15 +15,14 @@
  */
 package com.mastercard.developers.carboncalculator.service;
 
-import com.mastercard.developer.interceptors.OkHttpFieldLevelEncryptionInterceptor;
-import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
-import com.mastercard.developers.carboncalculator.configuration.ApiConfiguration;
-import com.mastercard.developers.carboncalculator.exception.ServiceException;
-import com.mastercard.developers.carboncalculator.util.EncryptionHelper;
-import okhttp3.OkHttpClient;
+import static com.mastercard.developers.carboncalculator.util.JSON.deserializeErrors;
+
+import java.util.List;
+
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.PaymentCardApi;
+import org.openapitools.client.api.ServiceProviderApi;
 import org.openapitools.client.model.PaymentCard;
 import org.openapitools.client.model.PaymentCardEnrolment;
 import org.openapitools.client.model.PaymentCardReference;
@@ -32,9 +31,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.mastercard.developer.interceptors.OkHttpFieldLevelEncryptionInterceptor;
+import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
+import com.mastercard.developers.carboncalculator.configuration.ApiConfiguration;
+import com.mastercard.developers.carboncalculator.exception.ServiceException;
+import com.mastercard.developers.carboncalculator.util.EncryptionHelper;
 
-import static com.mastercard.developers.carboncalculator.util.JSON.deserializeErrors;
+import okhttp3.OkHttpClient;
 
 @Service
 public class AddCardService {
@@ -42,11 +45,12 @@ public class AddCardService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AddCardService.class);
 
     private PaymentCardApi paymentCardApi;
-
+    
     @Autowired
     public AddCardService(ApiConfiguration apiConfiguration) throws ServiceException {
         LOGGER.info("Initializing Add Card Service");
         paymentCardApi = new PaymentCardApi(setup(apiConfiguration));
+        new ServiceProviderApi(setup(apiConfiguration));
 
     }
 
@@ -89,6 +93,14 @@ public class AddCardService {
         }
 
     }
-
+    
+    public List<PaymentCardEnrolment> registerBatchPaymentCardsServiceProvider(List<PaymentCard> paymentCard) throws ServiceException {
+        try {
+            LOGGER.info("Calling Service Provider Register Batch Payment Cards");
+            return paymentCardApi.bulkRegisterPaymentCards(paymentCard);
+        } catch (ApiException e) {
+            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
+        }
+    }
 
 }

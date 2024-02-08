@@ -76,8 +76,13 @@ public class CarbonCalculatorController {
     }
 
     @PostMapping("/aggregate-transaction-footprints")
-    public ResponseEntity<List<AggregateTransactionFootprint>> getPaymentCardAggregateTransactions(@RequestBody AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
+    public ResponseEntity<AggregateTransactionFootprints> getPaymentCardAggregateTransactions(@RequestBody AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
         return ResponseEntity.ok(paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria));
+    }
+    
+    @PostMapping("/payment-cards/transaction-footprints/aggregates")
+    public ResponseEntity<AggregateTransactionFootprints> getPaymentCardAggregateTransaction(@RequestBody AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
+        return ResponseEntity.ok(environmentalImpactService.getPaymentCardAggregateTransactions(aggregateSearchCriteria));
     }
 
     @GetMapping("/historical/{paymentcard_id}/transaction-footprints")
@@ -105,6 +110,17 @@ public class CarbonCalculatorController {
     @PostMapping("/payment-card-enrolments")
     public ResponseEntity<List<PaymentCardEnrolment>> addBulkPaymentCards(@RequestBody List<PaymentCard> paymentCards ) throws ServiceException {
         return ResponseEntity.ok(addCardService.registerBatchPaymentCards(paymentCards));
+    }
+    
+    @PostMapping("/service-providers/payment-cards")
+    public ResponseEntity<List<PaymentCardEnrolment>> addBatchPaymentCards(@RequestBody List<PaymentCard> paymentCards) throws ServiceException {
+    	 return ResponseEntity.ok(addCardService.registerBatchPaymentCardsServiceProvider(paymentCards));
+    }
+
+    @DeleteMapping("/service-providers/payment-cards/{payment_card_id}")
+    public ResponseEntity<String> deletePaymentCards(@PathVariable("payment_card_id") String paymentCardId) throws ServiceException {
+        paymentCardService.deletePaymentCard(paymentCardId);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
 }

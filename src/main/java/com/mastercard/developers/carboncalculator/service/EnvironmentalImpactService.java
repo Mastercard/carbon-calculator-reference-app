@@ -19,6 +19,8 @@ import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.EnvironmentalImpactApi;
+import org.openapitools.client.model.AggregateSearchCriteria;
+import org.openapitools.client.model.AggregateTransactionFootprints;
 import org.openapitools.client.model.TransactionData;
 import org.openapitools.client.model.TransactionFootprintData;
 import org.slf4j.Logger;
@@ -60,6 +62,21 @@ public class EnvironmentalImpactService {
         }
 
     }
+    
+    public AggregateTransactionFootprints getPaymentCardAggregateTransactions(AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
 
+            LOGGER.info("Calculating new aggregate API carbon score for paymentCardIds {}",
+                    aggregateSearchCriteria.getPaymentCardIds());
+
+            try {
+                AggregateTransactionFootprints aggregateTransactionFootprintList = environmentalImpactApi.getPaymentCardAggregateTransaction(
+                        aggregateSearchCriteria);
+                LOGGER.info("Returning aggregate carbon score.");
+
+                return aggregateTransactionFootprintList;
+            } catch (ApiException e) {
+                throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
+            }
+        }
 
 }

@@ -27,13 +27,9 @@ tags:
     description: >-
       APIs for payment cards onboarding and
       retrieving the transaction footprints of those cards.
-  - name: Notification
-    description: >-
-      APIs for sending the near real time notification
-      to the issuer about auth transaction footprints of onboarded cards.
   - name: Environmental Impact
     description: >-
-      APIs for calculating carbon emission based on provided payment transactions.
+      APIs for caluclating carbon emission for transactions, reviewing carbon emission of past transactions and sending near real time notification for enrolled cards.
   - name: Supported Parameters
     description: >-
       APIs for fetching the supported merchants and
@@ -69,6 +65,30 @@ paths:
           $ref: '#/components/responses/ServiceProvider'
         '400':
           $ref: '#/components/responses/ServiceProviderBadRequestError'
+        '404':
+          $ref: '#/components/responses/ServiceProviderNotFoundError'
+  '/service-providers/payment-cards':
+    post:
+      tags:
+        - Payment Card
+      summary: Batch Registration of Payment Cards
+      description: >-
+        Allows a registered Service Provider to add a list of new Payment Cards
+        to its profile. This endpoint uses [Mastercard payload
+        encryption](https://mstr.cd/2UPfda0). Please refer to the [Payload
+        Encryption](https://developer.mastercard.com/carbon-calculator/documentation/tutorials-and-guides/payload-encryption/)
+        page for implementation details.
+      operationId: BulkRegisterPaymentCards
+      x-mastercard-api-encrypted: true
+      requestBody:
+        $ref:  '#/components/requestBodies/PaymentCards'
+      responses:
+        '200':
+          $ref: '#/components/responses/PaymentCardEnrolments'
+        '400':
+          $ref: '#/components/responses/PaymentCardEnrolmentsBadRequestError'
+        '403':
+          $ref: '#/components/responses/ServiceProviderICAValidationError'
         '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
   /payment-cards:
@@ -120,6 +140,33 @@ paths:
           $ref: '#/components/responses/PaymentCardDeletionsBadRequestError'
         '404':
           $ref: '#/components/responses/PaymentCardDeletionsNotFoundError'
+  /service-providers/payment-cards/{payment_card_id}:
+    delete:
+      tags:
+        - Payment Card
+      summary: Delete a Payment Card
+      description: >-
+        Allows a registered Service Provider to delete single Payment Card at a time
+        from its profile. Any data associated with a requested paymentCardId
+        will also be deleted permanently.
+
+
+        On the successful response from the server, a Service Provider should remove all
+        the requested paymentCardIds from the system.
+
+
+        Once a request has been received from a Service Provider, data deletion
+        will happen immediately.
+      operationId: PaymentCardDeletion
+      parameters:
+        - $ref: '#/components/parameters/PaymentCardId'
+      responses:
+        '202':
+          $ref: '#/components/responses/Accepted'
+        '400':
+          $ref: '#/components/responses/PaymentCardDeletionsBadRequestError'
+        '404':
+          $ref: '#/components/responses/PaymentCardByIdNotFoundError'
   /payment-card-enrolments:
     post:
       tags:
@@ -166,19 +213,19 @@ paths:
           $ref: '#/components/responses/TransactionHistoryBadRequestError'
         '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
-  /payment-cards/aggregate-transaction-footprints:
+  /payment-cards/transaction-footprints/aggregates:
     post:
       tags:
-        - Payment Card
+        - Environmental Impact
       summary: >-
-        Fetches carbon score for payment cards and aggregates the same on a daily,
+        Fetches carbon score for payment cards and aggregates the same on a
         weekly and monthly basis. The result will be in descending
         order.
       description: >
         Allows a Service Provider to fetch aggregate carbon score for a single
-        or multiple payment card. A payment card has to be registered first
-        using /payment-cards endpoint before this endpoint can be called. The
-        aggregate can be requested for daily, weekly or monthly. Note
+        or multiple payment cards. A payment card has to be registered first
+        using /service-providers/payment-cards endpoint before this endpoint can be called. The
+        aggregate can be requested weekly, or monthly. Note
         that **ONLY** cleared transactions will be returned.
 
 
@@ -188,6 +235,45 @@ paths:
 
         If no transaction is found for a particular paymentCardId then the response
         will have an empty list against that paymentCardId.
+      operationId: GetPaymentCardAggregateTransaction
+      requestBody:
+        $ref: '#/components/requestBodies/AggregateSearchCriteria'
+      responses:
+        '200':
+          $ref: '#/components/responses/AggregateTransactionFootprints'
+        '400':
+          $ref: '#/components/responses/AggregateTransactionBadRequestError'
+        '403':
+          $ref: '#/components/responses/ServiceProviderICAValidationError'
+        '404':
+          $ref: '#/components/responses/ServiceProviderNotFoundError'
+  /payment-cards/aggregate-transaction-footprints:
+    post:
+      tags:
+        - Payment Card
+      summary: >-
+        Fetches carbon score for payment cards and aggregates the same on a
+        weekly and monthly basis. The result will be in descending
+        order.
+      description: >
+        Allows a Service Provider to fetch aggregate carbon score for a single
+        or multiple payment card. A payment card has to be registered first
+        using `/payment-cards` or `/payment-card-enrolments` endpoint before this endpoint can be called. The
+        aggregate can be requested for weekly or monthly. Note
+        that **ONLY** cleared transactions will be returned.
+
+
+        If any of the paymentCardIds is not valid or not registered, then the entire
+        request will be rejected, and no aggregate will be returned.
+
+
+        If no transaction is found for a particular paymentCardId then the response
+        will have an empty list against that paymentCardId.
+
+        If not provided any crossPANAggregate value then default will be considered as 'N'.
+
+        Date Range is valid for 26 weeks for weekly aggregate and 12 months for monthly aggregate.
+
       operationId: GetPaymentCardAggregateTransactions
       requestBody:
         $ref: '#/components/requestBodies/AggregateSearchCriteria'
@@ -198,10 +284,10 @@ paths:
           $ref: '#/components/responses/AggregateTransactionBadRequestError'
         '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
-  /payment-cards/notify-transaction-footprints:
+  /payment-cards/transaction-footprints/notifications:
     post:
       tags:
-        - Notification
+        - Environmental Impact
       summary: Notifies Transaction Footprints in Near Real-time
       description: >-
         Allows a Service Provider to receive near real-time transaction
@@ -367,17 +453,71 @@ components:
       items:
         $ref: '#/components/schemas/TransactionData'
       example:
-        - transactionId: ee421c25-f928-4bf6-b884-3600b76b860d
-          mcc: 3997
+        - transactionId: 'ee421c25-f928-4bf6-b884-3600b76b860d'
+          mcc: 3000
           amount:
-            value: 100
-            currencyCode: USD
-          cardBrand: OTH
-        - transactionId: fdc4626c-f51e-4ba6-9728-c79ac1d9aec8
+            value: 500
+            currencyCode: 'GBP'
+          cardBrand: 'MA'
+          additionalInformation: [
+            {
+              "key": "merchantDBAName",
+              "value": "SEARS HARDWARE 5736"
+            },
+            {
+              "key": "city",
+              "value": "THE WOODLANDS"
+            },
+            {
+              "key": "stateOrCountryCode",
+              "value": "USA"
+            }
+          ]
+        - transactionId: 'a213c72c-f13a-4930-a5f9-8cf765d42ca1'
+          mcc: 3000
+          amount:
+            value: 500
+            currencyCode: 'GBP'
+          cardBrand: 'OTH'
+          additionalInformation: [
+            {
+              "key": "merchantDBAName",
+              "value": "SEARS HARDWARE 5736"
+            },
+            {
+              "key": "city",
+              "value": "THE WOODLANDS"
+            },
+            {
+              "key": "stateOrCountryCode",
+              "value": "USA"
+            }
+          ]
+        - transactionId: 'e7463834-01fe-4f91-9562-484d10053390'
+          mcc: 3000
+          amount:
+            value: 500
+            currencyCode: 'GBP'
+          cardBrand: 'NC'
+          additionalInformation: [
+            {
+              "key": "merchantDBAName",
+              "value": "SEARS HARDWARE 5736"
+            },
+            {
+              "key": "city",
+              "value": "THE WOODLANDS"
+            },
+            {
+              "key": "stateOrCountryCode",
+              "value": "USA"
+            }
+          ]
+        - transactionId: 'fdc4626c-f51e-4ba6-9728-c79ac1d9aec8'
           mcc: 5962
           amount:
             value: 50
-            currencyCode: EUR
+            currencyCode: 'EUR'
     TransactionData:
       title: TransactionData
       type: object
@@ -393,7 +533,6 @@ components:
       description: A single payment transaction for carbon scoring.
       required:
         - amount
-        - mcc
         - transactionId
       properties:
         transactionId:
@@ -409,19 +548,25 @@ components:
           example: '3997'
         amount:
           $ref: '#/components/schemas/Amount'
+        additionalInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalInformation'
     CardBrand:
       title: CardBrand
       type: string
       minLength: 1
       maxLength: 3
-      pattern: '^(MA|OTH)$'
+      pattern: '^(MA|OTH|NC)$'
       example: 'MA'
       description: >-
         Brand type of the payment card through which transaction done. Possible values are,
 
         * MA = Mastercard branded payment card.
-
+        
         * OTH = Payment card brand other than Mastercard.
+        
+        * NC = Non card based transaction.
     Amount:
       title: Amount
       type: object
@@ -440,6 +585,23 @@ components:
           example: 100
         currencyCode:
           $ref: '#/components/schemas/CurrencyCode'
+    AdditionalInformation:
+      title: AdditionalInformation
+      description: Additional Information object with key value pair.
+      type: object
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: 'aiiaCode'
+          description: A unique key within `AdditionalInformation` which describes a specific input. For example aiiaCode.
+        value:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: '115'
+          description: A value against particular key.
     TransactionFootprintsData:
       title: TransactionFootprintsData
       type: array
@@ -470,7 +632,7 @@ components:
         - transactionId
         - mcc
       allOf:
-        - $ref: '#/components/schemas/CarbonAndWaterUsage'
+        - $ref: '#/components/schemas/CarbonUsage'
         - type: object
           properties:
             transactionId:
@@ -485,23 +647,13 @@ components:
               pattern: '^\d{1,4}'
             category:
               $ref: '#/components/schemas/Category'
-    CarbonAndWaterUsage:
-      title: CarbonAndWaterUsage
-      type: object
-      description: Object to hold carbon usage data.
-      properties:
-        carbonEmissionInGrams:
-          title: carbonEmissionInGrams
-          type: number
-          description: The transaction's CO2 emission in grams.
-          example: 48.52
-        carbonEmissionInOunces:
-          title: carbonEmissionInOunces
-          type: number
-          description: The transaction's CO2 emission in ounces.
-          example: 1.71
-        carbonSocialCost:
-          $ref: '#/components/schemas/CarbonSocialCost'
+            scoreReference:
+              type: string
+              description: >-
+                Score Reference defines transaction scoring type, 
+                based on which score has been generated. Possible values are MCC, MID or AIIA.
+              minLength: 3
+              maxLength: 3
     AggregateSearchCriteria:
       title: AggregateSearchCriteria
       type: object
@@ -520,22 +672,41 @@ components:
           maxItems: 5
         aggregateType:
           type: integer
-          minimum: 0
-          maximum: 2
-          example: 2
+          minimum: 1
+          maximum: 3
+          example: 1
           description: >
             Aggregate type for which aggregate needs to be calculated. Supported
             values are:
 
-            <li> 0 = Daily transactions aggregated for last 06 months
             <li> 1 = Weekly Transactions aggregated for last 26 weeks
             <li> 2 = Monthly transactions aggregated for last 12 months
+            <li> 3 = Monthly category-wise transactions aggregated for last 12 months
+        crossPANAggregate:
+          type: string
+          minLength: 1
+          maxLength: 1
+          pattern: '^(?:Y|N|y|n)$'
+          example: Y
+          description: >
+            Wheter to retrieve cross PAN aggregate carbon footprint or not. Supported
+            values are:
+
+            <li> Y = Retrieve cross PAN aggregate.
+            <li> N = Do not retrieve cross PAN aggregate.
+            <br> If not provided then default will be considered as 'N'.
+        fromDate:
+          $ref: '#/components/schemas/Day'
+        toDate:
+          $ref: '#/components/schemas/Day'
       example:
-        aggregateType: 0
+        aggregateType: 1
+        crossPANAggregate: Y
         paymentCardIds:
-          - 8a581a55-bcea-4c3e-8e0f-9b4726e5e6d3
           - 328b62d4-287c-4c9f-a05d-6d4a67f208d8
           - b86fd2ba-c095-4acb-b9df-f3805655ba24
+        fromDate: "2020-07-01"
+        toDate: "2020-08-30"
     HistoricalTransactionFootprints:
       title: HistoricalTransactionFootprints
       description: >-
@@ -606,6 +777,30 @@ components:
           minLength: 1
           pattern: '^[\w\-\_]{1,100}'
           example: ee421c25-f928-4bf6-b884-3600b76b860d
+        traceId:
+          title: traceId
+          type: string
+          description: A unique ID associated with a transaction.
+          maxLength: 100
+          minLength: 1
+          pattern: '([A-Za-z0-9]{10,100})'
+          example: 9f52386ce297173ecfeb9120aabb0805bbeeb1350ce1de640864852e800bd206
+        banknetReferenceNumber:
+          title: banknetReferenceNumber
+          type: string
+          description: DE 63 subelement 2 (POS_BANKNET_REF) is a reference number generated by authorization platform.
+          maxLength: 13
+          minLength: 6
+          pattern: '([A-Za-z0-9]{6,13})'
+          example: MPL0R6B2R
+        banknetDate:
+          title: banknetDate
+          type: string
+          description: DE 7 subelement 1 (POS_BANKNET_DATE) is a date when transaction message entered into MA.
+          maxLength: 4
+          minLength: 4
+          pattern: '([0-9]{4})'
+          example: '0525'
         retrievalRefNumber:
           title: retrievalRefNumber
           type: string
@@ -709,6 +904,9 @@ components:
         paymentCardId: c5d88571-ac15-465a-a0d8-1ad1327b9a06
         transactionMetadata:
           id: ee421c25-f928-4bf6-b884-3600b76b860d
+          traceId: 9f52386ce297173ecfeb9120aabb0805bbeeb1350ce1de640864852e800bd206
+          banknetReferenceNumber: MPL0R6B2R
+          banknetDate: '0525'
           retrievalRefNumber: MCC000100
           processingCode: '00'
           authCode: '444236'
@@ -723,32 +921,11 @@ components:
           mcc: 3997
           carbonEmissionInGrams: 48.52
           carbonEmissionInOunces: 1.71
-          carbonSocialCost:
-            value: 14.01
-            currencyCode: USD
           category:
             mainCategory: Leisure & Entertainment
             subCategory: Hotels & Vacation
             sector: 'Hotels, Motels & Resorts'
             sectorCode: '604'
-    CarbonSocialCost:
-      title: CarbonSocialCost
-      type: object
-      description: >-
-        The response object that contains a transaction's social cost of carbon
-        use.
-      properties:
-        value:
-          title: value
-          type: number
-          description: Actual value of CarbonSocialCost
-          maximum: 1000000000
-          exclusiveMaximum: false
-          minimum: -1000000000
-          exclusiveMinimum: false
-          example: 14
-        currencyCode:
-          $ref: '#/components/schemas/CurrencyCode'
     Category:
       title: Category
       type: object
@@ -832,12 +1009,63 @@ components:
           $ref: '#/components/schemas/Category'
     AggregateTransactionFootprints:
       title: AggregateTransactionFootprints
-      type: array
+      type: object
       description: List of AggregateTransactionFootprint.
-      minItems: 1
-      maxItems: 5
-      items:
-        $ref: '#/components/schemas/AggregateTransactionFootprint'
+      required:
+        - aggregateTransactionFootprint
+      properties:
+        aggregateTransactionFootprint:
+          description: Array of `crossPANAggregations` based on given aggregation level.
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/AggregateTransactionFootprint'
+        crossPANAggregations:
+          description: Array of `crossPANAggregations` based on given aggregation level.
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/CrossPANAggregation'
+
+
+
+    CrossPANAggregation:
+      title: CrossPANAggregation
+      description: Cross PAN aggregated carbon footprint for given aggregate type.
+      properties:
+        aggregateValue:
+          type: string
+          minLength: 10
+          maxLength: 25
+          description: >
+            Aggregate duration for which aggregate has been calculated.
+
+            * Weekly = Week-26|2019 (i.e.,Starting from
+            week 1 to week 26).
+
+            * Monthly = July|2019
+          example: 'Week-26|2019'
+      allOf:
+        - $ref: '#/components/schemas/CarbonUsage'
+
+    CarbonUsage:
+      title: CarbonUsage
+      type: object
+      description: Object to hold carbon usage data.
+      properties:
+        carbonEmissionInGrams:
+          title: carbonEmissionInGrams
+          type: number
+          description: The transaction's CO2 emission in grams.
+          example: 48.52
+        carbonEmissionInOunces:
+          title: carbonEmissionInOunces
+          type: number
+          description: The transaction's CO2 emission in ounces.
+          example: 1.71
+
     AggregateTransactionFootprint:
       title: AggregateTransactionFootprint
       type: object
@@ -862,7 +1090,7 @@ components:
         Aggregation of carbon score for a payment card ID and given
         aggregation level.
       allOf:
-        - $ref: '#/components/schemas/CarbonAndWaterUsage'
+        - $ref: '#/components/schemas/CarbonUsage'
         - type: object
           properties:
             aggregateValue:
@@ -872,10 +1100,7 @@ components:
               description: >
                 Aggregate duration for which aggregate has been calculated.
 
-                * Daily = 2020-07-13
-
-                * Weekly = Week-47|2019 (i.e., Week of the year. Starting from
-                week 1 to week 52).
+                * Weekly = Week-22|2019 (i.e., Week of the year).
 
                 * Monthly = July|2019
 
@@ -1015,6 +1240,10 @@ components:
             Status of a Service Provider on the server. Possible values are
             ACTIVE, INACTIVE & TERMINATED.
           example: ACTIVE
+        cardHolderBase:
+          type: string
+          description: Total cardholder base of the service provider.
+          example: '9900000'
     ServiceProviderConfig:
       title: ServiceProviderConfig
       type: object
@@ -1038,7 +1267,15 @@ components:
           minLength: 0
           maxLength: 2083
           description: A service URL that can receive transaction score information from Mastercard in near real-time.
-          example: 'https://www.abcbank.com/payment-cards/notify-transaction-footprints'
+          example: 'https://www.abcbank.com/payment-cards/transaction-footprints/notifications'
+        cardHolderBase:
+          type: string
+          pattern: '^\d+'
+          minimum: 1
+          maximum: 999999999999999
+          exclusiveMinimum: false
+          description: Total card holder base details of issuer.
+          example: '9900000'
     ErrorWrapper:
       title: ErrorWrapper
       type: object
@@ -1218,9 +1455,12 @@ components:
         carbon score needs to be retrieved and *aggregateType* as one of the
         following:
 
-        <li> 0 = Daily transactions aggregated for last 06 months
         <li> 1 = Weekly Transactions aggregated for last 26 weeks
         <li> 2 = Monthly transactions aggregated for last 12 months
+        <li> 3 = Monthly category-wise transactions aggregated for last 12 months
+
+
+         In order to retrieve aggregate for custom duration, please provide `fromDate` and `toDate`. Note that the duration should not exceed 26 weeks (for weekly aggregate) and 12 months (for monthly aggregate).
       required: true
       content:
         application/json:
@@ -1312,12 +1552,12 @@ components:
           schema:
             $ref: '#/components/schemas/AggregateTransactionFootprints'
           examples:
-            DailyAggregateTransactionFootprints:
-              $ref: '#/components/examples/DailyAggregateTransactionFootprints'
             WeeklyAggregateTransactionFootprints:
               $ref: '#/components/examples/WeeklyAggregateTransactionFootprints'
             MonthlyAggregateTransactionFootprints:
               $ref: '#/components/examples/MonthlyAggregateTransactionFootprints'
+            MonthlyCategoryAggregateTransactionFootprints:
+              $ref: '#/components/examples/MonthlyCategoryAggregateTransactionFootprints'
     SupportedCurrencies:
       description: >-
         This response code is returned when a request is accepted and
@@ -1415,9 +1655,12 @@ components:
           examples:
             InvalidPaymentCardError:
               $ref: '#/components/examples/InvalidPaymentCardError'
+            InvalidDateFormatError:
+              $ref: '#/components/examples/InvalidDateFormatError'
+            AggregateTransactionInvalidDateRangeError:
+              $ref: '#/components/examples/AggregateTransactionInvalidDateRangeError'
             AggregateTransactionInvalidAggregateTypeError:
-              $ref: >-
-                #/components/examples/AggregateTransactionInvalidAggregateTypeError
+              $ref: '#/components/examples/AggregateTransactionInvalidAggregateTypeError'
     RegisterPaymentCardBadRequestError:
       description: >-
         This response code is returned when a request is invalid or data in the
@@ -1430,8 +1673,7 @@ components:
             RegisterPaymentCardRequestValidationError:
               $ref: '#/components/examples/RegisterPaymentCardRequestValidationError'
             RegisterPaymentCardUnsupportedCardCurrencyError:
-              $ref: >-
-                #/components/examples/RegisterPaymentCardUnsupportedCardCurrencyError
+              $ref: '#/components/examples/RegisterPaymentCardUnsupportedCardCurrencyError'
             RegisterPaymentCardInvalidFPANError:
               $ref: '#/components/examples/RegisterPaymentCardInvalidFPANError'
             RegisterPaymentCardAlreadyRegisteredError:
@@ -1473,6 +1715,26 @@ components:
               $ref: '#/components/examples/ServiceProviderNotFoundError'
             PaymentCardNotFoundError:
               $ref: '#/components/examples/PaymentCardNotFoundError'
+    ServiceProviderICAValidationError:
+      description: This response code is returned when activity ICA validation is enabled and ICA of that service provider is unvalidated.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            ServiceProviderICAValidationError:
+              $ref: '#/components/examples/ServiceProviderICAValidationError'
+    PaymentCardByIdNotFoundError:
+      description: >-
+        This response code is returned when the server cannot find the paymentcard which
+        has been used to call this API.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            PaymentCardByIdNotFoundError:
+              $ref: '#/components/examples/PaymentCardByIdNotFoundError'
     Accepted:
       description: Accepted
     Ok:
@@ -1497,25 +1759,28 @@ components:
     TransactionFootprintsData:
       value:
         - transactionId: ee421c25-f928-4bf6-b884-3600b76b860d
-          mcc: 3997
+          mcc: 3000
+          cardBrand: MA
+          scoreReference: MID
+          carbonEmissionInGrams: 469343.47
+          carbonEmissionInOunces: 16555.62
+        - transactionId: a213c72c-f13a-4930-a5f9-8cf765d42ca1
+          mcc: 3000
           cardBrand: OTH
-          carbonEmissionInGrams: 48.52
-          carbonEmissionInOunces: 1.71
-          carbonSocialCost:
-            value: 14.01
-            currencyCode: USD
-          category:
-            mainCategory: Leisure & Entertainment
-            subCategory: Hotels & Vacation
-            sector: 'Hotels, Motels & Resorts'
-            sectorCode: '604'
+          scoreReference: MID
+          carbonEmissionInGrams: 469343.47
+          carbonEmissionInOunces: 16555.62
+        - transactionId: e7463834-01fe-4f91-9562-484d10053390
+          mcc: 3000
+          cardBrand: NC
+          scoreReference: MID
+          carbonEmissionInGrams: 469343.47
+          carbonEmissionInOunces: 16555.62
         - transactionId: fdc4626c-f51e-4ba6-9728-c79ac1d9aec8
           mcc: 5962
-          carbonEmissionInGrams: 27.98
-          carbonEmissionInOunces: 0.99
-          carbonSocialCost:
-            value: 7.98
-            currencyCode: EUR
+          scoreReference: MCC
+          carbonEmissionInGrams: 11905.70
+          carbonEmissionInOunces: 419.96
           category:
             mainCategory: Shopping
             subCategory: Department Store
@@ -1530,6 +1795,9 @@ components:
         items:
           - transactionMetadata:
               id: ee421c25-f928-4bf6-b884-3600b76b860d
+              traceId: 9f52386ce297173ecfeb9120aabb0805bbeeb1350ce1de640864852e800bd206
+              banknetReferenceNumber: MPL0R6B2R
+              banknetDate: '0525'
               retrievalRefNumber: MCC000100
               processingCode: '00'
               authCode: '52717Z'
@@ -1544,9 +1812,6 @@ components:
               mcc: 3997
               carbonEmissionInGrams: 48.52
               carbonEmissionInOunces: 1.71
-              carbonSocialCost:
-                value: 14.01
-                currencyCode: USD
               category:
                 mainCategory: Leisure & Entertainment
                 subCategory: Hotels & Vacation
@@ -1554,6 +1819,9 @@ components:
                 sectorCode: '604'
           - transactionMetadata:
               id: fdc4626c-f51e-4ba6-9728-c79ac1d9aec8
+              traceId: 9f52386ce297173ecfeb9120aabb0805bbeeb1350ce1de640864852e800bd206
+              banknetReferenceNumber: MPL0R6B2R
+              banknetDate: '0525'
               retrievalRefNumber: MCC000480
               processingCode: '01'
               authCode: 'K3C161'
@@ -1568,104 +1836,105 @@ components:
               mcc: 5962
               carbonEmissionInGrams: 27.98
               carbonEmissionInOunces: 0.99
-              carbonSocialCost:
-                value: 7.98
-                currencyCode: EUR
               category:
                 mainCategory: Shopping
                 subCategory: Department Store
                 sector: Specialty Retail & Services
                 sectorCode: '302'
-    DailyAggregateTransactionFootprints:
-      value:
-        - paymentCardId: 8a581a55-bcea-4c3e-8e0f-9b4726e5e6d3
-          footprintAggregation:
-            - carbonEmissionInGrams: 27.98
-              carbonEmissionInOunces: 0.99
-              carbonSocialCost:
-                value: 7.98
-                currencyCode: EUR
-              aggregateValue: '2020-07-14'
-            - carbonEmissionInGrams: 27.98
-              carbonEmissionInOunces: 0.99
-              carbonSocialCost:
-                value: 7.98
-                currencyCode: EUR
-              aggregateValue: '2020-07-13'
-        - paymentCardId: 328b62d4-287c-4c9f-a05d-6d4a67f208d8
-          footprintAggregation:
-            - carbonEmissionInGrams: 22.65
-              carbonEmissionInOunces: 0.94
-              carbonSocialCost:
-                value: 5.67
-                currencyCode: EUR
-              aggregateValue: '2020-07-14'
-            - carbonEmissionInGrams: 35.24
-              carbonEmissionInOunces: 0.87
-              carbonSocialCost:
-                value: 6.87
-                currencyCode: EUR
-              aggregateValue: '2020-07-13'
+
     WeeklyAggregateTransactionFootprints:
       value:
-        - paymentCardId: 8a581a55-bcea-4c3e-8e0f-9b4726e5e6d3
-          footprintAggregation:
-            - carbonEmissionInGrams: 140.52
-              carbonEmissionInOunces: 7.19
-              carbonSocialCost:
-                value: 42.23
-                currencyCode: EUR
-              aggregateValue: Week-26|2019
-            - carbonEmissionInGrams: 142.67
-              carbonEmissionInOunces: 6.94
-              carbonSocialCost:
-                value: 51.32
-                currencyCode: EUR
-              aggregateValue: Week-25|2019
-        - paymentCardId: 328b62d4-287c-4c9f-a05d-6d4a67f208d8
-          footprintAggregation:
-            - carbonEmissionInGrams: 143.64
-              carbonEmissionInOunces: 6.97
-              carbonSocialCost:
-                value: 39.54
-                currencyCode: EUR
-              aggregateValue: Week-26|2019
-            - carbonEmissionInGrams: 218.31
-              carbonEmissionInOunces: 7.19
-              carbonSocialCost:
-                value: 41.35
-                currencyCode: EUR
-              aggregateValue: Week-25|2019
+        aggregateTransactionFootprint:
+          - paymentCardId: 8a581a55-bcea-4c3e-8e0f-9b4726e5e6d3
+            footprintAggregation:
+              - carbonEmissionInGrams: 140.52
+                carbonEmissionInOunces: 7.19
+                aggregateValue: Week-26|2019
+              - carbonEmissionInGrams: 142.67
+                carbonEmissionInOunces: 6.94
+                aggregateValue: Week-25|2019
+          - paymentCardId: 328b62d4-287c-4c9f-a05d-6d4a67f208d8
+            footprintAggregation:
+              - carbonEmissionInGrams: 143.64
+                carbonEmissionInOunces: 6.97
+                aggregateValue: Week-26|2019
+              - carbonEmissionInGrams: 218.31
+                carbonEmissionInOunces: 7.19
+                aggregateValue: Week-25|2019
+        crossPANAggregation:
+          - carbonEmissionInGrams: 284.16
+            carbonEmissionInOunces: 14.16
+            aggregateValue: 'Week-26|2019'
+          - carbonEmissionInGrams: 360.98
+            carbonEmissionInOunces: 14.13
+            aggregateValue: 'Week-25|2019'
+
     MonthlyAggregateTransactionFootprints:
       value:
-        - paymentCardId: 8a581a55-bcea-4c3e-8e0f-9b4726e5e6d3
-          footprintAggregation:
-            - carbonEmissionInGrams: 616.35
-              carbonEmissionInOunces: 31.28
-              carbonSocialCost:
-                value: 210.68
-                currencyCode: EUR
-              aggregateValue: October|2019
-            - carbonEmissionInGrams: 898.64
-              carbonEmissionInOunces: 32.54
-              carbonSocialCost:
-                value: 211.19
-                currencyCode: EUR
-              aggregateValue: September|2019
-        - paymentCardId: 328b62d4-287c-4c9f-a05d-6d4a67f208d8
-          footprintAggregation:
-            - carbonEmissionInGrams: 614.24
-              carbonEmissionInOunces: 32.21
-              carbonSocialCost:
-                value: 198.36
-                currencyCode: EUR
-              aggregateValue: October|2019
-            - carbonEmissionInGrams: 612.24
-              carbonEmissionInOunces: 33.65
-              carbonSocialCost:
-                value: 194.34
-                currencyCode: EUR
-              aggregateValue: September|2019
+        aggregateTransactionFootprint:
+          - paymentCardId: 8a581a55-bcea-4c3e-8e0f-9b4726e5e6d3
+            footprintAggregation:
+              - carbonEmissionInGrams: 616.35
+                carbonEmissionInOunces: 31.28
+                aggregateValue: October|2019
+              - carbonEmissionInGrams: 898.64
+                carbonEmissionInOunces: 32.54
+                aggregateValue: September|2019
+          - paymentCardId: 328b62d4-287c-4c9f-a05d-6d4a67f208d8
+            footprintAggregation:
+              - carbonEmissionInGrams: 614.24
+                carbonEmissionInOunces: 32.21
+                aggregateValue: October|2019
+              - carbonEmissionInGrams: 612.24
+                carbonEmissionInOunces: 33.65
+                aggregateValue: September|2019
+        crossPANAggregation:
+          - carbonEmissionInGrams: 1230.59
+            carbonEmissionInOunces: 63.49
+            aggregateValue: October|2019
+          - carbonEmissionInGrams: 1510.88
+            carbonEmissionInOunces: 66.19
+            aggregateValue: September|2019
+
+    MonthlyCategoryAggregateTransactionFootprints:
+      value:
+        aggregateTransactionFootprint:
+          - paymentCardId: 8a581a55-bcea-4c3e-8e0f-9b4726e5e6d3
+            footprintAggregation:
+              - carbonEmissionInGrams: 345.35
+                carbonEmissionInOunces: 15.28
+                aggregateValue: October|2019|Shopping
+              - carbonEmissionInGrams: 261.64
+                carbonEmissionInOunces: 16.54
+                aggregateValue: October|2019|Hospital
+              - carbonEmissionInGrams: 898.64
+                carbonEmissionInOunces: 32.54
+                aggregateValue: September|2019|Shopping
+          - paymentCardId: 328b62d4-287c-4c9f-a05d-6d4a67f208d8
+            footprintAggregation:
+              - carbonEmissionInGrams: 614.24
+                carbonEmissionInOunces: 32.21
+                aggregateValue: October|2019|Foods
+              - carbonEmissionInGrams: 612.24
+                carbonEmissionInOunces: 33.65
+                aggregateValue: September|2019|Hospital
+        crossPANAggregation:
+          - carbonEmissionInGrams: 345.35
+            carbonEmissionInOunces: 15.28
+            aggregateValue: October|2019|Shopping
+          - carbonEmissionInGrams: 898.64
+            carbonEmissionInOunces: 32.54
+            aggregateValue: October|2019|Hospital
+          - carbonEmissionInGrams: 614.24
+            carbonEmissionInOunces: 32.21
+            aggregateValue: October|2019|Foods
+          - carbonEmissionInGrams: 898.64
+            carbonEmissionInOunces: 32.54
+            aggregateValue: September|2019|Shopping
+          - carbonEmissionInGrams: 612.24
+            carbonEmissionInOunces: 33.65
+            aggregateValue: September|2019|Hospital
+
     SupportedCurrencies:
       value:
         - currencyCode: SEK
@@ -1749,6 +2018,7 @@ components:
         callbackUrl: ''
         email: John.Doe@mail.com
         status: ACTIVE
+        cardHolderBase: '9900000'
     ServiceProviderWithCallbackUrl:
       value:
         clientId: fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5
@@ -1757,7 +2027,8 @@ components:
         supportedAccountRange: '534403, 518145, 518152, 5403, 5424'
         callbackUrl: 'https://www.abcbank.com/payment-cards/notify-transaction-footprints'
         email: John.Doe@mail.com
-        status: ACTIVE
+        status: ACTIVE,
+        cardHolderBase: '9900000'
     BadRequestError:
       value:
         Errors:
@@ -1807,6 +2078,16 @@ components:
                 limits. Try again with a valid date range.
               Recoverable: false
               Details: ''
+    AggregateTransactionInvalidDateRangeError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider
+              ReasonCode: INVALID_DATE_RANGE
+              Description: >-
+                Requested date range is either invalid or exceeds supported limit (i.e. 26 weeks for weekly aggregate and 12 months for monthly aggregate).
+              Recoverable: false
+              Details: ''
     InvalidDateFormatError:
       value:
         Errors:
@@ -1835,7 +2116,7 @@ components:
           Error:
             - Source: Service-Provider
               ReasonCode: INVALID_REQUEST_PARAMETER
-              Description: Invalid aggregate type. Try again with a valid value.
+              Description: One of the request parameters is invalid, try again with correct request.
               Recoverable: false
               Details: ''
     RegisterPaymentCardRequestValidationError:
@@ -1939,6 +2220,25 @@ components:
             - Source: 'Service-Provider'
               ReasonCode: 'INVALID_REQUEST_PARAMETER'
               Description: 'The callbackUrl you have provided is invalid. Try again with a valid URL. If you think that there has been some error, then kindly contact your Mastercard associate.'
+              Recoverable: false
+              Details: ''
+    ServiceProviderICAValidationError:
+      value:
+        Errors:
+          Error:
+            - Source: 'Service-Provider'
+              ReasonCode: 'SERVICE_PROVIDER_ICA_VALIDATION_FAILED'
+              Description: 'Your activity ICA is either pending or not validated. Kindly reach out to support team.'
+              Recoverable: false
+              Details: ''
+    PaymentCardByIdNotFoundError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider
+              ReasonCode: PAYMENT_CARD_NOT_FOUND
+              Description: >-
+                Paymentcard Not Found for the given payment card id in the path.
               Recoverable: false
               Details: ''
     PaymentCardNotFoundError:

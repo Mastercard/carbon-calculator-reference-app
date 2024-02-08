@@ -15,18 +15,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static com.mastercard.developers.carboncalculator.service.MockData.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 
 @SpringBootTest
@@ -131,13 +132,13 @@ class CarbonCalculatorControllerTest {
     }
 
     @Test
-    void aggregateTransactionFootprints() throws Exception {
+    void oldaggregateTransactionFootprints() throws Exception {
 
         AggregateSearchCriteria aggregateSearchCriteria = new AggregateSearchCriteria().paymentCardIds(
                 Collections.singletonList("paymentCardId")).aggregateType(0);
 
         when(paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria)).thenReturn(
-                new ArrayList<>());
+                new AggregateTransactionFootprints());
 
         MvcResult mvcResult2 = this.mockMvc
                 .perform(post("/demo/aggregate-transaction-footprints")
@@ -148,6 +149,35 @@ class CarbonCalculatorControllerTest {
 
         String response2 = mvcResult2.getResponse().getContentAsString();
         assertNotNull(response2);
+    }
+    
+    @Test
+    void aggregateTransactionFootprints() throws Exception {
+
+        AggregateSearchCriteria aggregateSearchCriteria = new AggregateSearchCriteria().paymentCardIds(
+                Collections.singletonList("paymentCardId")).aggregateType(1);
+
+        when(environmentalImpactService.getPaymentCardAggregateTransactions(aggregateSearchCriteria)).thenReturn(
+                new AggregateTransactionFootprints());
+
+        MvcResult mvcResult2 = this.mockMvc
+                .perform(post("/demo/payment-cards/transaction-footprints/aggregates")
+                        .contentType(
+                                MediaType.APPLICATION_JSON).content(
+                                gson.toJson(aggregateSearchCriteria))).andExpect(
+                        status().isOk()).andReturn();
+
+        String response2 = mvcResult2.getResponse().getContentAsString();
+        assertNotNull(response2);
+    }
+    
+    @Test
+    void deletePaymentCard() throws Exception {
+        doNothing().when(paymentCardService).deletePaymentCard(anyString());
+
+        this.mockMvc.perform(delete("/demo/service-providers/payment-cards/{paymentcard_id}"
+                .replace("{paymentcard_id}", "paymentCardId")))
+                .andExpect(status().isAccepted()).andReturn();
     }
 
     @Test
@@ -222,6 +252,20 @@ class CarbonCalculatorControllerTest {
         requestParams.add("offset", "0");
         requestParams.add("limit", "1");
         return requestParams;
+    }
+    
+    @Test
+    void bulkRegistrationPaymentCards() throws Exception {
+    	when(addCardService.registerBatchPaymentCards(any())).thenReturn(
+                batchPaymentEnrollment());
+
+        MvcResult mvcResult = this.mockMvc.perform(post("/demo/service-providers/payment-cards").contentType(
+                MediaType.APPLICATION_JSON).content(
+                gson.toJson(listPaymentCardReference())))
+                .andExpect(status().isOk()).andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        assertNotNull(response);
     }
 
 

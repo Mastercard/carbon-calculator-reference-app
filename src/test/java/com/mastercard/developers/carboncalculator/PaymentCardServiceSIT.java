@@ -22,7 +22,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.model.AggregateSearchCriteria;
-import org.openapitools.client.model.AggregateTransactionFootprint;
+import org.openapitools.client.model.AggregateTransactionFootprints;
 import org.openapitools.client.model.PaymentCard;
 import org.openapitools.client.model.PaymentCardEnrolment;
 import org.slf4j.Logger;
@@ -52,6 +52,7 @@ class PaymentCardServiceSIT {
     @Autowired
     private PaymentCardService paymentCardService;
 
+
     @Autowired
     private AddCardService addCardService;
 
@@ -67,7 +68,7 @@ class PaymentCardServiceSIT {
     private static String paymentCardId;
 
     /**
-     * Use case 4. Enrol FPAN
+     * Use case 4. Enrol FPAN(To be deprecated)
      */
     @Test
     @DisplayName("Register a new Payment Card")
@@ -104,7 +105,7 @@ class PaymentCardServiceSIT {
     void aggregateTransactionFootprints() {
 
         try {
-            List<AggregateTransactionFootprint> aggregateTransactionFootprints = paymentCardService.getPaymentCardAggregateTransactions(
+            AggregateTransactionFootprints aggregateTransactionFootprints = paymentCardService.getPaymentCardAggregateTransactions(
                     mockAggregateSearchCriteria(paymentCardId));
 
             assertNotNull(aggregateTransactionFootprints);
@@ -143,10 +144,9 @@ class PaymentCardServiceSIT {
 
     /**
      * Test with different Aggregate type, supported values are as follows:
-     * 0=daily
      * 1=weekly
      * 2=monthly
-     * 3=yearly
+     * 3=monthly category wise
      */
     private static AggregateSearchCriteria mockAggregateSearchCriteria(String paymentCardId) {
 
@@ -159,33 +159,33 @@ class PaymentCardServiceSIT {
     }
 
 
+//    /**
+//     * Use case 4. Delete Payment Cards
+//     */
+//    @Test
+//    @DisplayName("Delete Registered payment cards")
+//    @Order(4)
+//    void deletePaymentCards() {
+//
+//        final List<String> cardIds = of(PaymentCardServiceSIT.paymentCardId);
+//
+//        try {
+//            PaymentCardService paymentCardService1 =  Mockito.spy(paymentCardService);
+//            paymentCardService1.deletePaymentCards(cardIds);
+//            verify(paymentCardService1,times(1)).deletePaymentCards(cardIds);
+//
+//        } catch (ServiceException e) {
+//            LOGGER.info(DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
+//            Assertions.fail(e.getMessage());
+//        }
+//    }
+
+
     /**
-     * Use case 4. Delete Payment Cards
+     * Use case 10. Enrol bulk FPAN(To be deprecated)
      */
     @Test
-    @DisplayName("Delete Registered payment cards")
-    @Order(4)
-    void deletePaymentCards() {
-
-        final List<String> cardIds = of(PaymentCardServiceSIT.paymentCardId);
-
-        try {
-            PaymentCardService paymentCardService1 =  Mockito.spy(paymentCardService);
-            paymentCardService1.deletePaymentCards(cardIds);
-            verify(paymentCardService1,times(1)).deletePaymentCards(cardIds);
-
-        } catch (ServiceException e) {
-            LOGGER.info(DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
-            Assertions.fail(e.getMessage());
-        }
-    }
-
-
-    /**
-     * Use case 10. Enrol bulk FPAN
-     */
-    @Test
-    @DisplayName("Enroll bulk payment cards")
+    @DisplayName("Enroll bulk payment cards(To be deprecated)")
     void enrollBulkPaymentCards() {
 
         PaymentCard paymentCard1 = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
@@ -212,6 +212,60 @@ class PaymentCardServiceSIT {
 
 
         } catch (ServiceException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+    
+    /**
+     * Use case 11. Enrol bulk FPAN
+     */
+    @Test
+    @DisplayName("Enroll bulk payment cards")
+    void enrollBulkPaymentCardsServiceProvider() {
+
+        PaymentCard paymentCard1 = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
+        PaymentCard paymentCard2 = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
+
+        List<PaymentCard> paymentCards = new ArrayList<>();
+        paymentCards.add(paymentCard1);
+        paymentCards.add(paymentCard2);
+
+        try {
+            List<PaymentCardEnrolment> paymentCardEnrolmentList = addCardService.registerBatchPaymentCardsServiceProvider(paymentCards);
+
+            LOGGER.info("Enrolled payment cards are {}", paymentCardEnrolmentList);
+
+            assertNotNull(paymentCardEnrolmentList);
+
+            paymentCardEnrolmentList
+                    .stream()
+                    .forEach(paymentCardEnrolment -> {
+                        assertNotNull(paymentCardEnrolment.getPaymentCardId());
+                        assertNotNull(paymentCardEnrolment.getLast4fpan());
+                    }
+            );
+
+
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+    
+    /**
+     * Use case 4. Delete Payment Cards
+     */
+    @Test
+    @DisplayName("Delete Registered payment card")
+    @Order(4)
+    void deletePaymentCard() {
+
+        try {
+            PaymentCardService paymentCardService1 =  Mockito.spy(paymentCardService);
+            paymentCardService1.deletePaymentCard(PaymentCardServiceSIT.paymentCardId);
+            verify(paymentCardService1,times(1)).deletePaymentCard(PaymentCardServiceSIT.paymentCardId);
+
+        } catch (ServiceException e) {
+            LOGGER.info(DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
             Assertions.fail(e.getMessage());
         }
     }

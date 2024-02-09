@@ -68,7 +68,7 @@ class CarbonCalculatorControllerTest {
     String cardBaseCurrency;
 
     @Test
-    void calculateFootprints() throws Exception {
+    void calculateFootprintsWithMccRequest() throws Exception {
 
         List<TransactionData> mcTransactions = transactions();
 
@@ -268,5 +268,22 @@ class CarbonCalculatorControllerTest {
         assertNotNull(response);
     }
 
+    @Test
+    void calculateFootprintsWithAiiaRequest() throws Exception {
 
+        List<TransactionData> mcTransactions = aiiaBasedRequest();
+
+        when(environmentalImpactService.calculateFootprints(mcTransactions)).thenReturn(
+                aiiaBasedTransactionFootprints());
+
+        MvcResult mvcResult = mockMvc.perform(post("/demo/transaction-footprints").contentType(
+                MediaType.APPLICATION_JSON).content(
+                gson.toJson(mcTransactions))).andExpect(
+                status().isOk()).andReturn();
+
+
+        String response = mvcResult.getResponse().getContentAsString();
+        assertNotNull(response);
+
+    }
 }

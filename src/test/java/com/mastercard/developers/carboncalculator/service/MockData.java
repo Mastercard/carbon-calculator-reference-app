@@ -28,7 +28,7 @@ public class MockData {
                 "TX-1").category(new Category().mainCategory("Transportation").subCategory(
                 "Flights").sector(
                 "Airlines").sectorCode(
-                "505")).mcc("3000").carbonEmissionInGrams(BigDecimal.valueOf(205688.73)).carbonEmissionInOunces(
+                "505")).mcc("3000").scoreReference("MCC").carbonEmissionInGrams(BigDecimal.valueOf(205688.73)).carbonEmissionInOunces(
                 BigDecimal.valueOf(7255.46));
 
         return Collections.singletonList(transactionFootprint);
@@ -150,5 +150,34 @@ public class MockData {
         List<PaymentCard> paymentCards = new ArrayList<>();
         paymentCards.add(new PaymentCard().fpan("5344035171229750").cardBaseCurrency("EUR"));
         return paymentCards;
+    }
+
+    public static List<AdditionalInformation> getAiiaAdditionalInfo(){
+        List<AdditionalInformation> addInfo = new ArrayList<>();
+        AdditionalInformation info = new AdditionalInformation();
+        info.setKey("aiiaCode");
+        info.setValue("115");
+        addInfo.add(info);
+        return addInfo;
+    }
+
+    public static List<TransactionFootprintData> aiiaBasedTransactionFootprints() {
+
+        TransactionFootprintData transactionFootprint = new TransactionFootprintData().transactionId("TX-1")
+                .category(new Category().mainCategory("Transportation").subCategory("Flights").sector("Airlines")
+                        .sectorCode("505"))
+                .scoreReference("AIIA").mcc("3000").carbonEmissionInGrams(BigDecimal.valueOf(205688.73))
+                .carbonEmissionInOunces(BigDecimal.valueOf(7255.46));
+
+        return Collections.singletonList(transactionFootprint);
+
+    }
+
+    public static List<TransactionData> aiiaBasedRequest() {
+        List<TransactionData> mcTransactions = new ArrayList<>();
+        mcTransactions.add(
+                new TransactionData().type("AIIA").transactionId("TX-1").additionalInformation(getAiiaAdditionalInfo())
+                        .mcc("3000").amount(new Amount().currencyCode("EUR").value(new BigDecimal(150))));
+        return mcTransactions;
     }
 }

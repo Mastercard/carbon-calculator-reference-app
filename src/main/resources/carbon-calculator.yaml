@@ -453,71 +453,23 @@ components:
       items:
         $ref: '#/components/schemas/TransactionData'
       example:
-        - transactionId: 'ee421c25-f928-4bf6-b884-3600b76b860d'
-          mcc: 3000
-          amount:
-            value: 500
-            currencyCode: 'GBP'
-          cardBrand: 'MA'
-          additionalInformation: [
-            {
-              "key": "merchantDBAName",
-              "value": "SEARS HARDWARE 5736"
-            },
-            {
-              "key": "city",
-              "value": "THE WOODLANDS"
-            },
-            {
-              "key": "stateOrCountryCode",
-              "value": "USA"
-            }
-          ]
-        - transactionId: 'a213c72c-f13a-4930-a5f9-8cf765d42ca1'
-          mcc: 3000
-          amount:
-            value: 500
-            currencyCode: 'GBP'
-          cardBrand: 'OTH'
-          additionalInformation: [
-            {
-              "key": "merchantDBAName",
-              "value": "SEARS HARDWARE 5736"
-            },
-            {
-              "key": "city",
-              "value": "THE WOODLANDS"
-            },
-            {
-              "key": "stateOrCountryCode",
-              "value": "USA"
-            }
-          ]
-        - transactionId: 'e7463834-01fe-4f91-9562-484d10053390'
-          mcc: 3000
-          amount:
-            value: 500
-            currencyCode: 'GBP'
-          cardBrand: 'NC'
-          additionalInformation: [
-            {
-              "key": "merchantDBAName",
-              "value": "SEARS HARDWARE 5736"
-            },
-            {
-              "key": "city",
-              "value": "THE WOODLANDS"
-            },
-            {
-              "key": "stateOrCountryCode",
-              "value": "USA"
-            }
-          ]
         - transactionId: 'fdc4626c-f51e-4ba6-9728-c79ac1d9aec8'
           mcc: 5962
           amount:
             value: 50
             currencyCode: 'EUR'
+        - transactionId: 'ee421c25-f928-4bf-b8843600b76b860d'
+          type: AIIA
+          amount:
+            value: 100
+            currencyCode: 'USD'
+          cardBrand: 'NC'
+          additionalInformation: [
+            {
+              "key": "aiiaCode",
+              "value": "151"
+            }
+          ]
     TransactionData:
       title: TransactionData
       type: object
@@ -537,6 +489,8 @@ components:
       properties:
         transactionId:
           $ref: '#/components/schemas/TransactionId'
+        type:
+          $ref: '#/components/schemas/Type'
         mcc:
           type: string
           description: >-
@@ -552,6 +506,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdditionalInformation'
+    Type:
+      title: Type
+      type: string
+      minLength: 3
+      maxLength: 4
+      example: 'AIIA'
+      description: >-
+        Type defines transaction scoring type, 
+        based on which score has been generated.Allowed value is AIIA.
     CardBrand:
       title: CardBrand
       type: string
@@ -651,7 +614,7 @@ components:
               type: string
               description: >-
                 Score Reference defines transaction scoring type, 
-                based on which score has been generated. Possible values are MCC, MID or AIIA.
+                based on which score has been generated. Possible values are MCC or AIIA.
               minLength: 3
               maxLength: 3
     AggregateSearchCriteria:
@@ -1758,24 +1721,6 @@ components:
           errorCode: INVALID_FPAN
     TransactionFootprintsData:
       value:
-        - transactionId: ee421c25-f928-4bf6-b884-3600b76b860d
-          mcc: 3000
-          cardBrand: MA
-          scoreReference: MID
-          carbonEmissionInGrams: 469343.47
-          carbonEmissionInOunces: 16555.62
-        - transactionId: a213c72c-f13a-4930-a5f9-8cf765d42ca1
-          mcc: 3000
-          cardBrand: OTH
-          scoreReference: MID
-          carbonEmissionInGrams: 469343.47
-          carbonEmissionInOunces: 16555.62
-        - transactionId: e7463834-01fe-4f91-9562-484d10053390
-          mcc: 3000
-          cardBrand: NC
-          scoreReference: MID
-          carbonEmissionInGrams: 469343.47
-          carbonEmissionInOunces: 16555.62
         - transactionId: fdc4626c-f51e-4ba6-9728-c79ac1d9aec8
           mcc: 5962
           scoreReference: MCC
@@ -1786,6 +1731,16 @@ components:
             subCategory: Department Store
             sector: Specialty Retail & Services
             sectorCode: '302'
+        - transactionId: ee421c25-f928-4bf-b8843600b76b860d
+          scoreReference: AIIA
+          carbonEmissionInGrams: 11905.70
+          carbonEmissionInOunces: 419.96
+          category:
+            mainCategory: Shopping
+            subCategory: Department Store
+            sector: Specialty Retail & Services
+            sectorCode: '302'
+          carbBrand: NC
     HistoricalTransactionFootprints:
       value:
         count: 2

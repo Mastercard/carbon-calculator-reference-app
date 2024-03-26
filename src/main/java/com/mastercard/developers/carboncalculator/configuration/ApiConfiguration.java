@@ -39,7 +39,7 @@ public class ApiConfiguration {
     private String keyAlias;
 
     @Value("${mastercard.api.authentication.keystore-password}")
-    private String keyPassword;
+    private char[] userPasscode;
 
     @Value("${mastercard.api.authentication.key-file}")
     private Resource p12File;
@@ -86,7 +86,7 @@ public class ApiConfiguration {
             return AuthenticationUtils.loadSigningKey(
                     p12File.getFile().getAbsolutePath(),
                     keyAlias,
-                    keyPassword);
+                    String.valueOf(userPasscode));
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }

@@ -1147,7 +1147,6 @@ components:
         - clientId
         - customerName
         - supportedAccountRange
-        - callbackUrl
         - status
       properties:
         clientId:
@@ -1186,15 +1185,6 @@ components:
             Comma separated account range supported by a Service Provider as
             available on the server.
           example: '534403,518145,518152,5403,5424'
-        callbackUrl:
-          type: string
-          minLength: 0
-          maxLength: 2083
-          description: >-
-            A service URL that has been made available by a Service Provider so
-            that it can receive the latest transaction score information from the
-            server.
-          example: ''
         status:
           type: string
           minLength: 6
@@ -1225,12 +1215,6 @@ components:
           pattern: ^[\d\,]{1,}
           description: Comma separated account range supported by a Service Provider.
           example: '534403,518145,518152,5403,5424'
-        callbackUrl:
-          type: string
-          minLength: 0
-          maxLength: 2083
-          description: A service URL that can receive transaction score information from Mastercard in near real-time.
-          example: 'https://www.abcbank.com/payment-cards/transaction-footprints/notifications'
         cardHolderBase:
           type: string
           pattern: '^\d+'
@@ -1565,10 +1549,8 @@ components:
           schema:
             $ref: '#/components/schemas/ServiceProvider'
           examples:
-            ServiceProviderWithCallbackUrl:
-              $ref: '#/components/examples/ServiceProviderWithCallbackUrl'
-            ServiceProviderWithoutCallbackUrl:
-              $ref: '#/components/examples/ServiceProviderWithoutCallbackUrl'
+            ServiceProviderDetails:
+              $ref: '#/components/examples/ServiceProviderDetails'
     UnsupportedMediaTypeError:
       description: >-
         This response code is returned when the MediaType in the request is other
@@ -1663,8 +1645,6 @@ components:
           examples:
             ServiceProviderInvalidRequestParameterError:
               $ref: '#/components/examples/ServiceProviderInvalidRequestParameterError'
-            ServiceProviderInvalidCallbackUrlError:
-              $ref: '#/components/examples/ServiceProviderInvalidCallbackUrlError'
     PaymentCardDeletionsNotFoundError:
       description: >-
         This response code is returned when the server cannot find the account or one or more paymentcards which
@@ -1964,23 +1944,12 @@ components:
         bin: '534403'
         last4fpan: '9750'
         status: ACTIVE
-    ServiceProviderWithoutCallbackUrl:
+    ServiceProviderDetails:
       value:
         clientId: fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5
         customerId: ''
         customerName: ABC Bank
         supportedAccountRange: '534403, 518145, 518152, 5403, 5424'
-        callbackUrl: ''
-        email: John.Doe@mail.com
-        status: ACTIVE
-        cardHolderBase: '9900000'
-    ServiceProviderWithCallbackUrl:
-      value:
-        clientId: fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5
-        customerId: ''
-        customerName: ABC Bank
-        supportedAccountRange: '534403, 518145, 518152, 5403, 5424'
-        callbackUrl: 'https://www.abcbank.com/payment-cards/notify-transaction-footprints'
         email: John.Doe@mail.com
         status: ACTIVE,
         cardHolderBase: '9900000'
@@ -2168,15 +2137,6 @@ components:
               Description: 'One of the request parameters is either invalid or is missing, try again with the correct request.'
               Recoverable: false
               Details: 'customerName must match "^[\w\s]{1,200}"'
-    ServiceProviderInvalidCallbackUrlError:
-      value:
-        Errors:
-          Error:
-            - Source: 'Service-Provider'
-              ReasonCode: 'INVALID_REQUEST_PARAMETER'
-              Description: 'The callbackUrl you have provided is invalid. Try again with a valid URL. If you think that there has been some error, then kindly contact your Mastercard associate.'
-              Recoverable: false
-              Details: ''
     ServiceProviderICAValidationError:
       value:
         Errors:

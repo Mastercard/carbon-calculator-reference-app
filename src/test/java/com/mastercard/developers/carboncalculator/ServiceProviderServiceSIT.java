@@ -73,7 +73,6 @@ class ServiceProviderServiceSIT {
         try {
             ServiceProviderConfig serviceProviderConfig = new ServiceProviderConfig();
             serviceProviderConfig.setCustomerName("New Customer Name");
-            serviceProviderConfig.setCallbackUrl("https://www.abcbank.com/payment-cards/notify-transaction-footprints");
             serviceProviderConfig.setSupportedAccountRange("534403");
 
             ServiceProvider serviceProviderInfo = serviceProviderService.updateServiceProvider(serviceProviderConfig);

@@ -67,8 +67,7 @@ public class MockData {
 
     public static ServiceProvider serviceProvider() {
         return new ServiceProvider().clientId("clientId").customerId(
-                "customerId").customerName("customerName").status("ACTIVE").supportedAccountRange("5425").callbackUrl(
-                "http://www.callbackUrl.com/callback");
+                "customerId").customerName("customerName").status("ACTIVE").supportedAccountRange("5425");
     }
 
     public static AggregateSearchCriteria aggregateSearchCriteria(String paymentCardId) {

@@ -14,7 +14,7 @@
     <name>carbon-calculator</name>
     <description>Carbon Calculator Reference Application</description>
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <gson-fire-version>1.8.5</gson-fire-version>

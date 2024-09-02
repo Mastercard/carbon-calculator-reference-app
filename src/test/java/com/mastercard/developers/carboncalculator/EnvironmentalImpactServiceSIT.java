@@ -116,7 +116,7 @@ class EnvironmentalImpactServiceSIT {
 
     private static List<TransactionData> mockTransactions() {
         List<TransactionData> mcTransactions = new ArrayList<>();
-        mcTransactions.add(new TransactionData().transactionId("TX-1")
+        mcTransactions.add((TransactionData) new TransactionData().transactionId("TX-1")
                 .mcc("3000").amount(
                         new Amount().currencyCode("USD").value(new BigDecimal(150))));
         return mcTransactions;

@@ -1,5 +1,6 @@
 package com.mastercard.developers.carboncalculator.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.mastercard.developers.carboncalculator.configuration.ApiConfiguration;
 import com.mastercard.developers.carboncalculator.service.*;
@@ -70,16 +71,15 @@ class CarbonCalculatorControllerTest {
     @Test
     void calculateFootprintsWithMccRequest() throws Exception {
 
-        List<TransactionData> mcTransactions = transactions();
-
-        when(environmentalImpactService.calculateFootprints(mcTransactions)).thenReturn(
+        when(environmentalImpactService.calculateFootprints(any())).thenReturn(
                 transactionFootprints());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonContent = objectMapper.writeValueAsString(transactions());
 
-        MvcResult mvcResult = mockMvc.perform(post("/demo/transaction-footprints").contentType(
+        MvcResult mvcResult =this.mockMvc.perform(post("/demo/transaction-footprints").contentType(
                 MediaType.APPLICATION_JSON).content(
-                gson.toJson(mcTransactions))).andExpect(
+                jsonContent)).andExpect(
                 status().isOk()).andReturn();
-
 
         String response = mvcResult.getResponse().getContentAsString();
         assertNotNull(response);

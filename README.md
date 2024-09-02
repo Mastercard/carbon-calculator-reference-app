@@ -22,7 +22,7 @@ To call these APIs, consumer key and .p12 file are required from your project on
 
 ## Requirements  <a name="requirements"></a>
 
-- Java 11
+- Java 17
 - IntelliJ IDEA (or any other IDE)
 
 ## Frameworks/Libraries <a name="frameworks"></a>

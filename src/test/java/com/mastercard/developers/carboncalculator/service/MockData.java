@@ -15,16 +15,16 @@ public class MockData {
     private static final String SOURCE = "Carbon-Calculator";
 
     public static List<TransactionData> transactions() {
-        List<TransactionData> mcTransactions = new ArrayList<>();
-        mcTransactions.add(new TransactionData().transactionId("TX-1")
+//        List<TransactionData> mcTransactions = new ArrayList<>();
+        TransactionData transactionFootprint = (TransactionData) new TransactionData().transactionId("TX-1")
                 .mcc("3000").amount(
-                        new Amount().currencyCode("EUR").value(new BigDecimal(150))));
-        return mcTransactions;
+                        new Amount().currencyCode("EUR").value(new BigDecimal(150)));
+        return Collections.singletonList(transactionFootprint);
     }
 
     public static List<TransactionFootprintData> transactionFootprints() {
 
-        TransactionFootprintData transactionFootprint = new TransactionFootprintData().transactionId(
+        TransactionFootprintData transactionFootprint = (TransactionFootprintData) new TransactionFootprintData().transactionId(
                 "TX-1").category(new Category().mainCategory("Transportation").subCategory(
                 "Flights").sector(
                 "Airlines").sectorCode(
@@ -118,7 +118,7 @@ public class MockData {
 
     public static List<TransactionData> invalidTransactionRequest() {
         List<TransactionData> mcTransactions = new ArrayList<>();
-        mcTransactions.add(new TransactionData().transactionId("TX-1")
+        mcTransactions.add((TransactionData) new TransactionData().transactionId("TX-1")
                 .mcc("12345").amount(
                         new Amount().currencyCode("EUR").value(new BigDecimal(150))));
         return mcTransactions;
@@ -162,7 +162,7 @@ public class MockData {
 
     public static List<TransactionFootprintData> aiiaBasedTransactionFootprints() {
 
-        TransactionFootprintData transactionFootprint = new TransactionFootprintData().transactionId("TX-1")
+        TransactionFootprintData transactionFootprint = (TransactionFootprintData) new TransactionFootprintData().transactionId("TX-1")
                 .category(new Category().mainCategory("Transportation").subCategory("Flights").sector("Airlines")
                         .sectorCode("505"))
                 .scoreReference("AIIA").mcc("3000").carbonEmissionInGrams(BigDecimal.valueOf(205688.73))
@@ -175,7 +175,7 @@ public class MockData {
     public static List<TransactionData> aiiaBasedRequest() {
         List<TransactionData> mcTransactions = new ArrayList<>();
         mcTransactions.add(
-                new TransactionData().type("AIIA").transactionId("TX-1").additionalInformation(getAiiaAdditionalInfo())
+                (TransactionData) new TransactionData().type("AIIA").transactionId("TX-1").additionalInformation(getAiiaAdditionalInfo())
                         .mcc("3000").amount(new Amount().currencyCode("EUR").value(new BigDecimal(150))));
         return mcTransactions;
     }

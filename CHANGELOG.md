@@ -9,7 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Added support for non-card (NC) transactions in Transaction Footprints Calculation API.Introduced new API Delete Payment Card to delete a single payment card.
 
 ## [6.0.0] - January 2024
-### Enriched Transaction Footprints Calculation to support aiia based calculation.
+### Updates
+- Enriched Transaction Footprints Calculation to support aiia based calculation.
 
 ## [5.0.0] - August 2023
 ### Updates

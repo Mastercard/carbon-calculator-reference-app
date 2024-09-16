@@ -15,7 +15,6 @@
  */
 package com.mastercard.developers.carboncalculator.service;
 
-import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.SupportedParametersApi;
@@ -28,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.mastercard.developers.carboncalculator.util.JSON.deserializeErrors;
 
 @Service
 public class SupportedParametersService {
@@ -42,34 +40,19 @@ public class SupportedParametersService {
         supportedParametersApi = new SupportedParametersApi(client);
     }
 
-    public List<Currency> getSupportedCurrencies() throws ServiceException {
+    public List<Currency> getSupportedCurrencies() throws ApiException {
         LOGGER.info("Calling Get Supported Currencies API");
-
-        try {
-            List<Currency> mcSupportedCurrencies = supportedParametersApi.getSupportedCurrencies();
-
-            LOGGER.info("Returning list of supported currencies.");
-
-            return mcSupportedCurrencies;
-        } catch (ApiException e) {
-            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
-        }
-
-
+        List<Currency> mcSupportedCurrencies = supportedParametersApi.getSupportedCurrencies();
+        LOGGER.info("Returning list of supported currencies.");
+        return mcSupportedCurrencies;
     }
 
-    public List<MerchantCategory> getSupportedMerchantCategories() throws ServiceException {
+    public List<MerchantCategory> getSupportedMerchantCategories() throws ApiException {
         LOGGER.info("Calling Get Supported Merchant Categories API");
+        List<MerchantCategory> merchantCategories = supportedParametersApi.getSupportedMerchantCategories();
+        LOGGER.info("Returning list of supported MCCs.");
+        return merchantCategories;
 
-        try {
-            List<MerchantCategory> merchantCategories = supportedParametersApi.getSupportedMerchantCategories();
-
-            LOGGER.info("Returning list of supported MCCs.");
-
-            return merchantCategories;
-        } catch (ApiException e) {
-            throw new ServiceException(e.getResponseBody());
-        }
     }
 
 }

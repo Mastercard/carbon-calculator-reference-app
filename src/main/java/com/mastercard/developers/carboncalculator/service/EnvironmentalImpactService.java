@@ -15,7 +15,6 @@
  */
 package com.mastercard.developers.carboncalculator.service;
 
-import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.EnvironmentalImpactApi;
@@ -45,38 +44,29 @@ public class EnvironmentalImpactService {
         environmentalImpactApi = new EnvironmentalImpactApi(apiClient);
     }
 
-    public List<TransactionFootprintData> calculateFootprints(List<TransactionData> mcTransactions) throws ServiceException {
+    public List<TransactionFootprintData> calculateFootprints(List<TransactionData> mcTransactions) throws ApiException {
 
         LOGGER.info("Calling Calculate Transaction Footprint API");
 
-        try {
-            List<TransactionFootprintData> footprints = environmentalImpactApi.footprintsByTransactionData(
-                    mcTransactions);
+        List<TransactionFootprintData> footprints = environmentalImpactApi.footprintsByTransactionData(mcTransactions);
 
-            LOGGER.info("Calculate Transaction Footprint API call successful, returning Transaction Footprints.");
+        LOGGER.info("Calculate Transaction Footprint API call successful, returning Transaction Footprints.");
 
-            return footprints;
-
-        } catch (ApiException e) {
-            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
-        }
+        return footprints;
 
     }
-    
-    public AggregateTransactionFootprints getPaymentCardAggregateTransactions(AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
 
-            LOGGER.info("Calculating new aggregate API carbon score for paymentCardIds {}",
-                    aggregateSearchCriteria.getPaymentCardIds());
 
-            try {
-                AggregateTransactionFootprints aggregateTransactionFootprintList = environmentalImpactApi.getPaymentCardAggregateTransaction(
-                        aggregateSearchCriteria);
-                LOGGER.info("Returning aggregate carbon score.");
+    public AggregateTransactionFootprints getPaymentCardAggregateTransactions(String clientId,
+        AggregateSearchCriteria aggregateSearchCriteria, String channel, String origMcApiClientId) throws ApiException {
 
-                return aggregateTransactionFootprintList;
-            } catch (ApiException e) {
-                throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
-            }
-        }
+        LOGGER.info("Calculating new aggregate API carbon score for paymentCardIds {}",
+                aggregateSearchCriteria.getPaymentCardIds());
 
+            AggregateTransactionFootprints aggregateTransactionFootprintList = environmentalImpactApi.getPaymentCardAggregateTransaction(clientId,
+                    aggregateSearchCriteria, channel, origMcApiClientId);
+            LOGGER.info("Returning aggregate carbon score.");
+
+            return aggregateTransactionFootprintList;
+    }
 }

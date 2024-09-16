@@ -1,6 +1,5 @@
 package com.mastercard.developers.carboncalculator.service;
 
-import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import okhttp3.Call;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +12,6 @@ import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.ApiResponse;
 import org.openapitools.client.api.PaymentCardApi;
-import org.openapitools.client.model.Error;
 import org.openapitools.client.model.*;
 
 import java.lang.reflect.Type;
@@ -51,6 +49,11 @@ class ServiceTest {
 
     @Mock
     private PaymentCardApi paymentCardApi;
+
+
+    private static final String CLIENTID = "cNU2Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
+    private static final String ORIG_CLIENTID = "wfe232Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
+    private static final String CHANNEL = "CC";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -125,20 +128,14 @@ class ServiceTest {
                         "")));
 
 
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> serviceProviderService.getServiceProvider());
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
 
-        Assertions.assertNotNull(serviceException.getServiceErrors());
-        List<Error> errors = serviceException.getServiceErrors().getErrors().getError();
-        Assertions.assertFalse(errors.isEmpty());
-        errors.forEach(error -> {
-            Assertions.assertEquals(SOURCE, error.getSource());
-            Assertions.assertFalse(error.getRecoverable());
-        });
+        Assertions.assertNotNull(apiException.getResponseBody());
     }
 
     @Test
@@ -151,20 +148,14 @@ class ServiceTest {
                         "supportedAccountRange must match \\\"^[\\\\d\\\\,]{1,}\\\"")));
 
 
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> serviceProviderService.updateServiceProvider(serviceProviderConfig));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
 
-        Assertions.assertNotNull(serviceException.getServiceErrors());
-        List<Error> errors = serviceException.getServiceErrors().getErrors().getError();
-        Assertions.assertFalse(errors.isEmpty());
-        errors.forEach(error -> {
-            Assertions.assertEquals(SOURCE, error.getSource());
-            Assertions.assertFalse(error.getRecoverable());
-        });
+        Assertions.assertNotNull(apiException.getResponseBody());
     }
 
     @Test
@@ -205,8 +196,10 @@ class ServiceTest {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(201, new HashMap<>(), MockData.aggregateTransactionFootprint()));
 
-        AggregateTransactionFootprints aggregateTransactionFootprints = paymentCardService.getPaymentCardAggregateTransactions(
-                aggregateSearchCriteria("testPaymentCardId"));
+        AggregateSearchCriteria aggregateSearchCriteria= new AggregateSearchCriteria();
+        aggregateSearchCriteria.setPaymentCardIds(Arrays.asList("testPaymentCardId"));
+
+        AggregateTransactionFootprints aggregateTransactionFootprints = paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria);
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -214,7 +207,7 @@ class ServiceTest {
 
         assertNotNull(aggregateTransactionFootprints);
     }
-    
+
     @Test
     void aggregate() throws Exception {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
@@ -223,7 +216,7 @@ class ServiceTest {
         AggregateSearchCriteria aggregateSearchCriteria= new AggregateSearchCriteria();
         aggregateSearchCriteria.setPaymentCardIds(Arrays.asList("testPaymentCardId"));
 
-        AggregateTransactionFootprints aggregateTransactionFootprints = environmentalImpactService.getPaymentCardAggregateTransactions(aggregateSearchCriteria);
+        AggregateTransactionFootprints aggregateTransactionFootprints = environmentalImpactService.getPaymentCardAggregateTransactions(CLIENTID, aggregateSearchCriteria, CHANNEL, ORIG_CLIENTID);
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -244,20 +237,14 @@ class ServiceTest {
         AggregateSearchCriteria aggregateSearchCriteria= new AggregateSearchCriteria();
         aggregateSearchCriteria.setPaymentCardIds(Arrays.asList("testPaymentCardId"));
 
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
-                () -> environmentalImpactService.getPaymentCardAggregateTransactions(aggregateSearchCriteria));
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
+                () -> environmentalImpactService.getPaymentCardAggregateTransactions(CLIENTID, aggregateSearchCriteria, CHANNEL, ORIG_CLIENTID));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
 
-        Assertions.assertNotNull(serviceException.getServiceErrors());
-        List<Error> errors = serviceException.getServiceErrors().getErrors().getError();
-        Assertions.assertFalse(errors.isEmpty());
-        errors.forEach(error -> {
-            Assertions.assertEquals(SOURCE, error.getSource());
-            Assertions.assertFalse(error.getRecoverable());
-        });
+        Assertions.assertNotNull(apiException.getResponseBody());
     }
 
     @Test
@@ -269,7 +256,7 @@ class ServiceTest {
                         false,
                         "carbonIndexCalculation.transactions[0].mcc: size must be between 1 and 4")));
 
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> environmentalImpactService.calculateFootprints(
                         invalidTransactionRequest()));
 
@@ -277,13 +264,7 @@ class ServiceTest {
                 anyMap(), anyMap(), any(), any());
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
 
-        Assertions.assertNotNull(serviceException.getServiceErrors());
-        List<Error> errors = serviceException.getServiceErrors().getErrors().getError();
-        Assertions.assertFalse(errors.isEmpty());
-        errors.forEach(error -> {
-            Assertions.assertEquals(SOURCE, error.getSource());
-            Assertions.assertFalse(error.getRecoverable());
-        });
+        Assertions.assertNotNull(apiException.getResponseBody());
     }
 
     @Test
@@ -296,7 +277,7 @@ class ServiceTest {
                         "")));
 
 
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> paymentCardService.getPaymentCardAggregateTransactions(
                         aggregateSearchCriteria("b86fd2ba-c095-4acb-b9df-f3805655ba24")));
 
@@ -304,13 +285,7 @@ class ServiceTest {
                 anyMap(), anyMap(), any(), any());
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
 
-        Assertions.assertNotNull(serviceException.getServiceErrors());
-        List<Error> errors = serviceException.getServiceErrors().getErrors().getError();
-        Assertions.assertFalse(errors.isEmpty());
-        errors.forEach(error -> {
-            Assertions.assertEquals(SOURCE, error.getSource());
-            Assertions.assertFalse(error.getRecoverable());
-        });
+        Assertions.assertNotNull(apiException.getResponseBody());
     }
 
     @Test
@@ -322,20 +297,14 @@ class ServiceTest {
                         false,
                         "")));
 
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> supportedParametersService.getSupportedCurrencies());
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
 
-        Assertions.assertNotNull(serviceException.getServiceErrors());
-        List<Error> errors = serviceException.getServiceErrors().getErrors().getError();
-        Assertions.assertFalse(errors.isEmpty());
-        errors.forEach(error -> {
-            Assertions.assertEquals(SOURCE, error.getSource());
-            Assertions.assertFalse(error.getRecoverable());
-        });
+        Assertions.assertNotNull(apiException.getResponseBody());
     }
 
     @Test
@@ -347,14 +316,14 @@ class ServiceTest {
                         false,
                         "")));
 
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> supportedParametersService.getSupportedMerchantCategories());
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
 
-        Assertions.assertNotNull(serviceException.getServiceErrors());
+        Assertions.assertNotNull(apiException.getResponseBody());
     }
 
     @Test
@@ -370,14 +339,14 @@ class ServiceTest {
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
 
     }
-    
+
     @Test
     void deleteCards() throws Exception {
         when(apiClient.escapeString(anyString())).thenReturn("randomString");
         when(apiClient.execute(any(Call.class))).thenReturn(
                 new ApiResponse<>(201, new HashMap<>(),"SUCCESS"));
 
-        paymentCardService.deletePaymentCard("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9");
+        paymentCardService.deletePaymentCard("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9", CLIENTID, CHANNEL, ORIG_CLIENTID);
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -396,8 +365,8 @@ class ServiceTest {
                         "")));
         when(apiClient.escapeString(anyString())).thenReturn("randomString");
 
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
-                () -> paymentCardService.deletePaymentCard("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9"));
+        Assertions.assertThrows(ApiException.class,
+                () -> paymentCardService.deletePaymentCard("9d84e28e-2f5e-4843-87dc-ee0cdf2381d9", CLIENTID, CHANNEL, ORIG_CLIENTID));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -414,7 +383,7 @@ class ServiceTest {
                         "")));
         when(apiClient.escapeString(anyString())).thenReturn("randomString");
 
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class,
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> paymentCardService.getPaymentCardTransactionHistory(paymentCardReference().getPaymentCardId(), "2015-04-29","2013-06-30",0,
                         1));
 
@@ -422,12 +391,6 @@ class ServiceTest {
                 anyMap(), anyMap(), any(), any());
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
 
-        Assertions.assertNotNull(serviceException.getServiceErrors());
-        List<Error> errors = serviceException.getServiceErrors().getErrors().getError();
-        Assertions.assertFalse(errors.isEmpty());
-        errors.forEach(error -> {
-            Assertions.assertEquals(SOURCE, error.getSource());
-            Assertions.assertFalse(error.getRecoverable());
-        });
+        Assertions.assertNotNull(apiException.getResponseBody());
     }
 }

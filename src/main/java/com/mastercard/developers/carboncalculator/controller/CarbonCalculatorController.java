@@ -15,14 +15,36 @@
  */
 package com.mastercard.developers.carboncalculator.controller;
 
-import com.mastercard.developers.carboncalculator.exception.ServiceException;
-import com.mastercard.developers.carboncalculator.service.*;
-import org.openapitools.client.model.*;
+import com.mastercard.developers.carboncalculator.service.AddCardService;
+import com.mastercard.developers.carboncalculator.service.EnvironmentalImpactService;
+import com.mastercard.developers.carboncalculator.service.SupportedParametersService;
+import com.mastercard.developers.carboncalculator.service.PaymentCardService;
+import com.mastercard.developers.carboncalculator.service.ServiceProviderService;
+import org.openapitools.client.ApiException;
+
+import org.openapitools.client.model.TransactionFootprintData;
+import org.openapitools.client.model.TransactionData;
+import org.openapitools.client.model.MerchantCategory;
+import org.openapitools.client.model.Currency;
+import org.openapitools.client.model.PaymentCardReference;
+import org.openapitools.client.model.PaymentCard;
+import org.openapitools.client.model.AggregateSearchCriteria;
+import org.openapitools.client.model.AggregateTransactionFootprints;
+import org.openapitools.client.model.HistoricalTransactionFootprints;
+import org.openapitools.client.model.ServiceProvider;
+import org.openapitools.client.model.ServiceProviderConfig;
+import org.openapitools.client.model.PaymentCardEnrolment;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.mastercard.developers.carboncalculator.util.EncryptionHelper.getErrorObjectResponseEntity;
+
 
 /**
  * This controller class exposes the following endpoints
@@ -46,6 +68,8 @@ public class CarbonCalculatorController {
     private final ServiceProviderService serviceProviderService;
     private final AddCardService addCardService;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CarbonCalculatorController.class);
+
     public CarbonCalculatorController(EnvironmentalImpactService environmentalImpactService, SupportedParametersService supportedParametersService, PaymentCardService paymentCardService, ServiceProviderService serviceProviderService, AddCardService addCardService) {
         this.environmentalImpactService = environmentalImpactService;
         this.supportedParametersService = supportedParametersService;
@@ -55,72 +79,164 @@ public class CarbonCalculatorController {
     }
 
     @PostMapping("/transaction-footprints")
-    public ResponseEntity<List<TransactionFootprintData>> calculateFootprints(@RequestBody List<TransactionData> mcTransactions) throws ServiceException {
-        return ResponseEntity.ok(environmentalImpactService.calculateFootprints(mcTransactions));
+    public ResponseEntity<Object> calculateFootprints(@RequestBody List<TransactionData> mcTransactions) {
+
+        List<TransactionFootprintData> footprintData = null;
+        try {
+            footprintData = environmentalImpactService.calculateFootprints(mcTransactions);
+        } catch (ApiException exception) {
+            LOGGER.error("transaction-footprints apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(footprintData);
 
     }
 
     @GetMapping("/supported-currencies")
-    public ResponseEntity<List<Currency>> getSupportedCurrencies() throws ServiceException {
-        return ResponseEntity.ok(supportedParametersService.getSupportedCurrencies());
+    public ResponseEntity<Object> getSupportedCurrencies() {
+        List<Currency> currencyList = null;
+        try {
+            currencyList = supportedParametersService.getSupportedCurrencies();
+        } catch (ApiException exception) {
+            LOGGER.error("supported-currencies apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(currencyList);
     }
 
     @GetMapping("/supported-mccs")
-    public ResponseEntity<List<MerchantCategory>> getSupportedMerchantCategories() throws ServiceException {
-        return ResponseEntity.ok(supportedParametersService.getSupportedMerchantCategories());
+    public ResponseEntity<Object> getSupportedMerchantCategories() {
+        List<MerchantCategory> merchantCategories = null;
+        try {
+            merchantCategories = supportedParametersService.getSupportedMerchantCategories();
+        } catch (ApiException exception) {
+            LOGGER.error("supported-mccs apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(merchantCategories);
     }
 
     @PostMapping("/payment-cards")
-    public ResponseEntity<PaymentCardReference> registerPaymentCard(@RequestBody PaymentCard paymentCard) throws ServiceException {
-        return ResponseEntity.ok(addCardService.registerPaymentCard(paymentCard));
+    public ResponseEntity<Object> registerPaymentCard(@RequestBody PaymentCard paymentCard) {
+        PaymentCardReference paymentCardReference = null;
+        try {
+            paymentCardReference = addCardService.registerPaymentCard(paymentCard);
+        } catch (ApiException exception) {
+            LOGGER.error("payment-cards apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(paymentCardReference);
     }
 
     @PostMapping("/aggregate-transaction-footprints")
-    public ResponseEntity<AggregateTransactionFootprints> getPaymentCardAggregateTransactions(@RequestBody AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
-        return ResponseEntity.ok(paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria));
+    public ResponseEntity<Object> getPaymentCardAggregateTransactions(@RequestBody AggregateSearchCriteria aggregateSearchCriteria) {
+        AggregateTransactionFootprints aggregateTransactionFootprints = null;
+        try {
+            aggregateTransactionFootprints = paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria);
+        } catch (ApiException exception) {
+            LOGGER.error("aggregate-transaction-footprints apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(aggregateTransactionFootprints);
     }
-    
+
     @PostMapping("/payment-cards/transaction-footprints/aggregates")
-    public ResponseEntity<AggregateTransactionFootprints> getPaymentCardAggregateTransaction(@RequestBody AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
-        return ResponseEntity.ok(environmentalImpactService.getPaymentCardAggregateTransactions(aggregateSearchCriteria));
+    public ResponseEntity<Object> getPaymentCardAggregateTransaction(@RequestHeader("x-openapi-clientid") String clientId,
+                                                                     @RequestBody AggregateSearchCriteria aggregateSearchCriteria, @RequestHeader("channel") String channel, @RequestHeader("origMcApiClientId") String origMcApiClientId) {
+        AggregateTransactionFootprints footprintData = null;
+        try {
+            footprintData = environmentalImpactService.getPaymentCardAggregateTransactions(clientId, aggregateSearchCriteria, channel, origMcApiClientId);
+        } catch (ApiException exception) {
+            LOGGER.error("Get transaction-footprints-aggregates apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(footprintData);
     }
 
     @GetMapping("/historical/{paymentcard_id}/transaction-footprints")
-    public ResponseEntity<HistoricalTransactionFootprints> getPaymentCardTransactionHistory(@PathVariable("paymentcard_id") String paymentCardId, @RequestParam(value = "from_date") String fromDate, @RequestParam(value = "from_date") String toDate, @RequestParam(value = "offset") int offset, @RequestParam(value = "limit", required = false, defaultValue = "50") int limit) throws ServiceException {
-        return ResponseEntity.ok(
-                paymentCardService.getPaymentCardTransactionHistory(paymentCardId, fromDate, toDate, offset, limit));
+    public ResponseEntity<Object> getPaymentCardTransactionHistory(@PathVariable("paymentcard_id") String paymentCardId, @RequestParam(value = "from_date") String fromDate, @RequestParam(value = "to_date") String toDate, @RequestParam(value = "offset") int offset, @RequestParam(value = "limit", required = false, defaultValue = "50") int limit) {
+        HistoricalTransactionFootprints transactionFootprints = null;
+        try {
+            transactionFootprints = paymentCardService.getPaymentCardTransactionHistory(paymentCardId, fromDate, toDate, offset, limit);
+        } catch (ApiException exception) {
+            LOGGER.error("Get historical-transaction-footprints apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(transactionFootprints);
     }
 
     @GetMapping("/service-providers")
-    public ResponseEntity<ServiceProvider> getServiceProvider() throws ServiceException {
-        return ResponseEntity.ok(serviceProviderService.getServiceProvider());
+    public ResponseEntity<Object> getServiceProvider() {
+        ServiceProvider serviceProvider = null;
+        try {
+            serviceProvider = serviceProviderService.getServiceProvider();
+        } catch (ApiException exception) {
+            LOGGER.error("Get service-providers apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(serviceProvider);
     }
 
     @PostMapping("/payment-card-deletions")
-    public ResponseEntity<String> deletePaymentCards(@RequestBody List<String> paymentCards) throws ServiceException {
-        paymentCardService.deletePaymentCards(paymentCards);
+    public ResponseEntity<Object> deletePaymentCards(@RequestBody List<String> paymentCards) {
+        try {
+            paymentCardService.deletePaymentCards(paymentCards);
+        } catch (ApiException exception) {
+            LOGGER.error("delete payment-card-deletions apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("/service-providers/payment-cards/{paymentcard_id}")
+    public ResponseEntity<Object> deletePaymentCard(@PathVariable("paymentcard_id") String paymentCardId,
+                                                    @RequestHeader("x-openapi-clientid") String clientId, @RequestHeader("channel") String channel, @RequestHeader("origMcApiClientId") String origMcApiClientId) {
+        try {
+            paymentCardService.deletePaymentCard(paymentCardId, clientId, channel, origMcApiClientId);
+        } catch (ApiException exception) {
+            LOGGER.error("delete service-providers-payment-cards apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @PutMapping("/service-providers")
-    public ResponseEntity<ServiceProvider> updateServiceProvider( @RequestBody ServiceProviderConfig serviceProviderConfig ) throws ServiceException {
-        return ResponseEntity.ok(serviceProviderService.updateServiceProvider(serviceProviderConfig));
+    public ResponseEntity<Object> updateServiceProvider(@RequestBody ServiceProviderConfig serviceProviderConfig) {
+
+        ServiceProvider serviceProvider = null;
+
+        try {
+            serviceProvider = serviceProviderService.updateServiceProvider(serviceProviderConfig);
+        } catch (ApiException exception) {
+            LOGGER.error("service-providers apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(serviceProvider);
     }
 
     @PostMapping("/payment-card-enrolments")
-    public ResponseEntity<List<PaymentCardEnrolment>> addBulkPaymentCards(@RequestBody List<PaymentCard> paymentCards ) throws ServiceException {
-        return ResponseEntity.ok(addCardService.registerBatchPaymentCards(paymentCards));
-    }
-    
-    @PostMapping("/service-providers/payment-cards")
-    public ResponseEntity<List<PaymentCardEnrolment>> addBatchPaymentCards(@RequestBody List<PaymentCard> paymentCards) throws ServiceException {
-    	 return ResponseEntity.ok(addCardService.registerBatchPaymentCardsServiceProvider(paymentCards));
+    public ResponseEntity<Object> addBulkPaymentCards(@RequestBody List<PaymentCard> paymentCards) throws ApiException {
+        List<PaymentCardEnrolment> paymentCardEnrolments = null;
+        try {
+            paymentCardEnrolments = addCardService.registerBatchPaymentCards(paymentCards);
+        } catch (ApiException exception) {
+            LOGGER.error("payment-card-enrolments apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(paymentCardEnrolments);
     }
 
-    @DeleteMapping("/service-providers/payment-cards/{payment_card_id}")
-    public ResponseEntity<String> deletePaymentCards(@PathVariable("payment_card_id") String paymentCardId) throws ServiceException {
-        paymentCardService.deletePaymentCard(paymentCardId);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    @PostMapping("/service-providers/payment-cards")
+    public ResponseEntity<Object> addBatchPaymentCards(@RequestBody List<PaymentCard> paymentCards) {
+        List<PaymentCardEnrolment> paymentCardEnrolments = null;
+        try {
+            paymentCardEnrolments = addCardService.registerBatchPaymentCardsServiceProvider(paymentCards);
+        } catch (ApiException exception) {
+            LOGGER.error("service-providers-payment-cards apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(paymentCardEnrolments);
     }
+
 
 }

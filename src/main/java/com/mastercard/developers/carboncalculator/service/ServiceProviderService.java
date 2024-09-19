@@ -39,28 +39,18 @@ public class ServiceProviderService {
         serviceProviderApi = new ServiceProviderApi(client);
     }
 
-    public ServiceProvider getServiceProvider() throws ServiceException {
+    public ServiceProvider getServiceProvider() throws ApiException {
         LOGGER.info("Fetching service provider");
-
-        try {
             var serviceProviderInfo = serviceProviderApi.getServiceProviderById();
-
             LOGGER.info("Returning service provider information");
             return serviceProviderInfo;
-        } catch (ApiException e) {
-            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
-        }
     }
 
 
-    public ServiceProvider updateServiceProvider(ServiceProviderConfig serviceProviderConfig) throws ServiceException {
+    public ServiceProvider updateServiceProvider(ServiceProviderConfig serviceProviderConfig) throws ApiException {
         LOGGER.info("Updating service provider");
-        try {
             ServiceProvider serviceProvider = serviceProviderApi.updateServiceProvider( serviceProviderConfig);
             LOGGER.info("Returning updated service provider");
             return serviceProvider;
-        } catch (ApiException e) {
-            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
-        }
     }
 }

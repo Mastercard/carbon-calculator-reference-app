@@ -75,12 +75,12 @@ See also:
 
 ## Use-Cases <a name="use-cases"></a>
 1. **Calculate Transaction Footprints**   
-Calculates carbon emission and water usage based on payment transactions.
+Calculates carbon emission based on payment transactions.
 
 2. **Supported Currencies**    
 Provides a list of Currencies supported by the application.
 
-3. **Supported Merchant Categories**
+3. **Supported Merchant Categories**<br/>
 Provides a list of Merchant Category Code (MCC) supported by the application.  
 
 4. **Enroll FPAN**  

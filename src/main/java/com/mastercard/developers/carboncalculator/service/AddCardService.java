@@ -45,12 +45,14 @@ public class AddCardService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AddCardService.class);
 
     private PaymentCardApi paymentCardApi;
+
+    private ServiceProviderApi serviceProviderApi;
     
     @Autowired
     public AddCardService(ApiConfiguration apiConfiguration) throws ServiceException {
         LOGGER.info("Initializing Add Card Service");
         paymentCardApi = new PaymentCardApi(setup(apiConfiguration));
-        new ServiceProviderApi(setup(apiConfiguration));
+        serviceProviderApi = new ServiceProviderApi(setup(apiConfiguration));
 
     }
 
@@ -65,42 +67,28 @@ public class AddCardService {
     }
 
 
-    public PaymentCardReference registerPaymentCard(PaymentCard paymentCard) throws ServiceException {
+    public PaymentCardReference registerPaymentCard(PaymentCard paymentCard) throws ApiException {
 
-        try {
-            LOGGER.info("Calling Add Card API");
+        LOGGER.info("Calling Add Card API");
 
-            PaymentCardReference paymentCardInfo = paymentCardApi.registerPaymentCard(paymentCard);
+        PaymentCardReference paymentCardInfo = paymentCardApi.registerPaymentCard(paymentCard);
 
-            LOGGER.info("Add Card API call successful, payment card with id {} and fpan suffix {} added successfully .",
-                    paymentCardInfo.getPaymentCardId(),
-                    paymentCardInfo.getLast4fpan());
+        LOGGER.info("Add Card API call successful, payment card with id {} and fpan suffix {} added successfully .",
+                paymentCardInfo.getPaymentCardId(),
+                paymentCardInfo.getLast4fpan());
 
-            return paymentCardInfo;
-        } catch (ApiException e) {
-            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
-        }
+        return paymentCardInfo;
 
     }
 
-    public List<PaymentCardEnrolment> registerBatchPaymentCards(List<PaymentCard> paymentCard) throws ServiceException {
-
-        try {
-            LOGGER.info("Calling Register Batch Payment Cards");
-            return paymentCardApi.batchRegisterPaymentCards(paymentCard);
-        } catch (ApiException e) {
-            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
-        }
-
+    public List<PaymentCardEnrolment> registerBatchPaymentCards(List<PaymentCard> paymentCard) throws ApiException {
+        LOGGER.info("Calling Register Batch Payment Cards");
+        return paymentCardApi.batchRegisterPaymentCards(paymentCard);
     }
     
-    public List<PaymentCardEnrolment> registerBatchPaymentCardsServiceProvider(List<PaymentCard> paymentCard) throws ServiceException {
-        try {
+    public List<PaymentCardEnrolment> registerBatchPaymentCardsServiceProvider(List<PaymentCard> paymentCard) throws ApiException {
             LOGGER.info("Calling Service Provider Register Batch Payment Cards");
-            return paymentCardApi.bulkRegisterPaymentCards(paymentCard);
-        } catch (ApiException e) {
-            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
-        }
+            return serviceProviderApi.bulkRegisterPaymentCards(paymentCard);
     }
 
 }

@@ -15,7 +15,6 @@
  */
 package com.mastercard.developers.carboncalculator.service;
 
-import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.PaymentCardApi;
@@ -28,9 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static com.mastercard.developers.carboncalculator.util.JSON.deserializeErrors;
-
 
 @Service
 public class PaymentCardService {
@@ -47,64 +43,37 @@ public class PaymentCardService {
     }
 
 
-    public AggregateTransactionFootprints getPaymentCardAggregateTransactions(AggregateSearchCriteria aggregateSearchCriteria) throws ServiceException {
+    public AggregateTransactionFootprints getPaymentCardAggregateTransactions(AggregateSearchCriteria aggregateSearchCriteria) throws ApiException {
 
         LOGGER.info("Calculating aggregate carbon score for paymentCardIds {}",
                 aggregateSearchCriteria.getPaymentCardIds());
 
-        try {
-            AggregateTransactionFootprints aggregateTransactionFootprints = paymentCardApi.getPaymentCardAggregateTransactions(
-                    aggregateSearchCriteria);
-            LOGGER.info("Returning aggregate carbon score.");
-
-            return aggregateTransactionFootprints;
-        } catch (ApiException e) {
-            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
-        }
-
-
+        AggregateTransactionFootprints aggregateTransactionFootprintList = paymentCardApi.getPaymentCardAggregateTransactions(
+                aggregateSearchCriteria);
+        LOGGER.info("Returning aggregate carbon score.");
+        return aggregateTransactionFootprintList;
     }
 
-    public HistoricalTransactionFootprints getPaymentCardTransactionHistory(String paymentCardId, String fromDate, String toDate, int offset, int limit) throws ServiceException {
-        try {
+    public HistoricalTransactionFootprints getPaymentCardTransactionHistory(String paymentCardId, String fromDate, String toDate, int offset, int limit) throws ApiException {
             LOGGER.info("Fetching historical transaction footprint data for paymentCardId {}",
                     paymentCardId);
-
             HistoricalTransactionFootprints historicalTransactionFootprintList = paymentCardApi.getPaymentCardTransactionHistory(
                     paymentCardId, fromDate, toDate, offset, limit);
-
             LOGGER.info("Returning historical transaction footprint data.");
-
             return historicalTransactionFootprintList;
-        } catch (ApiException e) {
-            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
-        }
     }
 
-    public void deletePaymentCards(List <String> paymentCards) throws ServiceException {
-
-        try {
-
-            paymentCardApi.paymentCardDeletions(paymentCards);
-
-            LOGGER.info("Deleting payment cards completed");
-        } catch (ApiException e) {
-            throw new ServiceException(e);
-        }
-
+    public void deletePaymentCards(List<String> paymentCards) throws ApiException {
+        LOGGER.info("Deleting payment card/s");
+        paymentCardApi.paymentCardDeletions(paymentCards);
+        LOGGER.info("Deleting payment cards completed");
     }
-    
-    public void deletePaymentCard(String paymentCardId) throws ServiceException {
-        LOGGER.info("Deleting payment card {}", paymentCardId);
-        try {
 
-            paymentCardApi.paymentCardDeletion(paymentCardId);
+    public void deletePaymentCard(String paymentCard, String clientId, String channel, String origMcApiClientId) throws ApiException {
+        LOGGER.info("Deleting payment card");
 
-            LOGGER.info("Deleting payment cardId completed");
-        } catch (ApiException e) {
-            throw new ServiceException(e);
-        }
-
+        paymentCardApi.paymentCardDeletion(paymentCard, clientId, channel, origMcApiClientId);
+        LOGGER.info("Deleting payment cardId completed");
     }
 
 }

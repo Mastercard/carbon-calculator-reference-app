@@ -19,9 +19,14 @@ import com.mastercard.developer.encryption.FieldLevelEncryptionConfig;
 import com.mastercard.developer.encryption.FieldLevelEncryptionConfigBuilder;
 import com.mastercard.developer.utils.EncryptionUtils;
 import com.mastercard.developers.carboncalculator.exception.ServiceException;
+import org.openapitools.client.ApiException;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 
 import java.security.cert.X509Certificate;
+
+import static com.mastercard.developers.carboncalculator.util.JSON.deserializeErrors;
 
 public class EncryptionHelper {
 
@@ -60,5 +65,10 @@ public class EncryptionHelper {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    public static ResponseEntity<Object> getErrorObjectResponseEntity(ApiException exception) {
+        return new ResponseEntity<>(deserializeErrors(exception.getResponseBody()),
+                HttpStatusCode.valueOf(exception.getCode()));
     }
 }

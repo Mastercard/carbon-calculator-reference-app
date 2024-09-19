@@ -3,6 +3,10 @@ All notable changes to the Application should be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [8.0.0] - January 2024
+### Updates
+- BD Fixes - Java 17 & SpringBoot 3.3.3  chanegs and resolving exception hadling issues to provide valid error responses.
+
 ## [7.0.0] - February 2024
 ### Updates
 - Introduced POS Bank net reference number and POS Bank net reference date and TRACE ID in request payload of Transaction Footprint Notification and in the response of View Historical Transaction Footprints.

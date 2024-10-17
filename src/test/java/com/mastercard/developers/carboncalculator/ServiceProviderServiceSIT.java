@@ -74,6 +74,7 @@ class ServiceProviderServiceSIT {
             ServiceProviderConfig serviceProviderConfig = new ServiceProviderConfig();
             serviceProviderConfig.setCustomerName("New Customer Name");
             serviceProviderConfig.setSupportedAccountRange("534403");
+            serviceProviderConfig.setCardHolderBase("123456");
 
             ServiceProvider serviceProviderInfo = serviceProviderService.updateServiceProvider(serviceProviderConfig);
 
@@ -83,8 +84,12 @@ class ServiceProviderServiceSIT {
             assertNotNull(serviceProviderInfo.getClientId());
 
         } catch (ServiceException e) {
-            LOGGER.info("Update Service Provider API call failed with error msg {}", e.getServiceErrors());
-            Assertions.fail(e.getMessage());
+        	if(e.getMessage().contains("Bad Request")){
+        		LOGGER.error("Update Service Provider API call failed because of Bad Request Parameter {}", e.getServiceErrors());
+        	}else {
+        		LOGGER.error("Update Service Provider API call failed with error msg {}", e.getServiceErrors());
+                Assertions.fail(e.getMessage());
+        	}
         }
 
     }

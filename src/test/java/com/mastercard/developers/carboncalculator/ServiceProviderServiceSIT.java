@@ -83,8 +83,6 @@ class ServiceProviderServiceSIT {
 
             assertNotNull(serviceProviderInfo);
             assertNotNull(serviceProviderInfo.getClientId());
-
-
         } catch (ApiException exception) {
             LOGGER.info("Update Service Provider API call failed with error msg {}", exception.getResponseBody());
             Assertions.fail(exception.getMessage());

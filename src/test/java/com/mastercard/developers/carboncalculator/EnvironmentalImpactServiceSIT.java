@@ -137,15 +137,10 @@ class EnvironmentalImpactServiceSIT {
             assertNotNull(aggregateTransactionFootprints);
 
             LOGGER.info("{}", aggregateTransactionFootprints);
-        } catch (ServiceException e) {
-        	if(e.getMessage().contains("Bad Request")){
-        		LOGGER.error("Aggregate API call failed because of Bad Request Parameter {}", e.getServiceErrors());
-        	}else {
-            LOGGER.error(AGGREGATE_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
+        } catch (ApiException    e) {
+            LOGGER.error(AGGREGATE_API_CALL_FAILED_WITH_ERROR_MSG, e.getResponseBody());
             Assertions.fail(e.getMessage());
         	}
-        }
-
     }
 
     private static List<TransactionData> mockTransactions() {

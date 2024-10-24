@@ -15,7 +15,6 @@
  */
 package com.mastercard.developers.carboncalculator;
 
-import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import com.mastercard.developers.carboncalculator.service.AddCardService;
 import com.mastercard.developers.carboncalculator.service.PaymentCardService;
 import org.junit.jupiter.api.*;
@@ -23,7 +22,6 @@ import org.mockito.Mockito;
 
 import org.openapitools.client.ApiException;
 import org.openapitools.client.model.AggregateSearchCriteria;
-import org.openapitools.client.model.AggregateTransactionFootprint;
 import org.openapitools.client.model.AggregateTransactionFootprints;
 import org.openapitools.client.model.PaymentCard;
 import org.openapitools.client.model.PaymentCardEnrolment;
@@ -38,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.mastercard.developers.carboncalculator.usecases.helper.PanGenerator.generateFPAN;
+import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

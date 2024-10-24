@@ -28,6 +28,7 @@
         <oauth1-signer-version>1.5.0</oauth1-signer-version>
         <client-encryption-version>1.7.0</client-encryption-version>
         <junit-version>4.13.1</junit-version>
+        <junit-platform-launcher.version>1.8.2</junit-platform-launcher.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.coverage.exclusions>
             **/CarbonCalculatorApplication.java,
@@ -208,8 +209,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-
+		   <dependency>
+		         <groupId>org.junit.platform</groupId>
+		         <artifactId>junit-platform-launcher</artifactId>
+		          <version>${junit-platform-launcher.version}</version>
+		          <scope>test</scope>
+		   </dependency>        
 
     </dependencies>
 

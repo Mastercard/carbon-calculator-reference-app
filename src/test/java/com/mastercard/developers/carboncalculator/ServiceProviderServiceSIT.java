@@ -75,6 +75,7 @@ class ServiceProviderServiceSIT {
             ServiceProviderConfig serviceProviderConfig = new ServiceProviderConfig();
             serviceProviderConfig.setCustomerName("New Customer Name");
             serviceProviderConfig.setSupportedAccountRange("534403");
+            serviceProviderConfig.setCardHolderBase("123456");
 
             ServiceProvider serviceProviderInfo = serviceProviderService.updateServiceProvider(serviceProviderConfig);
 
@@ -83,12 +84,10 @@ class ServiceProviderServiceSIT {
             assertNotNull(serviceProviderInfo);
             assertNotNull(serviceProviderInfo.getClientId());
 
+
         } catch (ApiException exception) {
             LOGGER.info("Update Service Provider API call failed with error msg {}", exception.getResponseBody());
             Assertions.fail(exception.getMessage());
-        }
-
+        } 
     }
-
-
 }

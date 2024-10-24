@@ -19,7 +19,9 @@ import org.openapitools.client.model.ErrorWrapper;
 
 public class ServiceException extends Exception {
 
-    private final transient ErrorWrapper errors = new ErrorWrapper();
+	private static final long serialVersionUID = 1L;
+	
+	private final transient ErrorWrapper errors = new ErrorWrapper();
 
     public ServiceException(String message, ErrorWrapper serviceErrors) {
         super(message);

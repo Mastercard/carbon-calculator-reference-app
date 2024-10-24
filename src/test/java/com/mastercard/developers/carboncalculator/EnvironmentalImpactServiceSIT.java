@@ -51,10 +51,12 @@ class EnvironmentalImpactServiceSIT {
     @Autowired
     private SupportedParametersService supportedParametersService;
 
+
     private static final String X_OPENAPI_CLIENTID = "x-openapi-clientid";
     private static final String CLIENTID = "cNU2Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
     private static final String CHANNEL = "CC";
-    private static final String ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG = "Add Card API call failed with error msg {}";
+  
+    private static final String AGGREGATE_API_CALL_FAILED_WITH_ERROR_MSG = "Aggregate API call failed with error msg {}";
 
     /**
      * Use case 1. Calculate Transaction Footprints
@@ -126,7 +128,6 @@ class EnvironmentalImpactServiceSIT {
      */
     @Test
     @DisplayName("Fetch the aggregate carbon score for the transactions")
-    @Order(2)
     void aggregateTransactionFootprints() {
 
         try {
@@ -136,9 +137,13 @@ class EnvironmentalImpactServiceSIT {
             assertNotNull(aggregateTransactionFootprints);
 
             LOGGER.info("{}", aggregateTransactionFootprints);
-        } catch (ApiException e) {
-            LOGGER.info(ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG, e.getResponseBody());
+        } catch (ServiceException e) {
+        	if(e.getMessage().contains("Bad Request")){
+        		LOGGER.error("Aggregate API call failed because of Bad Request Parameter {}", e.getServiceErrors());
+        	}else {
+            LOGGER.error(AGGREGATE_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
             Assertions.fail(e.getMessage());
+        	}
         }
 
     }

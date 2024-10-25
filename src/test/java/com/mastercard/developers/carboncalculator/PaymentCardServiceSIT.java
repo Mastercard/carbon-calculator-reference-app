@@ -15,11 +15,12 @@
  */
 package com.mastercard.developers.carboncalculator;
 
-import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import com.mastercard.developers.carboncalculator.service.AddCardService;
 import com.mastercard.developers.carboncalculator.service.PaymentCardService;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
+
+import org.openapitools.client.ApiException;
 import org.openapitools.client.model.AggregateSearchCriteria;
 import org.openapitools.client.model.AggregateTransactionFootprints;
 import org.openapitools.client.model.PaymentCard;
@@ -35,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.mastercard.developers.carboncalculator.usecases.helper.PanGenerator.generateFPAN;
+import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,6 +48,9 @@ class PaymentCardServiceSIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentCardServiceSIT.class);
     private static final String ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG = "Add Card API call failed with error msg {}";
     private static final String DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG = "Delete Card API call failed with error msg {}";
+    private static final String X_OPENAPI_CLIENTID = "x-openapi-clientid";
+    private static final String CLIENTID = "cNU2Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
+    private static final String CHANNEL = "CC";
 
     @Autowired
     private PaymentCardService paymentCardService;
@@ -83,8 +88,8 @@ class PaymentCardServiceSIT {
             setPaymentCardId(paymentCardReference.getPaymentCardId());
 
 
-        } catch (ServiceException e) {
-            LOGGER.info(ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
+        } catch (ApiException e) {
+            LOGGER.info(ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG, e.getMessage());
             Assertions.fail(e.getMessage());
         }
 
@@ -106,9 +111,9 @@ class PaymentCardServiceSIT {
             assertNotNull(aggregateTransactionFootprints);
 
             LOGGER.info("{}", aggregateTransactionFootprints);
-        } catch (ServiceException e) {
-            LOGGER.info(ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
-            Assertions.fail(e.getMessage());
+        } catch (ApiException exception) {
+            LOGGER.info(ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG, exception.getResponseBody());
+            Assertions.fail(exception.getMessage());
         }
 
 
@@ -129,8 +134,8 @@ class PaymentCardServiceSIT {
             assertNotNull(historicalTransactionFootprints);
 
             LOGGER.info("{}", historicalTransactionFootprints);
-        } catch (ServiceException e) {
-            LOGGER.info(ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
+        } catch (ApiException e) {
+            LOGGER.info(ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG, e.getResponseBody());
             Assertions.fail(e.getMessage());
         }
 
@@ -151,6 +156,48 @@ class PaymentCardServiceSIT {
 
     private static void setPaymentCardId(String paymentCardId) {
         PaymentCardServiceSIT.paymentCardId = paymentCardId;
+    }
+
+
+
+    /**
+     * Use case 4. Delete Payment Cards
+     */
+    @Test
+    @DisplayName("Delete Registered payment cards")
+    @Order(4)
+    void deletePaymentCards() {
+
+        final List<String> cardIds = of(PaymentCardServiceSIT.paymentCardId);
+
+        try {
+            PaymentCardService paymentCardService1 =  Mockito.spy(paymentCardService);
+            paymentCardService1.deletePaymentCards(cardIds);
+            verify(paymentCardService1,times(1)).deletePaymentCards(cardIds);
+
+        } catch (ApiException e) {
+            LOGGER.info(DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG, e.getResponseBody());
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Use case 4. Delete Payment Cards
+     */
+    @Test
+    @DisplayName("Delete Registered payment card")
+    @Order(5)
+    void deletePaymentCard() {
+
+        try {
+            PaymentCardService paymentCardService1 =  Mockito.spy(paymentCardService);
+            paymentCardService1.deletePaymentCard(PaymentCardServiceSIT.paymentCardId, X_OPENAPI_CLIENTID, CHANNEL, CLIENTID);
+            verify(paymentCardService1,times(1)).deletePaymentCard(PaymentCardServiceSIT.paymentCardId, X_OPENAPI_CLIENTID, CHANNEL, CLIENTID);
+
+        } catch (ApiException exception) {
+            LOGGER.info(DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG, exception.getResponseBody());
+            Assertions.fail(exception.getMessage());
+        }
     }
 
 
@@ -184,7 +231,7 @@ class PaymentCardServiceSIT {
             );
 
 
-        } catch (ServiceException e) {
+        } catch (ApiException e) {
             Assertions.fail(e.getMessage());
         }
     }
@@ -220,25 +267,6 @@ class PaymentCardServiceSIT {
 
 
         } catch (Exception e) {
-            Assertions.fail(e.getMessage());
-        }
-    }
-    
-    /**
-     * Use case 4. Delete Payment Cards
-     */
-    @Test
-    @DisplayName("Delete Registered payment card")
-    @Order(4)
-    void deletePaymentCard() {
-
-        try {
-            PaymentCardService paymentCardService1 =  Mockito.spy(paymentCardService);
-            paymentCardService1.deletePaymentCard(PaymentCardServiceSIT.paymentCardId);
-            verify(paymentCardService1,times(1)).deletePaymentCard(PaymentCardServiceSIT.paymentCardId);
-
-        } catch (ServiceException e) {
-            LOGGER.info(DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
             Assertions.fail(e.getMessage());
         }
     }

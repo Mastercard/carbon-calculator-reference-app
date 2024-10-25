@@ -20,11 +20,14 @@ import com.mastercard.developers.carboncalculator.service.EnvironmentalImpactSer
 import com.mastercard.developers.carboncalculator.service.SupportedParametersService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.openapitools.client.ApiException;
 import org.openapitools.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
@@ -32,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.mastercard.developers.carboncalculator.usecases.helper.PanGenerator.generateFPAN;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -46,7 +50,12 @@ class EnvironmentalImpactServiceSIT {
 
     @Autowired
     private SupportedParametersService supportedParametersService;
-    
+
+
+    private static final String X_OPENAPI_CLIENTID = "x-openapi-clientid";
+    private static final String CLIENTID = "cNU2Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
+    private static final String CHANNEL = "CC";
+  
     private static final String AGGREGATE_API_CALL_FAILED_WITH_ERROR_MSG = "Aggregate API call failed with error msg {}";
 
     /**
@@ -70,8 +79,8 @@ class EnvironmentalImpactServiceSIT {
                 Assertions.fail("Calculate Transaction Footprint API call failed.");
             }
 
-        } catch (ServiceException e) {
-            LOGGER.info("Calculate Transaction Footprint API call failed with error msg {}", e.getServiceErrors());
+        } catch (ApiException e) {
+            LOGGER.info("Calculate Transaction Footprint API call failed with error msg {}", e.getResponseBody());
             Assertions.fail(e.getMessage());
         }
 
@@ -88,8 +97,8 @@ class EnvironmentalImpactServiceSIT {
             supportedCurrencies = supportedParametersService.getSupportedCurrencies();
             assertNotNull(supportedCurrencies);
             assertFalse(supportedCurrencies.isEmpty());
-        } catch (ServiceException e) {
-            LOGGER.info("Get Supported Currencies API call failed with error msg {}", e.getServiceErrors());
+        } catch (ApiException e) {
+            LOGGER.info("Get Supported Currencies API call failed with error msg {}", e.getResponseBody());
             Assertions.fail(e.getMessage());
         }
 
@@ -107,21 +116,13 @@ class EnvironmentalImpactServiceSIT {
 
             assertNotNull(supportedMerchantCategories);
             assertFalse(supportedMerchantCategories.isEmpty());
-        } catch (ServiceException e) {
-            LOGGER.info("Get Supported Merchant Categories API call failed with error msg {}", e.getServiceErrors());
+        } catch (ApiException e) {
+            LOGGER.info("Get Supported Merchant Categories API call failed with error msg {}", e.getResponseBody());
             Assertions.fail(e.getMessage());
         }
 
     }
 
-    private static List<TransactionData> mockTransactions() {
-        List<TransactionData> mcTransactions = new ArrayList<>();
-        mcTransactions.add(new TransactionData().transactionId("TX-1")
-                .mcc("3000").amount(
-                        new Amount().currencyCode("USD").value(new BigDecimal(150))));
-        return mcTransactions;
-    }
-    
     /**
      * Use case 7. View Aggregate Transaction Carbon Footprints
      */
@@ -131,22 +132,25 @@ class EnvironmentalImpactServiceSIT {
 
         try {
             AggregateTransactionFootprints aggregateTransactionFootprints = environmentalImpactService.getPaymentCardAggregateTransactions(
-                    mockAggregateSearchCriteria("49f29176-8b3e-4a6e-9681-4ea37d70eaef"));
+                    X_OPENAPI_CLIENTID, mockAggregateSearchCriteria("3b40b264-6ae6-4dd2-aa79-a984c81d138"), CHANNEL, CLIENTID);
 
             assertNotNull(aggregateTransactionFootprints);
 
             LOGGER.info("{}", aggregateTransactionFootprints);
-        } catch (ServiceException e) {
-        	if(e.getMessage().contains("Bad Request")){
-        		LOGGER.error("Aggregate API call failed because of Bad Request Parameter {}", e.getServiceErrors());
-        	}else {
-            LOGGER.error(AGGREGATE_API_CALL_FAILED_WITH_ERROR_MSG, e.getServiceErrors());
+        } catch (ApiException    e) {
+            LOGGER.error(AGGREGATE_API_CALL_FAILED_WITH_ERROR_MSG, e.getResponseBody());
             Assertions.fail(e.getMessage());
         	}
-        }
-
     }
-    
+
+    private static List<TransactionData> mockTransactions() {
+        List<TransactionData> mcTransactions = new ArrayList<>();
+        mcTransactions.add((TransactionData) new TransactionData().transactionId("TX-1")
+                .mcc("3000").amount(
+                        new Amount().currencyCode("USD").value(new BigDecimal(150))));
+        return mcTransactions;
+    }
+
     /**
      * Test with different Aggregate type, supported values are as follows:
      * 1=weekly

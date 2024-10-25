@@ -1,12 +1,14 @@
 package com.mastercard.developers.carboncalculator.service;
 
+import org.openapitools.client.model.Currency;
 import org.openapitools.client.model.Error;
 import org.openapitools.client.model.*;
+import org.springframework.util.LinkedMultiValueMap;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.*;
 
 import static com.mastercard.developers.carboncalculator.util.JSON.serializeErrors;
 
@@ -15,16 +17,24 @@ public class MockData {
     private static final String SOURCE = "Carbon-Calculator";
 
     public static List<TransactionData> transactions() {
-        List<TransactionData> mcTransactions = new ArrayList<>();
-        mcTransactions.add(new TransactionData().transactionId("TX-1")
+//        List<TransactionData> mcTransactions = new ArrayList<>();
+        TransactionData transactionFootprint = (TransactionData) new TransactionData().transactionId("TX-1")
                 .mcc("3000").amount(
-                        new Amount().currencyCode("EUR").value(new BigDecimal(150))));
-        return mcTransactions;
+                        new Amount().currencyCode("EUR").value(new BigDecimal(150)));
+        return Collections.singletonList(transactionFootprint);
     }
+    
+	public static List<TransactionData> aiiaBasedRequest() {
+		List<TransactionData> mcTransactions = new ArrayList<>();
+		mcTransactions.add(
+                (TransactionData) new TransactionData().type("AIIA").transactionId("TX-1").additionalInformation(getAiiaAdditionalInfo())
+                        .mcc("3000").amount(new Amount().currencyCode("EUR").value(new BigDecimal(150))));
+		return mcTransactions;
+	}
 
     public static List<TransactionFootprintData> transactionFootprints() {
 
-        TransactionFootprintData transactionFootprint = new TransactionFootprintData().transactionId(
+        TransactionFootprintData transactionFootprint = (TransactionFootprintData) new TransactionFootprintData().transactionId(
                 "TX-1").category(new Category().mainCategory("Transportation").subCategory(
                 "Flights").sector(
                 "Airlines").sectorCode(
@@ -34,6 +44,18 @@ public class MockData {
         return Collections.singletonList(transactionFootprint);
 
     }
+    
+	public static List<TransactionFootprintData> aiiaBasedTransactionFootprints() {
+
+		TransactionFootprintData transactionFootprint = (TransactionFootprintData) new TransactionFootprintData().transactionId("TX-1")
+				.category(new Category().mainCategory("Transportation").subCategory("Flights").sector("Airlines")
+						.sectorCode("505"))
+				.scoreReference("AIIA").mcc("3000").carbonEmissionInGrams(BigDecimal.valueOf(205688.73))
+				.carbonEmissionInOunces(BigDecimal.valueOf(7255.46));
+
+		return Collections.singletonList(transactionFootprint);
+
+	}
 
     public static List<TransactionFootprint> historicalTransactionFootprints() {
 
@@ -73,27 +95,27 @@ public class MockData {
     public static AggregateSearchCriteria aggregateSearchCriteria(String paymentCardId) {
 
         //Test with different Aggregate type, supported values are as follows:
-        // 0=daily
         // 1=weekly
         // 2=monthly
-        // 3=yearly
+        // 3=monthly with category wise
         List<String> paymentCardIds = Collections.singletonList(paymentCardId);
         return new AggregateSearchCriteria().paymentCardIds(paymentCardIds).aggregateType(0);
     }
 
     public static AggregateTransactionFootprints aggregateTransactionFootprint() {
 
-        FootprintAggregation footprintAggregation = new FootprintAggregation().aggregateValue("2020");
+        FootprintAggregation footprintAggregation = new FootprintAggregation().aggregateValue("2");
         footprintAggregation.carbonEmissionInGrams(BigDecimal.valueOf(205688.73)).carbonEmissionInOunces(
                 BigDecimal.valueOf(7255.46));
 
+        AggregateTransactionFootprints aggregateTransactionFootprints= new AggregateTransactionFootprints();
+        List<AggregateTransactionFootprint> listAggregateTransactionFootprint = new ArrayList<>();
         AggregateTransactionFootprint aggregateTransactionFootprint = new AggregateTransactionFootprint();
         aggregateTransactionFootprint.paymentCardId("testPaymentCardId").addFootprintAggregationsItem(
                 footprintAggregation);
-        
-        AggregateTransactionFootprints aggri = new AggregateTransactionFootprints();
-        aggri.addAggregateTransactionFootprintItem(aggregateTransactionFootprint);
-        return aggri;
+        listAggregateTransactionFootprint.add(aggregateTransactionFootprint);
+        aggregateTransactionFootprints.setAggregateTransactionFootprint(listAggregateTransactionFootprint);
+        return aggregateTransactionFootprints;
     }
 
     public static HistoricalTransactionFootprints historicalTransactionFootprint() {
@@ -101,7 +123,7 @@ public class MockData {
         HistoricalTransactionFootprint historicalTransactionFootprint = new HistoricalTransactionFootprint().transactionFootprint(
                 historicalTransactionFootprints().get(0)).transactionMetadata(
                 new TransactionMetadata().amount(BigDecimal.valueOf(150.0)).currencyCode("USD").indicator("RFT").retrievalRefNumber(
-                        "83Y071x35").processingCode("16").traceId("9f52386ce297173ecfeb9120aabb0805bbeeb1350ce1de640864852e800bd206").banknetReferenceNumber("MPL0R6B2R").banknetDate("0525"));
+                        "83Y071x35").processingCode("16"));
 
         return new HistoricalTransactionFootprints().count(1).limit(1).offset(0).total(1).addItemsItem(
                 historicalTransactionFootprint);
@@ -118,7 +140,7 @@ public class MockData {
 
     public static List<TransactionData> invalidTransactionRequest() {
         List<TransactionData> mcTransactions = new ArrayList<>();
-        mcTransactions.add(new TransactionData().transactionId("TX-1")
+        mcTransactions.add((TransactionData) new TransactionData().transactionId("TX-1")
                 .mcc("12345").amount(
                         new Amount().currencyCode("EUR").value(new BigDecimal(150))));
         return mcTransactions;
@@ -150,33 +172,27 @@ public class MockData {
         paymentCards.add(new PaymentCard().fpan("5344035171229750").cardBaseCurrency("EUR"));
         return paymentCards;
     }
+    
 
-    public static List<AdditionalInformation> getAiiaAdditionalInfo(){
-        List<AdditionalInformation> addInfo = new ArrayList<>();
-        AdditionalInformation info = new AdditionalInformation();
-        info.setKey("aiiaCode");
-        info.setValue("115");
-        addInfo.add(info);
-        return addInfo;
+
+	public static List<AdditionalInformation> getAiiaAdditionalInfo(){
+    	List<AdditionalInformation> addInfo = new ArrayList<>();
+    	AdditionalInformation info = new AdditionalInformation();
+    	info.setKey("aiiaCode");
+    	info.setValue("115");
+    	addInfo.add(info);
+    	return addInfo;
     }
 
-    public static List<TransactionFootprintData> aiiaBasedTransactionFootprints() {
 
-        TransactionFootprintData transactionFootprint = new TransactionFootprintData().transactionId("TX-1")
-                .category(new Category().mainCategory("Transportation").subCategory("Flights").sector("Airlines")
-                        .sectorCode("505"))
-                .scoreReference("AIIA").mcc("3000").carbonEmissionInGrams(BigDecimal.valueOf(205688.73))
-                .carbonEmissionInOunces(BigDecimal.valueOf(7255.46));
-
-        return Collections.singletonList(transactionFootprint);
-
+    public static LinkedMultiValueMap<Object, String> prepareRequestParams() {
+        LinkedMultiValueMap<Object, String> requestParams = new LinkedMultiValueMap<>();
+        requestParams.add("from_date", "2020-09-19");
+        requestParams.add("to_date", "2020-10-01");
+        requestParams.add("offset", "0");
+        requestParams.add("limit", "1");
+        return requestParams;
     }
 
-    public static List<TransactionData> aiiaBasedRequest() {
-        List<TransactionData> mcTransactions = new ArrayList<>();
-        mcTransactions.add(
-                new TransactionData().type("AIIA").transactionId("TX-1").additionalInformation(getAiiaAdditionalInfo())
-                        .mcc("3000").amount(new Amount().currencyCode("EUR").value(new BigDecimal(150))));
-        return mcTransactions;
-    }
+
 }

@@ -20,6 +20,7 @@ import com.mastercard.developers.carboncalculator.service.ServiceProviderService
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openapitools.client.ApiException;
 import org.openapitools.client.model.ServiceProvider;
 import org.openapitools.client.model.ServiceProviderConfig;
 import org.slf4j.Logger;
@@ -55,8 +56,8 @@ class ServiceProviderServiceSIT {
             assertNotNull(serviceProviderInfo);
             assertNotNull(serviceProviderInfo.getClientId());
 
-        } catch (ServiceException e) {
-            LOGGER.info("Get Service Provider API call failed with error msg {}", e.getServiceErrors());
+        } catch (ApiException e) {
+            LOGGER.info("Get Service Provider API call failed with error msg {}", e.getResponseBody());
             Assertions.fail(e.getMessage());
         }
 
@@ -82,17 +83,9 @@ class ServiceProviderServiceSIT {
 
             assertNotNull(serviceProviderInfo);
             assertNotNull(serviceProviderInfo.getClientId());
-
-        } catch (ServiceException e) {
-        	if(e.getMessage().contains("Bad Request")){
-        		LOGGER.error("Update Service Provider API call failed because of Bad Request Parameter {}", e.getServiceErrors());
-        	}else {
-        		LOGGER.error("Update Service Provider API call failed with error msg {}", e.getServiceErrors());
-                Assertions.fail(e.getMessage());
-        	}
-        }
-
+        } catch (ApiException exception) {
+            LOGGER.info("Update Service Provider API call failed with error msg {}", exception.getResponseBody());
+            Assertions.fail(exception.getMessage());
+        } 
     }
-
-
 }

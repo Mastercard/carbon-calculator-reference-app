@@ -22,18 +22,7 @@ import com.mastercard.developers.carboncalculator.service.PaymentCardService;
 import com.mastercard.developers.carboncalculator.service.ServiceProviderService;
 import org.openapitools.client.ApiException;
 
-import org.openapitools.client.model.TransactionFootprintData;
-import org.openapitools.client.model.TransactionData;
-import org.openapitools.client.model.MerchantCategory;
-import org.openapitools.client.model.Currency;
-import org.openapitools.client.model.PaymentCardReference;
-import org.openapitools.client.model.PaymentCard;
-import org.openapitools.client.model.AggregateSearchCriteria;
-import org.openapitools.client.model.AggregateTransactionFootprints;
-import org.openapitools.client.model.HistoricalTransactionFootprints;
-import org.openapitools.client.model.ServiceProvider;
-import org.openapitools.client.model.ServiceProviderConfig;
-import org.openapitools.client.model.PaymentCardEnrolment;
+import org.openapitools.client.model.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +75,20 @@ public class CarbonCalculatorController {
             footprintData = environmentalImpactService.calculateFootprints(mcTransactions);
         } catch (ApiException exception) {
             LOGGER.error("transaction-footprints apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(footprintData);
+
+    }
+
+    @PostMapping("/carbon-scores")
+    public ResponseEntity<Object> calculateCarbonScoreFootprints(@RequestHeader("x-openapi-clientid") String clientId, @RequestBody ScoreRequestDetails scoreRequestDetails, String channel, String origMcApiClientId) {
+
+        CarbonScoreDetails footprintData = null;
+        try {
+            footprintData = environmentalImpactService.calculateCarbonScoreFootprints(scoreRequestDetails, clientId, channel, origMcApiClientId);
+        } catch (ApiException exception) {
+            LOGGER.error("carbon-scores apiException : {}", exception.getResponseBody());
             return getErrorObjectResponseEntity(exception);
         }
         return ResponseEntity.ok(footprintData);

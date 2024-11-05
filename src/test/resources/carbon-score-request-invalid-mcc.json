@@ -1,0 +1,20 @@
+{
+  "transactions": [
+    {
+      "id": "1",
+      "mcc": "1234",
+      "amount": {
+        "currencyCode": "USD",
+        "value": "123"
+      }
+    },
+    {
+      "id": "1",
+      "mcc": "5678",
+      "amount": {
+        "currencyCode": "USD",
+        "value": "123"
+      }
+    }
+  ]
+}

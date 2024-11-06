@@ -3,13 +3,10 @@ package com.mastercard.developers.carboncalculator.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.mastercard.developers.carboncalculator.configuration.ApiConfiguration;
-import com.mastercard.developers.carboncalculator.service.AddCardService;
-import com.mastercard.developers.carboncalculator.service.EnvironmentalImpactService;
-import com.mastercard.developers.carboncalculator.service.PaymentCardService;
-import com.mastercard.developers.carboncalculator.service.ServiceProviderService;
-import com.mastercard.developers.carboncalculator.service.SupportedParametersService;
+import com.mastercard.developers.carboncalculator.service.*;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.ApiException;
+import org.openapitools.client.api.EngagementServicesApi;
 import org.openapitools.client.model.AggregateSearchCriteria;
 import org.openapitools.client.model.AggregateTransactionFootprints;
 import org.openapitools.client.model.HistoricalTransactionFootprints;
@@ -82,6 +79,12 @@ class CarbonCalculatorControllerTest {
 
     @MockBean
     private ServiceProviderConfig serviceProviderConfig;
+
+    @MockBean
+    private EngagementService engagementService;
+
+    @MockBean
+    private EngagementServicesApi engagementServicesApi;
 
     @Value("${test.data.bin}")
     String bin;

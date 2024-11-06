@@ -104,6 +104,21 @@ Allows a registered Service Provider to delete one or more Payment Cards from it
 10. **Bulk Enroll FPAN**  
 Allows a registered Service Provider to add list of new Payment Cards under its profile
 
+11. **Get Survey Questions** <br/>
+The Survey API offers essential features for seamless onboarding onto the Engagement Services platform, enabling integration with diverse surveys designed to fine-tune a Climate Profile.
+
+12. **Update Profiles** <br/>
+The Profile Service calculates a climate profile based on the answers from a Survey obtained from the Surveys Service.
+
+13. **Update Insights** <br/>
+The Insights Service delivers insights and other suggestions that can inform you about what you can do in order to reduce your footprint.
+
+14. **Get Insights by ID** <br/>
+Fetches a given Insight and marks it as viewed in your profile. Issuer has to save the profile locally and send it in future communication with Engagement Services.
+
+15. **Get Benchmarks** <br/>
+Returns a benchmark for a specific country for the year 2020, monthly or yearly.
+
 More details can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/use-cases/).    
 
 
@@ -128,8 +143,12 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
                 - POST <Host>/demo/payment-card-enrolments           
                 - PUT <Host>/demo/service-providers <br>
                 - POST <Host>/demo/payment-card-deletions   
-                - POST <Host>/demo/service-providers/payment-cards          
-                                                                               
+                - POST <Host>/demo/service-providers/payment-cards 
+                - GET <Host>/demo/surveys <br>
+                - PUT <Host>/demo/profiles <br>
+                - PUT <Host>/demo/insights <br>
+                - PUT <Host>/demo/insights/{id} <br>
+                - GET <Host>/demo/benchmarks
 ## Service Documentation <a name="documentation"></a>
 
 Carbon Calculator documentation can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/).
@@ -151,3 +170,16 @@ the License. You may obtain a copy of the License at:</p>
 <p>Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
 an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.</p>
+
+### Release history <a name="releasehistory"></a>
+
+| Version | Description                                                                                                                                                                                                                                                                                                                                                                | Release Date |                      
+|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| 8.0.0   | BD Fixes - Java 17 & SpringBoot 3.3.3  chanegs and resolving exception hadling issues to provide valid error responses. | September 2024 |
+| 7.0.0   | Introduced POS Bank net reference number and POS Bank net reference date and TRACE ID in request payload of Transaction Footprint Notification and in the response of View Historical Transaction Footprints.Added support for non-card (NC) transactions in Transaction Footprints Calculation API.Introduced new API Delete Payment Card to delete a single payment card.                                                                                                                                 | January 2024 |
+| 6.0.0   | Enriched Transaction Footprints Calculation to support aiia based calculation.                                                                                                                                                                                                                                                                                             | January 2024 |
+| 5.0.0   | Introduced new API Add Payment Cards to register a single and bulk payment card.                                                                                                                               																																							   | August 2023  |
+| 4.0.0   | Enriched Aggregate Transaction Footprint to support category wise aggregation for transaction of enrolled cards.                                                                                               																																							   | May 2023     |
+| 3.0.0   | Removed the yearly aggregation from the Aggregate Transaction Footprint use case.Issuer needs to send card brand with each transaction in Transaction Footprints Calculation.                                  																																							   | April 2022   |
+| 2.0.0   | Introduced new APIs to leverage the capabilities of Carbon Calculator. 																																		   																																							   | December 2021|
+| 1.0.0   | Launched the Carbon Calculator API to provide visibility into the environmental impact based on the spending habits of consumers.                   														   																																							   | March 2021   |

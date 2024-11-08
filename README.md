@@ -104,6 +104,9 @@ Allows a registered Service Provider to delete one or more Payment Cards from it
 10. **Bulk Enroll FPAN**  
 Allows a registered Service Provider to add list of new Payment Cards under its profile
 
+11. **Calculate Carbon Scores** <br/>
+Calculates carbon footprints for various indices. It selects the most relevant index based on input data and calculates the carbon footprint accordingly. This API is applicable for **India region** only.
+
 More details can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/use-cases/).    
 
 
@@ -118,6 +121,7 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
     2. Use REST API based Client( such as [Insomnia](https://insomnia.rest/download/core/) or [Postman](https://www.postman.com/downloads/))  
         - Run ```mvn spring-boot:run``` command to run the application.  
         - Use any REST API based Client to test the functionality. Below are the APIs exposed by this application:  
+            - APIs exposed on Global Region:
                 - POST <Host>/demo/transaction-footprints      
                 - GET <Host>/demo/supported-mccs  
                 - GET <Host>/demo/supported-currencies  
@@ -128,7 +132,9 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
                 - POST <Host>/demo/payment-card-enrolments           
                 - PUT <Host>/demo/service-providers <br>
                 - POST <Host>/demo/payment-card-deletions   
-                - POST <Host>/demo/service-providers/payment-cards          
+                - POST <Host>/demo/service-providers/payment-cards    
+          - APIs exposed on India Region:
+                - POST <Host>/demo/carbon-scores
                                                                                
 ## Service Documentation <a name="documentation"></a>
 

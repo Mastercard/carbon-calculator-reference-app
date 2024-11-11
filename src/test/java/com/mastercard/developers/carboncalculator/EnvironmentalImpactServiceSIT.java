@@ -87,6 +87,35 @@ class EnvironmentalImpactServiceSIT {
     }
 
     /**
+     * Use case 1. Calculate Carbon Scores
+     */
+    @Test
+    @DisplayName("Calculate carbon scores")
+    void calculateCarbonScoreFootprints() {
+
+        CarbonScoreDetails carbonScoreDetails;
+        try {
+            carbonScoreDetails = environmentalImpactService.calculateCarbonScoreFootprints(mockCarbonScoreData()
+                    , X_OPENAPI_CLIENTID, CHANNEL, CLIENTID);
+
+            if (carbonScoreDetails != null) {
+                assertNotNull(carbonScoreDetails);
+                assertNotNull(carbonScoreDetails.getTransactionFootprints());
+                assertFalse(carbonScoreDetails.getTransactionFootprints().isEmpty());
+                LOGGER.info("Calculate Carbon Score Success : {}", carbonScoreDetails);
+            } else {
+                LOGGER.info("Calculate Carbon Score Footprint API call failed.");
+                Assertions.fail("Calculate Carbon Score Footprint API call failed.");
+            }
+
+        } catch (ApiException e) {
+            LOGGER.info("Calculate Carbon Score Footprint API call failed with error msg {}", e.getResponseBody());
+            Assertions.fail(e.getMessage());
+        }
+
+    }
+
+    /**
      * Use case 2. Supported Currencies
      */
     @Test
@@ -161,6 +190,15 @@ class EnvironmentalImpactServiceSIT {
 
         List<String> paymentCardIds = Collections.singletonList(paymentCardId);
         return new AggregateSearchCriteria().paymentCardIds(paymentCardIds).aggregateType(2);
+    }
+
+    private static ScoreRequestDetails mockCarbonScoreData() {
+        ScoreRequestDetails scoreRequestDetails = new ScoreRequestDetails();
+        TransactionDetails transactionDetails  = new TransactionDetails();
+        transactionDetails.mcc("3000").id("DVsJNvdSMX").amount(
+                new Amount().currencyCode("USD").value(new BigDecimal(150)));
+        scoreRequestDetails.addTransactionsItem(transactionDetails);
+        return scoreRequestDetails;
     }
 
 }

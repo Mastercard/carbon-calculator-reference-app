@@ -18,10 +18,7 @@ package com.mastercard.developers.carboncalculator.service;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.EnvironmentalImpactApi;
-import org.openapitools.client.model.AggregateSearchCriteria;
-import org.openapitools.client.model.AggregateTransactionFootprints;
-import org.openapitools.client.model.TransactionData;
-import org.openapitools.client.model.TransactionFootprintData;
+import org.openapitools.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +48,18 @@ public class EnvironmentalImpactService {
         List<TransactionFootprintData> footprints = environmentalImpactApi.footprintsByTransactionData(mcTransactions);
 
         LOGGER.info("Calculate Transaction Footprint API call successful, returning Transaction Footprints.");
+
+        return footprints;
+
+    }
+
+    public CarbonScoreDetails calculateCarbonScoreFootprints(ScoreRequestDetails scoreRequestDetails, String clientId, String channel, String origMcApiClientId) throws ApiException {
+
+        LOGGER.info("Calling Calculate Carbon-Scores API");
+
+        CarbonScoreDetails footprints = environmentalImpactApi.carbonScoresByTransactionData(clientId, scoreRequestDetails, channel, origMcApiClientId);
+
+        LOGGER.info("Calculated Carbon-Scores API call successful, returning Transaction Footprints.");
 
         return footprints;
 

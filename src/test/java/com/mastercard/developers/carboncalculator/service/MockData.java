@@ -23,6 +23,32 @@ public class MockData {
                         new Amount().currencyCode("EUR").value(new BigDecimal(150)));
         return Collections.singletonList(transactionFootprint);
     }
+
+    public static ScoreRequestDetails carbonScoreRequest() {
+        ScoreRequestDetails scoreRequestDetails = new ScoreRequestDetails();
+        TransactionDetails transactionDetails  = new TransactionDetails();
+        transactionDetails.mcc("3000").id("DVsJNvdSMX").amount(
+                new Amount().currencyCode("USD").value(new BigDecimal(150)));
+        scoreRequestDetails.addTransactionsItem(transactionDetails);
+        return scoreRequestDetails;
+    }
+
+    public static CarbonScoreDetails carbonScoreResponse(){
+        CarbonScoreDetails scoreResponse = new CarbonScoreDetails();
+
+        List<TransactionFootprintDetails> transactionDetailList = new ArrayList<>();
+        TransactionFootprintDetails carbonScore = new TransactionFootprintDetails();
+        carbonScore.setCarbonEmissionInGrams(new BigDecimal(2582.11));
+        carbonScore.setCarbonEmissionInOunces(new BigDecimal(91.08));
+        carbonScore.setId("1");
+        carbonScore.setMcc("3000");
+        carbonScore.setCardBrand("MA");
+        carbonScore.setScoreStatus("SUCCESS");
+        carbonScore.setScoreReference("MCC");
+        transactionDetailList.add(carbonScore);
+        scoreResponse.setTransactionFootprints(transactionDetailList);
+        return scoreResponse;
+    }
     
 	public static List<TransactionData> aiiaBasedRequest() {
 		List<TransactionData> mcTransactions = new ArrayList<>();

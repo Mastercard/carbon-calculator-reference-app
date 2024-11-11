@@ -367,6 +367,28 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/SupportedMerchantCategories'
+  /carbon-scores:
+    post:
+      tags:
+        - Environmental Impact
+      summary: Calculate Transaction Footprints
+      description: >-
+        Calculates carbon emission based on the payment transaction
+        amount and the merchant category code.
+      operationId: CarbonScoresByTransactionData
+      parameters:
+        - $ref: '#/components/parameters/XOpenapiClientId'
+        - $ref: '#/components/parameters/Channel'
+        - $ref: '#/components/parameters/OrigMcApiClientId'
+      requestBody:
+        $ref: '#/components/requestBodies/ScoreRequestDetails'
+      responses:
+        '200':
+          $ref: '#/components/responses/CarbonScoreDetails'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaTypeError'
   /surveys:
     get:
       tags:
@@ -1960,6 +1982,158 @@ components:
         - traits
         - version
       type: object
+    TransactionDetails:
+      title: TransactionDetails
+      type: object
+      description: >-
+        Object which holds information about payment transaction for carbon
+        scoring and other properties.
+      allOf:
+        - $ref: '#/components/schemas/TransactionDetail'
+    TransactionDetail:
+      title: TransactionDetail
+      type: object
+      description: A single payment transaction for carbon scoring.
+      required:
+        - amount
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        amount:
+          $ref: '#/components/schemas/Amount'
+        cardBrand:
+          $ref: '#/components/schemas/CardBrand'
+        mcc:
+          $ref: '#/components/schemas/MCC'
+        additionalInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalInformation'
+    ScoreRequestDetails:
+      title: ScoreRequestDetails
+      type: object
+      description: >-
+        Different type of list including payment transactions related requests which needs to be scored.
+      properties:
+        transactions:
+          type: array
+          description: >-
+            List of transactions which holds information about payment
+            transaction for carbon scoring and other properties.
+          items:
+            $ref: '#/components/schemas/TransactionDetails'
+    MCC:
+      type: string
+      description: >-
+        Merchant category code of a payment transaction that uniquely defines a
+        merchant business.
+      minLength: 1
+      maxLength: 4
+      pattern: '^\d{1,4}'
+      example: '3997'
+    Id:
+      type: string
+      description: >-
+        A unique ID associated with a payment transaction, For example, original
+        payment transaction ID. The same ID will be returned in the response
+        corresponding to its payment transaction.
+      minLength: 1
+      maxLength: 100
+      pattern: '^[\w\-\_]{1,100}'
+      example: ee421c25-f928-4bf6-b884-3600b76b860d
+    CarbonScoreDetails:
+      title: CarbonScoreDetails
+      type: object
+      description: >-
+        Different type of payment transaction carbon footprints.
+      properties:
+        transactionFootprints:
+          type: array
+          description: >-
+            List of transaction footprint objects which holds information about
+            carbon footprint data for payment transaction.
+          items:
+            $ref: '#/components/schemas/TransactionFootprintDetails'
+    TransactionFootprintDetails:
+      title: TransactionFootprintDetails
+      type: object
+      description: >-
+        Object which holds information about carbon footprint data for payment
+        transaction.
+      allOf:
+        - $ref: '#/components/schemas/TransactionFootprintDetail'
+    TransactionFootprintDetail:
+      title: TransactionFootprintDetail
+      type: object
+      description: >-
+        A single transaction footprint calculated for a corresponding payment
+        transaction.
+      required:
+        - id
+      allOf:
+        - $ref: '#/components/schemas/CarbonUsage'
+        - $ref: '#/components/schemas/CarbonScoreData'
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/Id'
+            mcc:
+              type: string
+              description: >-
+                Merchant category code of a payment transaction that uniquely
+                defines a merchant business (same as in request).
+              minLength: 1
+              maxLength: 4
+              pattern: '^\d{1,4}'
+              example: '3447'
+            category:
+              $ref: '#/components/schemas/Category'
+            cardBrand:
+              $ref: '#/components/schemas/CardBrand'
+    CarbonScoreData:
+      title: CarbonScoreData
+      type: object
+      description: Object to hold carbon scoring parameter details.
+      required:
+        - scoreStatus
+      properties:
+        scoreReference:
+          type: string
+          description: >-
+            Score Reference defines transaction scoring type, based on which
+            score has been generated. Possible values is MCC.
+          minLength: 3
+          maxLength: 3
+          example: MCC
+        scoreStatus:
+          type: string
+          example: SUCCESS
+          description: >-
+            scoreStatus defines the status of carbon scoring for a given
+            transaction. Possible values are,
+            
+            * SUCCESS = Transaction is scored successfully.
+            
+            * FAILURE = Transaction scoring is failed.
+          minLength: 5
+          maxLength: 7
+        errorCode:
+          type: string
+          example: INVALID_MCC
+          description: >-
+            A unique constant identifying the error case encountered during
+            carbon scoring for a given transaction.
+          minLength: 1
+          maxLength: 100
+        errorMessage:
+          type: string
+          example: >-
+            MCC Provided in the request is Invalid. Kindly Request again with
+            valid MCC.
+          description: Short description of the errorCode field.
+          minLength: 10
+          maxLength: 1000
     InsightsRequestPayload:
       title: InsightsRequestPayload
       type: object
@@ -2406,6 +2580,18 @@ components:
             InsightsByIdRequest:
               $ref: '#/components/examples/InsightsByIdRequest'
       required: true
+    ScoreRequestDetails:
+      description: >-
+        Different type of list including payment transactions, products level
+        data and the flight related requests which needs to be scored.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ScoreRequestDetails'
+          examples:
+            ScoreRequestDetails:
+              $ref: '#/components/examples/ScoreRequestDetails'
+      required: true
   responses:
     PaymentCardEnrolments:
       description: >-
@@ -2648,6 +2834,17 @@ components:
       description: Accepted
     Ok:
       description: OK
+    CarbonScoreDetails:
+      description: >-
+        This response code is returned when a request is valid and the carbon
+        footprint will be calculated.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CarbonScoreDetails'
+          examples:
+            CarbonScoreDetails:
+              $ref: '#/components/examples/CarbonScoreDetails'
     Profile:
       description: The resulting profile.
       content:
@@ -3300,6 +3497,30 @@ components:
                 Paymentcards not found for the given payment card ids.
               Recoverable: false
               Details: ''
+    ScoreRequestDetails:
+      value:
+        transactions:
+          - id: ee421c25-f928-4bf6-b884-3600b76b860d
+            mcc: 3997
+            amount:
+              currencyCode: USD
+              value: 123
+            cardBrand: OTH
+    CarbonScoreDetails:
+      value:
+        transactions:
+          - id: ee421c25-f928-4bf6-b884-3600b76b860d
+            mcc: 3997
+            cardBrand: OTH
+            scoreReference: MCC
+            carbonEmissionInGrams: 48.52
+            carbonEmissionInOunces: 1.71
+            category:
+              mainCategory: Leisure & Entertainment
+              subCategory: Hotels & Vacation
+              sector: 'Hotels, Motels & Resorts'
+              sectorCode: '604'
+            scoreStatus: SUCCESS
     SurveyResponseData:
       value:
         - surveysPayload:

@@ -3,15 +3,17 @@ package com.mastercard.developers.carboncalculator.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.mastercard.developers.carboncalculator.configuration.ApiConfiguration;
+import com.mastercard.developers.carboncalculator.service.AddCardService;
+import com.mastercard.developers.carboncalculator.service.EnvironmentalImpactService;
+import com.mastercard.developers.carboncalculator.service.PaymentCardService;
+import com.mastercard.developers.carboncalculator.service.ServiceProviderService;
+import com.mastercard.developers.carboncalculator.service.SupportedParametersService;
+import org.junit.jupiter.api.DisplayName;
 import com.mastercard.developers.carboncalculator.service.*;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.EngagementServicesApi;
-import org.openapitools.client.model.AggregateSearchCriteria;
-import org.openapitools.client.model.AggregateTransactionFootprints;
-import org.openapitools.client.model.HistoricalTransactionFootprints;
-import org.openapitools.client.model.ServiceProviderConfig;
-import org.openapitools.client.model.TransactionData;
+import org.openapitools.client.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,22 +23,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
+import util.Resources;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.mastercard.developers.carboncalculator.service.MockData.aiiaBasedRequest;
-import static com.mastercard.developers.carboncalculator.service.MockData.aiiaBasedTransactionFootprints;
-import static com.mastercard.developers.carboncalculator.service.MockData.batchPaymentEnrollment;
-import static com.mastercard.developers.carboncalculator.service.MockData.currencies;
-import static com.mastercard.developers.carboncalculator.service.MockData.listPaymentCardReference;
-import static com.mastercard.developers.carboncalculator.service.MockData.listPaymentCards;
-import static com.mastercard.developers.carboncalculator.service.MockData.merchantCategories;
-import static com.mastercard.developers.carboncalculator.service.MockData.paymentCard;
-import static com.mastercard.developers.carboncalculator.service.MockData.paymentCardReference;
-import static com.mastercard.developers.carboncalculator.service.MockData.serviceProvider;
-import static com.mastercard.developers.carboncalculator.service.MockData.transactionFootprints;
-import static com.mastercard.developers.carboncalculator.service.MockData.transactions;
+import static com.mastercard.developers.carboncalculator.service.MockData.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -95,6 +89,7 @@ class CarbonCalculatorControllerTest {
     private static final String CLIENTID = "cNU2Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
     private static final String ORIG_CLIENTID = "wfe232Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
     private static final String CHANNEL = "CC";
+    private static final String CARBON_SCORES = "/demo/carbon-scores";
 
     ApiException apiException = new ApiException(400, "Bad Request");
 
@@ -152,6 +147,61 @@ class CarbonCalculatorControllerTest {
                 jsonContent)).andExpect(
                 status().isBadRequest()).andReturn();
 
+
+        String response = mvcResult.getResponse().getContentAsString();
+        assertNotNull(response);
+
+    }
+
+    @Test
+    @DisplayName("Verify that carbon calculation controller sends proper response in the success scenario when product request and card brand provided")
+    void testSuccessResponseWithCardBrandAndProductRequest() throws Exception {
+        when(environmentalImpactService.calculateCarbonScoreFootprints(any(), anyString(), anyString(), anyString())).thenReturn(
+                getValidMccResponse());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonContent = objectMapper.writeValueAsString(carbonScoreRequest());
+
+        MvcResult mvcResult =this.mockMvc.perform(post(CARBON_SCORES).contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent).header("X-MC-key", "value").header("x-openapi-clientid", CLIENTID)
+                        .header("channel", CHANNEL).header("origMcApiClientId",ORIG_CLIENTID))
+                .andExpect(status().isOk()).andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        assertNotNull(response);
+
+    }
+
+    @Test
+    @DisplayName("Verify Invalid MCC Response")
+    void testInvalidMccResponse() throws Exception {
+        when(environmentalImpactService.calculateCarbonScoreFootprints(any(), any(), any(), any())).thenReturn(
+                getInvalidMccResponse());
+        MvcResult mvcResult = this.mockMvc
+                .perform(post(CARBON_SCORES).contentType("application/json").header("X-MC-Correlation-ID", " ")
+                        .content(Resources.getFileAsString("carbon-score-request-invalid-mcc.json"))
+                        .header("X-MC-key", "value").header("x-openapi-clientid", CLIENTID)
+                        .header("channel", CHANNEL).header("origMcApiClientId",ORIG_CLIENTID))
+                .andExpect(status().isOk()).andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        assertNotNull(response);
+
+    }
+
+    @Test
+    @DisplayName("Verify that carbon calculation controller sends Error Response when Web Service throws Exception")
+    void testCarbonScoresException() throws Exception {
+
+        when(environmentalImpactService.calculateCarbonScoreFootprints(any(), any(), any(), any())).thenThrow(apiException);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonContent = objectMapper.writeValueAsString(mockCarbonScoreData());
+        MvcResult mvcResult =this.mockMvc.perform(post(CARBON_SCORES).contentType(
+                                MediaType.APPLICATION_JSON).content(jsonContent)
+                        .header("x-openapi-clientid", CLIENTID)
+                        .header("channel", CHANNEL).header("origMcApiClientId",ORIG_CLIENTID))
+                .andExpect(status().isBadRequest()).andReturn();
 
         String response = mvcResult.getResponse().getContentAsString();
         assertNotNull(response);
@@ -526,5 +576,61 @@ class CarbonCalculatorControllerTest {
 
         String response = mvcResult.getResponse().getContentAsString();
         assertNotNull(response);
+    }
+
+    private CarbonScoreDetails getInvalidMccResponse(){
+        CarbonScoreDetails scoreResponse = new CarbonScoreDetails();
+
+        List<TransactionFootprintDetails> transactionDetailList = new ArrayList<>();
+        TransactionFootprintDetails carbonScore = new TransactionFootprintDetails();
+        carbonScore.setCarbonEmissionInGrams(null);
+        carbonScore.setCarbonEmissionInOunces(null);
+        carbonScore.setId("1");
+        carbonScore.setMcc("1234");
+        carbonScore.setCardBrand("MA");
+        carbonScore.setCategory(null);
+        carbonScore.setScoreStatus("FAILURE");
+        carbonScore.setErrorCode("INVALID-MCC");
+        carbonScore.setErrorMessage("Given merchant category code is not valid.");
+        carbonScore.setScoreReference(null);
+        transactionDetailList.add(carbonScore);
+        TransactionFootprintDetails carbonScore1 = new TransactionFootprintDetails();
+        carbonScore1.setCarbonEmissionInGrams(null);
+        carbonScore1.setCarbonEmissionInOunces(null);
+        carbonScore1.setId("2");
+        carbonScore1.setMcc("5678");
+        carbonScore1.setCardBrand("MA");
+        carbonScore1.setCategory(null);
+        carbonScore1.setScoreStatus("FAILURE");
+        carbonScore1.setScoreReference(null);
+        transactionDetailList.add(carbonScore1);
+        scoreResponse.setTransactionFootprints(transactionDetailList);
+        return scoreResponse;
+    }
+
+    private CarbonScoreDetails getValidMccResponse(){
+        CarbonScoreDetails scoreResponse = new CarbonScoreDetails();
+
+        List<TransactionFootprintDetails> transactionDetailList = new ArrayList<>();
+        TransactionFootprintDetails carbonScore = new TransactionFootprintDetails();
+        carbonScore.setCarbonEmissionInGrams(new BigDecimal(2582.11));
+        carbonScore.setCarbonEmissionInOunces(new BigDecimal(91.08));
+        carbonScore.setId("1");
+        carbonScore.setMcc("3000");
+        carbonScore.setCardBrand("MA");
+        carbonScore.setScoreStatus("SUCCESS");
+        carbonScore.setScoreReference("MCC");
+        transactionDetailList.add(carbonScore);
+        scoreResponse.setTransactionFootprints(transactionDetailList);
+        return scoreResponse;
+    }
+
+    public static ScoreRequestDetails mockCarbonScoreData() {
+        ScoreRequestDetails scoreRequestDetails = new ScoreRequestDetails();
+        TransactionDetails transactionDetails  = new TransactionDetails();
+        transactionDetails.mcc("3000").id("DVsJNvdSMX").amount(
+                new Amount().currencyCode("USD").value(new BigDecimal(150)));
+        scoreRequestDetails.addTransactionsItem(transactionDetails);
+        return scoreRequestDetails;
     }
 }

@@ -104,19 +104,22 @@ Allows a registered Service Provider to delete one or more Payment Cards from it
 10. **Bulk Enroll FPAN**  
 Allows a registered Service Provider to add list of new Payment Cards under its profile
 
-11. **Get Survey Questions** <br/>
+11. **Calculate Carbon Scores** <br/>
+Calculates carbon footprints for various indices. It selects the most relevant index based on input data and calculates the carbon footprint accordingly. This API is applicable for **India region** only.
+
+12. **Get Survey Questions** <br/>
 The Survey API offers essential features for seamless onboarding onto the Engagement Services platform, enabling integration with diverse surveys designed to fine-tune a Climate Profile.
 
-12. **Update Profiles** <br/>
+13. **Update Profiles** <br/>
 The Profile Service calculates a climate profile based on the answers from a Survey obtained from the Surveys Service.
 
-13. **Update Insights** <br/>
+14. **Update Insights** <br/>
 The Insights Service delivers insights and other suggestions that can inform you about what you can do in order to reduce your footprint.
 
-14. **Get Insights by ID** <br/>
+15. **Get Insights by ID** <br/>
 Fetches a given Insight and marks it as viewed in your profile. Issuer has to save the profile locally and send it in future communication with Engagement Services.
 
-15. **Get Benchmarks** <br/>
+16. **Get Benchmarks** <br/>
 Returns a benchmark for a specific country for the year 2020, monthly or yearly.
 
 More details can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/use-cases/).    
@@ -133,6 +136,7 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
     2. Use REST API based Client( such as [Insomnia](https://insomnia.rest/download/core/) or [Postman](https://www.postman.com/downloads/))  
         - Run ```mvn spring-boot:run``` command to run the application.  
         - Use any REST API based Client to test the functionality. Below are the APIs exposed by this application:  
+            - APIs exposed on Global Region:
                 - POST <Host>/demo/transaction-footprints      
                 - GET <Host>/demo/supported-mccs  
                 - GET <Host>/demo/supported-currencies  
@@ -148,7 +152,10 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
                 - PUT <Host>/demo/profiles <br>
                 - PUT <Host>/demo/insights <br>
                 - PUT <Host>/demo/insights/{id} <br>
-                - GET <Host>/demo/benchmarks
+                - GET <Host>/demo/benchmarks        
+          - APIs exposed on India Region:
+                - POST <Host>/demo/carbon-scores
+                                                                               
 ## Service Documentation <a name="documentation"></a>
 
 Carbon Calculator documentation can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/).

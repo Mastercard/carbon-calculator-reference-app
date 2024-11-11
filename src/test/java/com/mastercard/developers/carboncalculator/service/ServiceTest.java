@@ -92,6 +92,21 @@ class ServiceTest {
     }
 
     @Test
+    void calculateCarbonScoreFootprints() throws Exception {
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
+                new ApiResponse<>(200, new HashMap<>(), carbonScoreResponse()));
+
+        CarbonScoreDetails carbonScoreDetails = environmentalImpactService.calculateCarbonScoreFootprints(
+                carbonScoreRequest(), CLIENTID, CHANNEL, ORIG_CLIENTID);
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        assertNotNull(carbonScoreDetails);
+    }
+
+    @Test
     void getSupportedCurrencies() throws Exception {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(200, new HashMap<>(), currencies()));

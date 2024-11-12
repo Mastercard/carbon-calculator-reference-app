@@ -34,6 +34,9 @@ tags:
     description: >-
       APIs for fetching the supported merchants and
       currencies by the system.
+  - name: Engagement Services
+    description: >-
+      APIs for making sense of environmental impact by using data.
 paths:
   /service-providers:
     get:
@@ -386,8 +389,139 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '415':
           $ref: '#/components/responses/UnsupportedMediaTypeError'
+  /surveys:
+    get:
+      tags:
+        - Engagement Services
+      summary: A Survey that can be answered by user.
+      description: >-
+        The Survey API offers essential features for seamless onboarding onto
+        the Engagement Services platform, enabling integration with diverse
+        surveys designed to fine-tune a Climate Profile. In response, the API
+        furnishes a comprehensive set of survey questions, inviting user input
+        to gather valuable insights and data.
+      operationId: getSurvey
+      responses:
+        '200':
+          $ref: '#/components/responses/Survey'
+        '404':
+          $ref: '#/components/responses/ServiceProviderNotFoundError'
+  /profiles:
+    put:
+      operationId: updateUserProfile
+      description: >-
+        The Profile Service employs a sophisticated algorithm to compute a
+        detailed climate profile, drawing upon the responses gathered through a
+        Survey obtained from the Surveys Service. This process involves a
+        meticulous analysis of user-provided answers to generate a comprehensive
+        and nuanced representation of their climate preferences and
+        perspectives. See (https://surveyjs.io/survey-creator)
+      summary: >-
+        The Profile Service calculates a climate profile based on the answers
+        from a Survey obtained from the Surveys Service.
+      tags:
+        - Engagement Services
+      requestBody:
+        $ref: '#/components/requestBodies/ProfileRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/Profile'
+        '400':
+          $ref: '#/components/responses/ProfilePayloadBadRequestError'
+        '404':
+          $ref: '#/components/responses/ServiceProviderNotFoundError'
+  /insights:
+    put:
+      operationId: updateUserInsights
+      description: The Insights Service delivers insights and other suggestions that can inform you about what you can do in order to reduce your footprint
+      summary: Get insights based on the contents of your climate profile
+      tags:
+        - Engagement Services
+      parameters:
+        - $ref: '#/components/parameters/Branding'
+        - $ref: '#/components/parameters/Heading'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Version'
+        - $ref: '#/components/parameters/Language'
+
+
+      requestBody:
+        $ref: '#/components/requestBodies/InsightsRequest'
+      responses:
+        "200":
+          $ref: '#/components/responses/Insights'
+        "400":
+          $ref: "#/components/responses/MissingInsightAttributesBadRequestError"
+        "404":
+          $ref: "#/components/responses/ServiceProviderNotFoundError"
+  '/insights/{id}':
+    put:
+      operationId: getInsightsById
+      description: Fetches a given Insight and marks it as viewed in your profile. Issuer has to save the profile locally and send it in future communication with Engagement Services
+      summary: Fetches an Insight details based on provided Insight id
+      tags:
+        - Engagement Services
+      parameters:
+        - $ref: '#/components/parameters/Branding'
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/Version'
+        - $ref: '#/components/parameters/InsightsId'
+      requestBody:
+        $ref: '#/components/requestBodies/InsightsByIdRequest'
+      responses:
+        "200":
+          $ref: '#/components/responses/InsightsByIdResponse'
+        "400":
+          $ref: "#/components/responses/MissingInsightAttributesBadRequestError"
+        "404":
+          $ref: "#/components/responses/InsightNotFoundError"
+  /benchmarks:
+    get:
+      operationId: getBenchmarksForCountry
+      description: 'Returns a benchmark for a specific country for the year 2020, monthly or yearly'
+      summary: 'Get benchmarks for a specific country, monthly or yearly'
+      tags:
+        - Engagement Services
+
+      parameters:
+        - $ref: '#/components/parameters/Period'
+        - $ref: '#/components/parameters/CountryCode'
+      responses:
+        "200":
+          $ref: '#/components/responses/Benchmarks'
+        "400":
+          $ref: "#/components/responses/BenchmarkBadRequestError"
+        "404":
+          $ref: '#/components/responses/BenchmarkNotFoundError'
 components:
   schemas:
+    Surveys:
+      type: object
+      properties:
+        surveysPayload:
+          $ref: '#/components/schemas/SurveyData'
+    Profile:
+      type: object
+      properties:
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
+      required:
+        - profileResponsePayload
+    ClassificationType:
+      type: string
+      minLength: 3
+      maxLength: 5
+      pattern: ^(mcc|docc|MCC|plaid)$
+      example: MCC
+      description: >-
+        Classification for this transaction.
+        Possible values are,
+        
+        * mcc
+        * docc
+        * MCC
+        * plaid
     PaymentCardEnrolments:
       title: PaymentCardEnrolments
       type: array
@@ -487,18 +621,37 @@ components:
           amount:
             value: 50
             currencyCode: 'EUR'
-        - transactionId: 'ee421c25-f928-4bf-b8843600b76b860d'
-          type: AIIA
-          amount:
-            value: 100
-            currencyCode: 'USD'
-          cardBrand: 'NC'
-          additionalInformation: [
-            {
-              "key": "aiiaCode",
-              "value": "151"
-            }
-          ]
+          profile:
+            traits:
+              knowledge: 0.65
+              lifestyle: 0.445
+              motivated: 0.683
+            userAttributes:
+              demo: 66
+              diet: 256
+              lifestyle: 4
+              energy: 12288
+              transport: 36933
+              country: AX
+            created: '2024-01-31T10:57:36.161Z'
+            surveys:
+              key1:
+                key2: 1
+                key3: 2
+            persona: '3'
+            benchmarks:
+              key1:
+                key2: 1
+                key3: 2
+            comparisons:
+              key1:
+                key2: 1
+                key3: 2
+            insights:
+              key1:
+                key2: 1
+                key3: 2
+            version: '1.0'
     TransactionData:
       title: TransactionData
       type: object
@@ -657,6 +810,53 @@ components:
                 based on which score has been generated. Possible values are MCC or AIIA.
               minLength: 3
               maxLength: 3
+            profile:
+              $ref: '#/components/schemas/ClimateProfile'
+            classification:
+              title: Classification
+              type: object
+              description: >-
+                  Classification for this transaction.
+              properties:
+                type:
+                  $ref: '#/components/schemas/ClassificationType'
+                id:
+                  type: string
+                  example: "5411"
+                  description: specifies Id of Classification
+              required:
+                - id
+                - type
+            spendingAreaId:
+              type: number
+              description: >-
+                  Spending area id
+              example: 30
+            scoreStatus:
+              type: string
+              example: 'SUCCESS'
+              description: >-
+                  scoreStatus defines the status of carbon scoring for a given transaction. Possible values are,
+                  
+                  * SUCCESS = Transaction is scored successfully.
+                  
+                  * FAILURE = Transaction scoring is failed.
+              minLength: 5
+              maxLength: 7
+            errorCode:
+              type: string
+              example: 'INVALID_MCC'
+              description: >-
+                  A unique constant identifying the error case encountered during carbon scoring for a given transaction.
+              minLength: 1
+              maxLength: 100
+            errorMessage:
+              type: string
+              example: 'MCC Provided in the request is Invalid. Kindly Request again with valid MCC.'
+              description: >-
+                  Short description of the errorCode field.
+              minLength: 10
+              maxLength: 1000
     AggregateSearchCriteria:
       title: AggregateSearchCriteria
       type: object
@@ -1350,6 +1550,324 @@ components:
           minLength: 0
           maxLength: 5000
           example: paymentCardId size must be between 36 and 36
+
+    InsightItem:
+      properties:
+        heading:
+          description: Heading of the item
+          type: string
+          example: insight
+        id:
+          description: Id of the item
+          type: string
+          example: T1
+        mainCategory:
+          description: Main Category of the item
+          type: string
+          example: Shopping
+        seen:
+          description: whether or not item has been seen
+          type: boolean
+          example: false
+        spendingAreaId:
+          description: Spending Area Id
+          type: string
+          example: '678'
+        subCategory:
+          description: Sub Category of the item
+          type: string
+          example: hardware
+        version:
+          description: Version of the item
+          type: string
+          example: '1.1'
+      required:
+        - id
+        - mainCategory
+        - seen
+        - spendingAreaId
+        - subCategory
+        - version
+      type: object
+    InsightsData:
+      properties:
+        insightPayload:
+          properties:
+            insights:
+              items:
+                $ref: '#/components/schemas/InsightItem'
+              type: array
+              description: details of items
+            language:
+              type: string
+              description: language of insights
+              example: en
+            nextPage:
+              type: string
+              description: next present or not
+              example: 'yes'
+            page:
+              type: number
+              description: number of page
+              example: 1
+            previousPage:
+              type: string
+              description: previous Page present or not
+              example: 'yes'
+            totalItemCount:
+              type: number
+              description: total item count number
+              example: 96
+            totalPageCount:
+              type: number
+              description: total page count
+              example: 20
+          required:
+            - insights
+            - page
+            - totalItemCount
+            - totalPageCount
+          type: object
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
+      required:
+        - insightPayload
+      type: object
+    Profiles:
+      title: profiles
+      type: object
+      description: Climate Profile of the user.
+      properties:
+        profilesPayload:
+          properties:
+            id:
+              type: string
+              description: id of survey
+              example: onboarding
+            surveyioResults:
+              type: object
+              properties:
+                sex:
+                  type: string
+                  description: "'demo.m' stands for Male, 'demo.f' stands for Female, 'demo.other' stands for other"
+                  example: demo.m
+                age:
+                  type: string
+                  description: "'demo.lt10' for age in range 0-9, 'demo.lt20' for age in the range 10-19, 'demo.lt30' for age in the range 20-29, 'demo.lt40' for age in the range 30-39, 'demo.lt50' for age in the range 40-49, 'demo.lt60' for age in the range 50-59, 'demo.lt70' for age in the range 60-69, 'demo.lt80' for age in the range 70-79, 'demo.lt90' for age in the range 80-89, 'demo.gt90' for age greater than 90"
+                  example: demo.lt30
+                country:
+                  type: string
+                  description: 2 letter country code of country of residence. For example, 'IN' stands for India, 'US' stands for United States of America, 'BH' stands for Bahrain
+                  example: IN
+                interest:
+                  type: string
+                  description: >-
+                    'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
+                  example: Neutral
+                knowledge:
+                  type: string
+                  description: >-
+                    'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
+                  example: Neutral
+                diet:
+                  type: string
+                  description: >-
+                    'diet.all' stands for "I eat everything", 'diet.meatlessDay' stands for "One meatless day a week", 'diet.avoidRed' stands for "I try to avoid eating red meat", 'diet.noRed' stands for "I don't eat red meat", 'diet.pescetarian' stands for "Pescetarian(I don't eat meat except fish)", 'diet.vegetarian' stands for "Vegetarian", 'diet.vegan' stands for "Vegan"
+                  example: diet.noRed
+                renewableElectricity:
+                  type: string
+                  description: >-
+                    'energy.renewable' stands for "Yes, we use a supplier of renewable electricity", 'energy.selfProduced' stands for "Yes, we produce our own renewable electricity", 'energy.not' stands for "No", 'energy.idk' stands for "I don't know"
+                  example: energy.renewable
+                haveCar:
+                  type: string
+                  description: >-
+                    'transport.hasCar' stands for "Yes" and 'transport.noCar' stands for "No"
+                  example: transport.hasCar
+                carFuel:
+                  type: string
+                  description: >-
+                    'transport.petrol' stands for "Petrol", 'transport.diesel' stands for "Diesel", 'transport.bio' stands for "Bio-fuel or bio-gas", 'transport.hybrid' stands for "Hybrid", 'transport.phev' stands for "Plug-in hybrid", 'transport.electric' stands for "Electric", 'transport.idk' stands for "I don't know"
+                  example: transport.petrol
+                flyFrequency:
+                  type: string
+                  description: >-
+                    'transport.everyMonth' stands for "Every month or more", 'transport.secondMonth' stands for "Every second month", 'transport.twice' stands for "A couple of times a year", 'transport.once' stands for "Once a year or less", 'transport.Never' stands for "Never"
+                  example: transport.twice
+                shopFrequency:
+                  type: string
+                  description: >-
+                    'lifestyle.shopVeryOften' stands for "Every week or more often", 'lifestyle.shopOften' stands for "2-3 times every month", 'lifestyle.shopSometimes' stands for "Once a month", 'lifestyle.shopSeldom' stands for "1-2 times every 3 months", 'lifestyle.shopRarely' stands for "Less often or not at all"
+                  example: once a month
+                difference:
+                  type: string
+                  description: >-
+                    'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
+                  example: somewhatAgree
+                consciousPurchasingDecision:
+                  type: string
+                  description: >-
+                    'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
+                  example: Neutral
+                explainCarbonFootprint:
+                  type: string
+                  description: >-
+                    'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
+                  example: stronglyDisagree
+              required:
+                - sex
+                - age
+                - country
+                - interest
+                - knowledge
+                - diet
+                - renewableElectricity
+                - haveCar
+                - flyFrequency
+                - shopFrequency
+                - difference
+                - consciousPurchasingDecision
+                - explainCarbonFootprint
+              additionalProperties: false
+            version:
+              type: string
+              example: '1'
+              description: version of survey
+          required:
+            - id
+            - surveyioResults
+            - version
+          type: object
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
+      required:
+        - profilesPayload
+    SurveyData:
+      title: surveys
+      type: object
+      description: List of survey questions.
+      properties:
+        id:
+          description: Id of survey
+          type: string
+          example: onboarding
+          minLength: 10
+          maxLength: 15
+        language:
+          description: language of user
+          type: string
+          example: en
+          minLength: 2
+          maxLength: 10
+        type:
+          description: survey type
+          type: string
+          example: survey
+          minLength: 6
+          maxLength: 20
+        survey:
+          $ref: '#/components/schemas/SurveyJs'
+        version:
+          description: Survey version number
+          type: string
+          example: '1.0'
+          minLength: 2
+          maxLength: 10
+      required:
+        - id
+        - survey
+        - version
+    Page:
+      properties:
+        questions:
+          description: Array containing the questions for this page
+          items:
+            $ref: '#/components/schemas/Question'
+          type: array
+        name:
+          description: 'Name of this page default: `pageNN` ex `page3`'
+          type: string
+          example: page1
+          minLength: 5
+          maxLength: 20
+        visibleIf:
+          description: to denote if the page will be visible or not. This will only be displayed in the response if a particular page is to be displayed based on a certain condition.
+          type: string
+          example: "{haveCar} = 'transport.hasCar'"
+      required:
+        - questions
+        - name
+      type: object
+    SurveyJs:
+      description: 'SurveyJS compatible survey. See https://surveyjs.io/'
+      properties:
+        pages:
+          description: Pages containing questions
+          items:
+            $ref: '#/components/schemas/Page'
+          type: array
+        showQuestionNumbers:
+          description: string to denote whether or not question number is diplayed
+          type: string
+          example: 'off'
+          minLength: 3
+          maxLength: 10
+        showProgressBar:
+          description: denotes position of progress bar
+          type: string
+          example: top
+          minLength: 3
+          maxLength: 20
+      required:
+        - pages
+      type: object
+    Option:
+      properties:
+        text:
+          type: string
+          example: What kind of car is it?
+          description: survey question
+        value:
+          type: string
+          example: Diesel
+          description: survey answer
+      required:
+        - text
+        - value
+      type: object
+    Question:
+      properties:
+        choices:
+          description: dropdown or choice
+          items:
+            $ref: '#/components/schemas/Option'
+          type: array
+        description:
+          description: Question asked as a part of survey
+          type: string
+          example: >-
+            I am curious about my own carbon footprint and how I personally
+            contribute to climate change
+        name:
+          type: string
+          example: interest
+          description: name given to the question
+        title:
+          description: title for survey question
+          type: string
+          example: >-
+            I am curious about my own carbon footprint and how I personally
+            contribute to climate change
+        type:
+          description: denotes input type of the choices
+          type: string
+          example: radiogroup
+      required:
+        - description
+        - name
+        - title
+        - type
+      type: object
     ClimateProfile:
       description: Represents a Climate Profile for a User. Always use updated profile present in the response, which might include benchmarks, comparisons, insights and surveys.
       properties:
@@ -1616,6 +2134,178 @@ components:
           description: Short description of the errorCode field.
           minLength: 10
           maxLength: 1000
+    InsightsRequestPayload:
+      title: InsightsRequestPayload
+      type: object
+      description: The request object which contains climate Profile and payload
+      properties:
+        insightsPayload:
+          properties:
+            docc:
+              type: string
+              description: document of insights
+              example: 'Eat more greens - for the planet'
+            main:
+              type: string
+              description: description of main category
+              example: 'shopping'
+            mainCategory:
+              type: string
+              description: details of main category
+              example: 'shopping'
+            spendingAreaId:
+              type: string
+              description: area of category in which expenditure was made
+              example: '30'
+            subCategory:
+              type: string
+              description: details of sub category
+              example: 'clothes'
+          type: object
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
+    LanguageCode:
+      description: ISO 639-1 format language code
+      example: es
+      pattern: '^[a-z]{2}$'
+      type: string
+    InsightsByIdRequestPayload:
+      title: InsightsByIdRequestPayload
+      type: object
+      description: The request object which contains climate Profile
+      properties:
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
+    InsightsResponseById:
+      properties:
+        insightsByIdPayload:
+          properties:
+            content:
+              description: Insight content
+              type: string
+              example: Voluptate eiusmod culpa incididunt excepteur anim ipsum et ex elit laboris esse. Nostrud proident culpa exercitation eu dolore consectetur sit amet cillum veniam enim duis ut. Qui mollit fugiat tempor deserunt occaecat fugiat adipisicing ex cupidatat duis commodo id ea. Dolor laboris eu commodo ea reprehenderit in nisi proident. Fugiat cupidatat excepteur et ullamco anim. Cillum fugiat commodo ipsum consequat irure proident tempor nisi tempor ad.\nOccaecat est pariatur cillum commodo incididunt exercitation laboris consectetur eu mollit incididunt. Adipisicing quis incididunt mollit esse officia dolore fugiat reprehenderit nisi do velit ea. Id cillum consectetur mollit eu laborum nostrud nulla sint Lorem voluptate elit id.
+            heading:
+              description: Title of insight
+              type: string
+              example: Recycle your e-waste
+            id:
+              description: Insight Id
+              type: string
+              example: T101
+            mainCategory:
+              description: Main category of this insight
+              type: string
+              example: home
+            notification:
+              description: Summary user for tool tips or similar
+              type: string
+              example: A balanced diet is good for your health and that of the planet.
+            source:
+              description: Entity used as source for this insight
+              type: string
+              example: The Global E-waste Monitor 2020
+            sourceDate:
+              description: Date of source
+              type: string
+              example: 2020-07-01
+            sourceDescription:
+              description: Source description
+              type: string
+              example: The Global E-waste Monitor 2020
+            sourceLink:
+              description: Link to source (if available)
+              type: string
+              example: https://ewastemonitor.info/wp-content/uploads/2020/11/GEM_2020_def_july1_low.pdf
+            spendingAreaId:
+              description: Spending Area Id
+              type: string
+              example: 10
+            subCategory:
+              description: Sub category
+              type: string
+              example: electronics
+            version:
+              description: Version for this profile
+              type: string
+              example: 1.1
+            language:
+              description: language of insights
+              type: string
+              example: en
+          required:
+            - content
+            - heading
+            - id
+            - mainCategory
+            - spendingAreaId
+            - subCategory
+            - version
+          type: object
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
+      required:
+        - insightsByIdPayload
+      type: object
+    Benchmark:
+      type: object
+      properties:
+        benchmarksPayload:
+          $ref: '#/components/schemas/BenchmarksData'
+    BenchmarksData:
+      title: benchmarks
+      type: object
+      description: benchmark data.
+      properties:
+        id:
+          type: string
+          description: id of benchmark
+          example: 'US'
+        emission:
+          type: object
+          description: Emissions for this country yearly or monthly in metric tons, atleast one property will appear among yearly, monthly or data.
+          properties:
+            yearly:
+              description: Yearly emissions for this country in metric tons
+              type: number
+              example: 1.425
+            monthly:
+              description: Monthly emissions for this country in metric tons
+              type: number
+              example: 0.678
+            data:
+              description: If no data exists for this country
+              type: string
+              example: 'No emissions records for this country'
+          minProperties: 1
+
+        parisAgreement:
+          type: object
+          description: Emissions meeting the 2030 goal stated in the Paris agreement in metric tons, atleast one property will appear among yearly or monthly.
+          properties:
+            yearly:
+              description: Yearly emissions goal for reaching the Paris agreement in metric
+                tons
+              type: number
+              example: 1.66
+            monthly:
+              description: Monthly emissions goal for reaching the Paris agreement in metric
+                tons
+              type: number
+              example: 0.425
+          minProperties: 1
+
+      required:
+        - emission
+        - id
+        - parisAgreement
+    Period:
+      description: period in which user wants to see benchmark for specific country
+      example: month
+      type: string
+    CountryCode:
+      description: ISO 3166-1 alpha-2 format country code
+      pattern: '^[A-Z]{2}$'
+      type: string
   parameters:
     PaymentCardId:
       name: payment_card_id
@@ -1698,6 +2388,82 @@ components:
         maxLength: 200
         pattern: ^[\w\d\-\_]{1,200}
         example: 'fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5'
+    Branding:
+      name: branding
+      in: query
+      description: If you have a branded content version, please supply it here
+      required: false
+      example: branding
+      schema:
+        type: string
+    Heading:
+      name: heading
+      in: query
+      description: If you want to display heading of the insights content
+      required: false
+      example: false
+      schema:
+        type: boolean
+    PageSize:
+      name: page_size
+      in: query
+      description: size of page upto which data should be present
+      required: false
+      example: 20
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+    Page:
+      name: page
+      in: query
+      description: Page number of the page whose data should be present in response
+      required: false
+      example: 2
+      schema:
+        type: integer
+        minimum: 1
+    Version:
+      name: version
+      in: query
+      description: version of insights
+      required: false
+      example: 1.1
+      schema:
+        type: string
+        minimum: 1.0
+    Language:
+      name: language
+      in: query
+      description: language in which user wants to see insights to their climate profile
+      required: false
+      example: en
+      schema:
+        $ref: '#/components/schemas/LanguageCode'
+    Period:
+      name: period
+      in: query
+      description: period in which user wants to see benchmark for specific country
+      required: false
+      example: month / year
+      schema:
+        $ref: '#/components/schemas/Period'
+    CountryCode:
+      name: country
+      in: query
+      description: for specific country user wants to see benchmark
+      required: true
+      example: US
+      schema:
+        $ref: '#/components/schemas/CountryCode'
+    InsightsId:
+      name: id
+      in: path
+      description: for specific insight Id user wants to see insight to their climate profile
+      required: true
+      example: T101
+      schema:
+        type: string
   requestBodies:
     ServiceProviderConfig:
       description: Configuration details for service provider which needs to be update. It should contain only those parameters which you want to update. If you are calling this API for the first time then it is recommended to send all the parameters.
@@ -1783,6 +2549,36 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Transactions'
+      required: true
+    ProfileRequest:
+      description: List of payment transactions which needs to be scored.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Profiles'
+          examples:
+            ProfileRequest:
+              $ref: '#/components/examples/ProfileRequest'
+      required: true
+    InsightsRequest:
+      description: Insights for climate profile.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InsightsRequestPayload'
+          examples:
+            InsightsRequest:
+              $ref: '#/components/examples/InsightsRequest'
+      required: true
+    InsightsByIdRequest:
+      description: Represents a Climate Profile for a User.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InsightsByIdRequestPayload'
+          examples:
+            InsightsByIdRequest:
+              $ref: '#/components/examples/InsightsByIdRequest'
       required: true
     ScoreRequestDetails:
       description: >-
@@ -2049,6 +2845,117 @@ components:
           examples:
             CarbonScoreDetails:
               $ref: '#/components/examples/CarbonScoreDetails'
+    Profile:
+      description: The resulting profile.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Profile'
+          examples:
+            ProfileResponse:
+              $ref: '#/components/examples/ProfileResponseData'
+    Survey:
+      description: Returns a survey compatible with the format supported by SurveyJS.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Surveys'
+          examples:
+            SurveyResponse:
+              $ref: '#/components/examples/SurveyResponseData'
+    ProfilePayloadBadRequestError:
+      description: >-
+        This response code is returned when one or more request parameters is
+        either missing or is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            BadRequestError:
+              $ref: '#/components/examples/ProfilePayloadBadRequestError'
+    Insights:
+      description: >-
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InsightsData'
+          examples:
+            InsightsResponseData:
+              $ref: '#/components/examples/InsightsResponseData'
+    InsightsByIdResponse:
+      description: >-
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InsightsResponseById'
+          examples:
+            InsightsByIdResponse:
+              $ref: '#/components/examples/InsightsByIdResponse'
+    MissingInsightAttributesBadRequestError:
+      description: >-
+        This response code is returned when one or more request parameters is
+        either missing or is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            BadRequestError:
+              $ref: '#/components/examples/MissingInsightAttributesBadRequestError'
+    Benchmarks:
+      description: >-
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Benchmark'
+          examples:
+            BenchmarksResponse:
+              $ref: '#/components/examples/BenchmarksResponseData'
+            NoDataEmissionResponseData:
+              $ref: '#/components/examples/NoDataEmissionResponseData'
+    BenchmarkBadRequestError:
+      description: >-
+        This response code is returned when one or more request parameters is
+        either missing or is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            BadRequestError:
+              $ref: '#/components/examples/BenchmarkBadRequestError'
+    BenchmarkNotFoundError:
+      description: >-
+        This response code is returned when one or more request parameters is
+        either missing or is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            ServiceProviderNotFoundError:
+              $ref: '#/components/examples/ServiceProviderNotFoundError'
+            InvalidCountryCodeError:
+              $ref: '#/components/examples/InvalidCountryCodeError'
+    InsightNotFoundError:
+      description: >-
+        This response code is returned when one or more request parameters is
+        either missing or is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            ServiceProviderNotFoundError:
+              $ref: '#/components/examples/ServiceProviderNotFoundError'
+            InsightItemNotFoundError:
+              $ref: '#/components/examples/InsightItemNotFoundError'
+            InsightItemNotFoundInVersionError:
+              $ref: '#/components/examples/InsightItemNotFoundInVersionError'
+            UnsupportedLanguageError:
+              $ref: '#/components/examples/UnsupportedLanguageError'
+
   examples:
     PaymentCardEnrolments:
       value:
@@ -2614,3 +3521,565 @@ components:
               sector: 'Hotels, Motels & Resorts'
               sectorCode: '604'
             scoreStatus: SUCCESS
+    SurveyResponseData:
+      value:
+        - surveysPayload:
+            language: en
+            type: survey
+            id: onboarding
+            version: '1.1'
+            survey:
+              showQuestionNumber: off
+              showProgressBar: top
+              pages:
+                - name: page1
+                  questions:
+                    - type: radiogroup
+                      name: sex
+                      title: What do you identify as?
+                      description: ''
+                      choices:
+                        - value: demo.m
+                          text: Male
+                        - value: demo.f
+                          text: Female
+                - name: page2
+                  questions:
+                    - type: dropdown
+                      name: age
+                      title: What age range are you in?
+                      description: ''
+                      choices:
+                        - value: demo.lt10
+                          text: 0-9
+                        - value: demo.lt20
+                          text: 10-19
+                        - value: demo.lt30
+                          text: 20-29
+                - name: page3
+                  questions:
+                    - type: dropdown
+                      name: country
+                      title: Which is your country of residence?
+                      description: ''
+                      choices:
+                        - value: AF
+                          text: Afghanistan
+                        - value: AX
+                          text: Åland Islands
+                        - value: AL
+                          text: Albania
+                - name: page4
+                  questions:
+                    - type: radiogroup
+                      name: interest
+                      title: >-
+                        I am curious about my own carbon footprint and how I
+                        personally contribute to climate change
+                      description: ''
+                      choices:
+                        - value: stronglyAgree
+                          text: Strongly agree
+                        - value: somewhatAgree
+                          text: Somewhat agree
+                        - value: neutral
+                          text: Neutral
+                - name: page5
+                  questions:
+                    - type: radiogroup
+                      name: knowledge
+                      title: >-
+                        I have good knowledge about climate change and its
+                        effects
+                      description: ''
+                      choices:
+                        - value: stronglyAgree
+                          text: Strongly agree
+                        - value: somewhatAgree
+                          text: Somewhat agree
+                        - value: neutral
+                          text: Neutral
+                - name: page6
+                  questions:
+                    - type: radiogroup
+                      name: diet
+                      title: What best describes your diet?
+                      description: ''
+                      choices:
+                        - value: diet.all
+                          text: I eat everything
+                        - value: diet.meatlessDay
+                          text: One meatless day a week
+                        - value: diet.avoidRed
+                          text: I try to avoid eating red meat
+                        - value: diet.noRed
+                          text: I don't eat red meat
+                - name: page7
+                  questions:
+                    - type: radiogroup
+                      name: renewableElectricity
+                      title: Does your household use renewable electricity?
+                      description: '(e.g. solar, wind or hydro)'
+                      choices:
+                        - value: energy.renewable
+                          text: 'Yes, we use a supplier of renewable electricity'
+                        - value: energy.selfProduced
+                          text: 'Yes, we produce our own renewable electricity'
+                - name: page8
+                  questions:
+                    - type: radiogroup
+                      name: haveCar
+                      title: Do you have a car?
+                      description: >-
+                        This only refers to cars you drive for personal or
+                        family needs, not a company car that is exclusively used
+                        professionally.
+                      choices:
+                        - value: transport.hasCar
+                          text: 'Yes'
+                        - value: transport.noCar
+                          text: 'No'
+                - name: page9
+                  visibleIf: '{haveCar} = ''transport.hasCar'''
+                  questions:
+                    - type: radiogroup
+                      name: carFuel
+                      title: What kind of car is it?
+                      description: ''
+                      choices:
+                        - value: transport.petrol
+                          text: Petrol
+                        - value: transport.diesel
+                          text: Diesel
+                        - value: transport.bio
+                          text: Bio-fuel or bio-gas
+                - name: page10
+                  questions:
+                    - type: radiogroup
+                      name: flyFrequency
+                      title: >-
+                        How often do you travel by plane for personal or leisure
+                        purposes?
+                      description: Do not include business travels.
+                      choices:
+                        - value: transport.twice
+                          text: A couple of times a year
+    ProfileResponseData:
+      value:
+        - profile:
+            traits:
+              knowledge: 0
+              lifestyle: 0.683
+              motivated: 0.3
+            userAttributes:
+              demo: 34
+              diet: 16399
+              lifestyle: 16
+              energy: 0
+              transport: 0
+              country: AF
+            created: '2024-01-19T09:31:08.065Z'
+            surveys:
+              key1:
+                key2: 1
+                key3: 2
+            persona: '5'
+            benchmarks:
+              key1:
+                key2: 1
+                key3: 2
+            comparisons:
+              key1:
+                key2: 1
+                key3: 2
+            insights:
+              key1:
+                key2: 1
+                key3: 2
+            version: '1.0'
+    InsightsResponseData:
+      value:
+        insightPayload:
+          language: en
+          insights:
+            - id: T13
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T14
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T2
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T23
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T24
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T6
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T78
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T79
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T92
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T20
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T21
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T75
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T76
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T77
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T9
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+          page: 1
+          totalItemCount: 15
+          totalPageCount: 1
+        profile:
+          traits:
+            knowledge: 0.65
+            lifestyle: 0.445
+            motivated: 0.683
+          userAttributes:
+            demo: 66
+            diet: 256
+            lifestyle: 4
+            energy: 12288
+            transport: 36933
+            country: AX
+          created: '2024-01-31T10:57:36.161Z'
+          surveys:
+            key1:
+              key2: 1
+              key3: 2
+          persona: '3'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+          comparisons:
+            key1:
+              key2: 1
+              key3: 2
+          insights:
+            key1:
+              key2: 1
+              key3: 2
+          version: '1.0'
+    InsightsRequest:
+      value:
+        insightsPayload:
+          mainCategory: shopping
+          main: shopping
+          docc: ''
+          spendingAreaId: '30'
+          subCategory: clothes
+        profile:
+          traits:
+            knowledge: 0.65
+            lifestyle: 0.445
+            motivated: 0.683
+          userAttributes:
+            demo: 66
+            diet: 256
+            lifestyle: 4
+            energy: 12288
+            transport: 36933
+            country: AX
+          created: '2024-01-31T10:57:36.161Z'
+          surveys:
+            key1:
+              key2: 1
+              key3: 2
+          persona: '3'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+          comparisons:
+            key1:
+              key2: 1
+              key3: 2
+          insights:
+            key1:
+              key2: 1
+              key3: 2
+          version: '1.0'
+    ProfileRequest:
+      value:
+        profilesPayload:
+          id: onboarding
+          version: '1.1'
+          surveyioResults:
+            sex: demo.f
+            age: demo.lt20
+            country: AX
+            interest: stronglyDisagree
+            knowledge: stronglyDisagree
+            diet: diet.vegan
+            renewableElectricity: energy.idk
+            haveCar: transport.noCar
+            flyFrequency: transport.never
+            shopFrequency: lifestyle.shopRarely
+            difference: stronglyDisagree
+            consciousPurchasingDecisions: stronglyDisagree
+            explainCarbonFootprint: stronglyDisagree
+        profile:
+          traits:
+            knowledge: 0.65
+            lifestyle: 0.445
+            motivated: 0.683
+          userAttributes:
+            demo: 66
+            diet: 256
+            lifestyle: 4
+            energy: 12288
+            transport: 36933
+            country: AX
+          created: '2024-01-31T10:57:36.161Z'
+          surveys:
+            key1:
+              key2: 1
+              key3: 2
+          persona: '3'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+          comparisons:
+            key1:
+              key2: 1
+              key3: 2
+          insights:
+            key1:
+              key2: 1
+              key3: 2
+          version: '1.0'
+    ProfilePayloadBadRequestError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: "One of the request parameters is invalid, try again with correct request."
+              Recoverable: false
+              Details: payload.id must not be null
+            - Source: Carbon-Calculator
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: "One of the request parameters is invalid, try again with correct request."
+              Recoverable: false
+              Details: payload.version must not be null
+    MissingInsightAttributesBadRequestError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: "One of the request parameters is invalid, try again with correct request."
+              Recoverable: false
+              Details: "profile.userAttributes must not be null"
+
+            - Source: Carbon-Calculator
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: "One of the request parameters is invalid, try again with correct request"
+              Recoverable: false
+              Details: "profile.traits must not be null"
+    InsightsByIdResponse:
+      value:
+        insightsByIdPayload:
+          id: T101
+          version: 1.1
+          language: "en"
+          heading: "Recycle your e-waste"
+          content: "Voluptate eiusmod culpa incididunt excepteur anim ipsum et ex elit laboris esse. Nostrud proident culpa exercitation eu dolore consectetur sit amet cillum veniam enim duis ut. Qui mollit fugiat tempor deserunt occaecat fugiat adipisicing ex cupidatat duis commodo id ea. Dolor laboris eu commodo ea reprehenderit in nisi proident. Fugiat cupidatat excepteur et ullamco anim. Cillum fugiat commodo ipsum consequat irure proident tempor nisi tempor ad.\nOccaecat est pariatur cillum commodo incididunt exercitation laboris consectetur eu mollit incididunt. Adipisicing quis incididunt mollit esse officia dolore fugiat reprehenderit nisi do velit ea. Id cillum consectetur mollit eu laborum nostrud nulla sint Lorem voluptate elit id."
+          notification: ""
+          mainCategory: "home"
+          subCategory: "electronics"
+          spendingAreaId: "10"
+          source: "The Global E-waste Monitor 2020"
+          sourceDescription: "The Global E-waste Monitor 2020"
+          sourceLink: "https://ewastemonitor.info/wp-content/uploads/2020/11/GEM_2020_def_july1_low.pdf"
+          sourceDate: "2020-07-01"
+        profile:
+          traits:
+            knowledge: 0.65
+            lifestyle: 0.445
+            motivated: 0.683
+          userAttributes:
+            demo: 66
+            diet: 256
+            lifestyle: 4
+            energy: 12288
+            transport: 36933
+            country: AX
+          created: '2024-01-31T10:57:36.161Z'
+          surveys:
+            viewed:
+              onboardingVersion: 1
+          persona: '3'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+          comparisons:
+            key1:
+              key2: 1
+              key3: 2
+          insights:
+            key1:
+              key2: 1
+              key3: 2
+          version: '1.0'
+    InsightItemNotFoundError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: ITEM_NOT_FOUND
+              Description: "Insight Item not found for the provided id"
+              Recoverable: false
+              Details: ""
+    InsightItemNotFoundInVersionError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: VERSION_NOT_FOUND
+              Description: "Insight T101 unavailable in 3.1 (use: 1.1)"
+              Recoverable: false
+              Details: ""
+    BenchmarksResponseData:
+      value:
+        benchmarksPayload:
+          id: 'US'
+          emission:
+            yearly: 1.425
+          parisAgreement:
+            yearly: 1.66
+    NoDataEmissionResponseData:
+      value:
+        benchmarksPayload:
+          id: 'VU'
+          emission:
+            data: 'No emissions records for this country'
+          parisAgreement:
+            yearly: 3.498
+    BenchmarkBadRequestError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: BAD_REQUEST
+              Description: "One of the request parameters is invalid, try again with correct request."
+              Recoverable: false
+              Details: "country is a required field"
+    InvalidCountryCodeError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: BAD_REQUEST
+              Description: "One of the request parameters is invalid, try again with correct request."
+              Recoverable: false
+              Details: "Country code is invalid"
+    UnsupportedLanguageError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: LANGUAGE_NOT_FOUND
+              Description: "Unsupported language or branding"
+              Recoverable: false
+              Details: ""
+    InsightsByIdRequest:
+      value:
+        profile:
+          traits:
+            knowledge: 0.65
+            lifestyle: 0.445
+            motivated: 0.683
+          userAttributes:
+            demo: 66
+            diet: 256
+            lifestyle: 4
+            energy: 12288
+            transport: 36933
+            country: US
+          created: '2024-01-31T10:57:36.161Z'
+          surveys:
+            viewed:
+              onboardingVersion: 1
+          persona: '3'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+          comparisons:
+            key1:
+              key2: 1
+              key3: 2
+          insights:
+            key1:
+              key2: 1
+              key3: 2
+          version: '1.0'

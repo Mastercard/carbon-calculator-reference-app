@@ -9,8 +9,10 @@ import com.mastercard.developers.carboncalculator.service.PaymentCardService;
 import com.mastercard.developers.carboncalculator.service.ServiceProviderService;
 import com.mastercard.developers.carboncalculator.service.SupportedParametersService;
 import org.junit.jupiter.api.DisplayName;
+import com.mastercard.developers.carboncalculator.service.*;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.ApiException;
+import org.openapitools.client.api.EngagementServicesApi;
 import org.openapitools.client.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,6 +73,12 @@ class CarbonCalculatorControllerTest {
 
     @MockBean
     private ServiceProviderConfig serviceProviderConfig;
+
+    @MockBean
+    private EngagementService engagementService;
+
+    @MockBean
+    private EngagementServicesApi engagementServicesApi;
 
     @Value("${test.data.bin}")
     String bin;

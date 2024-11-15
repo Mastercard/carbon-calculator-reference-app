@@ -18,8 +18,6 @@ package com.mastercard.developers.carboncalculator.service;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.PaymentCardApi;
-import org.openapitools.client.model.AggregateSearchCriteria;
-import org.openapitools.client.model.AggregateTransactionFootprints;
 import org.openapitools.client.model.HistoricalTransactionFootprints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,18 +38,6 @@ public class PaymentCardService {
     public PaymentCardService(ApiClient client) {
         LOGGER.info("Initializing Payment Card API");
         paymentCardApi = new PaymentCardApi(client);
-    }
-
-
-    public AggregateTransactionFootprints getPaymentCardAggregateTransactions(AggregateSearchCriteria aggregateSearchCriteria) throws ApiException {
-
-        LOGGER.info("Calculating aggregate carbon score for paymentCardIds {}",
-                aggregateSearchCriteria.getPaymentCardIds());
-
-        AggregateTransactionFootprints aggregateTransactionFootprintList = paymentCardApi.getPaymentCardAggregateTransactions(
-                aggregateSearchCriteria);
-        LOGGER.info("Returning aggregate carbon score.");
-        return aggregateTransactionFootprintList;
     }
 
     public HistoricalTransactionFootprints getPaymentCardTransactionHistory(String paymentCardId, String fromDate, String toDate, int offset, int limit) throws ApiException {

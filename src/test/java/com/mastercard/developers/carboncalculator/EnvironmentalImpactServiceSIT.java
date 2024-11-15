@@ -15,19 +15,16 @@
  */
 package com.mastercard.developers.carboncalculator;
 
-import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import com.mastercard.developers.carboncalculator.service.EnvironmentalImpactService;
 import com.mastercard.developers.carboncalculator.service.SupportedParametersService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
@@ -35,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.mastercard.developers.carboncalculator.usecases.helper.PanGenerator.generateFPAN;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

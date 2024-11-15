@@ -15,7 +15,6 @@
  */
 package com.mastercard.developers.carboncalculator.service;
 
-import static com.mastercard.developers.carboncalculator.util.JSON.deserializeErrors;
 
 import java.util.List;
 

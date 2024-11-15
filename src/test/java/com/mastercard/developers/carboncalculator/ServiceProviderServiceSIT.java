@@ -15,7 +15,6 @@
  */
 package com.mastercard.developers.carboncalculator;
 
-import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import com.mastercard.developers.carboncalculator.service.ServiceProviderService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

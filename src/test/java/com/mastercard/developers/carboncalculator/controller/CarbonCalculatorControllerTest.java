@@ -298,45 +298,6 @@ class CarbonCalculatorControllerTest {
     }
 
     @Test
-    void oldaggregateTransactionFootprints() throws Exception {
-
-        AggregateSearchCriteria aggregateSearchCriteria = new AggregateSearchCriteria().paymentCardIds(
-                Collections.singletonList("paymentCardId")).aggregateType(1);
-
-        when(paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria)).thenReturn(
-                new AggregateTransactionFootprints());
-
-        MvcResult mvcResult2 = this.mockMvc
-                .perform(post("/demo/aggregate-transaction-footprints")
-                        .contentType(
-                                MediaType.APPLICATION_JSON).content(
-                                gson.toJson(aggregateSearchCriteria))).andExpect(
-                        status().isOk()).andReturn();
-
-        String response2 = mvcResult2.getResponse().getContentAsString();
-        assertNotNull(response2);
-    }
-
-    @Test
-    void oldaggregateTransactionFootprintsException() throws Exception {
-
-        AggregateSearchCriteria aggregateSearchCriteria = new AggregateSearchCriteria().paymentCardIds(
-                Collections.singletonList("paymentCardId")).aggregateType(1);
-
-        when(paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria)).thenThrow(apiException);
-
-        MvcResult mvcResult2 = this.mockMvc
-                .perform(post("/demo/aggregate-transaction-footprints")
-                        .contentType(
-                                MediaType.APPLICATION_JSON).content(
-                                gson.toJson(aggregateSearchCriteria))).andExpect(
-                        status().isBadRequest()).andReturn();
-
-        String response2 = mvcResult2.getResponse().getContentAsString();
-        assertNotNull(response2);
-    }
-
-    @Test
     void aggregateTransactionFootprints() throws Exception {
 
         AggregateSearchCriteria aggregateSearchCriteria = new AggregateSearchCriteria().paymentCardIds(

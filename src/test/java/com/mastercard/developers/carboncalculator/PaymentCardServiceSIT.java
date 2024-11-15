@@ -21,8 +21,6 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
 import org.openapitools.client.ApiException;
-import org.openapitools.client.model.AggregateSearchCriteria;
-import org.openapitools.client.model.AggregateTransactionFootprints;
 import org.openapitools.client.model.PaymentCard;
 import org.openapitools.client.model.PaymentCardEnrolment;
 import org.slf4j.Logger;
@@ -32,7 +30,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.mastercard.developers.carboncalculator.usecases.helper.PanGenerator.generateFPAN;
@@ -100,29 +97,6 @@ class PaymentCardServiceSIT {
      * Use case 5. View Historical Carbon Impact
      */
     @Test
-    @DisplayName("Fetch the aggregate carbon score for the transactions")
-    @Order(2)
-    void aggregateTransactionFootprints() {
-
-        try {
-            AggregateTransactionFootprints aggregateTransactionFootprints = paymentCardService.getPaymentCardAggregateTransactions(
-                    mockAggregateSearchCriteria(paymentCardId));
-
-            assertNotNull(aggregateTransactionFootprints);
-
-            LOGGER.info("{}", aggregateTransactionFootprints);
-        } catch (ApiException exception) {
-            LOGGER.info(ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG, exception.getResponseBody());
-            Assertions.fail(exception.getMessage());
-        }
-
-
-    }
-
-    /**
-     * Use case 6. View Aggregate Carbon Impact
-     */
-    @Test
     @DisplayName("Fetch the historical transaction footprint data")
     @Order(3)
     void historicalTransactionFootprints() {
@@ -140,18 +114,6 @@ class PaymentCardServiceSIT {
         }
 
 
-    }
-
-    /**
-     * Test with different Aggregate type, supported values are as follows:
-     * 1=weekly
-     * 2=monthly
-     * 3=monthly category wise
-     */
-    private static AggregateSearchCriteria mockAggregateSearchCriteria(String paymentCardId) {
-
-        List<String> paymentCardIds = Collections.singletonList(paymentCardId);
-        return new AggregateSearchCriteria().paymentCardIds(paymentCardIds).aggregateType(2);
     }
 
     private static void setPaymentCardId(String paymentCardId) {

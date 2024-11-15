@@ -28,8 +28,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ServiceTest {
 
-    private static final String SOURCE = "Carbon-Calculator";
-
     @InjectMocks
     private EnvironmentalImpactService environmentalImpactService;
 
@@ -222,23 +220,6 @@ class ServiceTest {
     }
 
     @Test
-    void oldAggregate() throws Exception {
-        when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
-                new ApiResponse<>(201, new HashMap<>(), MockData.aggregateTransactionFootprint()));
-
-        AggregateSearchCriteria aggregateSearchCriteria= new AggregateSearchCriteria();
-        aggregateSearchCriteria.setPaymentCardIds(Arrays.asList("testPaymentCardId"));
-
-        AggregateTransactionFootprints aggregateTransactionFootprints = paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria);
-
-        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
-                anyMap(), anyMap(), any(), any());
-        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
-
-        assertNotNull(aggregateTransactionFootprints);
-    }
-
-    @Test
     void aggregate() throws Exception {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(201, new HashMap<>(), MockData.aggregateTransactionFootprint()));
@@ -289,27 +270,6 @@ class ServiceTest {
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> environmentalImpactService.calculateFootprints(
                         invalidTransactionRequest()));
-
-        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
-                anyMap(), anyMap(), any(), any());
-        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
-
-        Assertions.assertNotNull(apiException.getResponseBody());
-    }
-
-    @Test
-    void paymentCardAggregateTransactionsErrorScenario() throws Exception {
-        when(apiClient.execute(any(Call.class), any(Type.class))).thenThrow(new ApiException(400, new HashMap<>(),
-                getErrorResponseBody(
-                        "INVALID_REQUEST_PARAMETER",
-                        "Payment card id - [b86fd2ba-c095-4acb-b9df-f3805655ba24,d30f6223-b15d-4663-8e6a-247475c596dd ] is/are invalid or not found. Please try again with a valid payment card ID.",
-                        false,
-                        "")));
-
-
-        ApiException apiException = Assertions.assertThrows(ApiException.class,
-                () -> paymentCardService.getPaymentCardAggregateTransactions(
-                        aggregateSearchCriteria("b86fd2ba-c095-4acb-b9df-f3805655ba24")));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());

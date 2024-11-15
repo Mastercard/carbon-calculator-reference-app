@@ -6,7 +6,6 @@ import com.mastercard.developers.carboncalculator.service.MockData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.model.*;
 import org.slf4j.Logger;
@@ -21,10 +20,6 @@ class EngagementServiceSIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(EngagementServiceSIT.class);
     @Autowired
     private EngagementService engagementService;
-
-    @Autowired
-    private ApiClient apiClient;
-
 
     @Test
     @DisplayName("GetSurveys")

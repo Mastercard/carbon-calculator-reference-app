@@ -26,8 +26,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.mastercard.developers.carboncalculator.util.JSON.deserializeErrors;
-
 @Service
 public class EnvironmentalImpactService {
 

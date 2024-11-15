@@ -257,43 +257,6 @@ paths:
           $ref: '#/components/responses/ServiceProviderICAValidationError'
         '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
-  /payment-cards/aggregate-transaction-footprints:
-    post:
-      tags:
-        - Payment Card
-      summary: >-
-        Fetches carbon score for payment cards and aggregates the same on a
-        weekly and monthly basis. The result will be in descending
-        order.
-      description: >
-        Allows a Service Provider to fetch aggregate carbon score for a single
-        or multiple payment card. A payment card has to be registered first
-        using `/payment-cards` or `/payment-card-enrolments` endpoint before this endpoint can be called. The
-        aggregate can be requested for weekly or monthly. Note
-        that **ONLY** cleared transactions will be returned.
-
-
-        If any of the paymentCardIds is not valid or not registered, then the entire
-        request will be rejected, and no aggregate will be returned.
-
-
-        If no transaction is found for a particular paymentCardId then the response
-        will have an empty list against that paymentCardId.
-
-        If not provided any crossPANAggregate value then default will be considered as 'N'.
-
-        Date Range is valid for 26 weeks for weekly aggregate and 12 months for monthly aggregate.
-
-      operationId: GetPaymentCardAggregateTransactions
-      requestBody:
-        $ref: '#/components/requestBodies/AggregateSearchCriteria'
-      responses:
-        '200':
-          $ref: '#/components/responses/AggregateTransactionFootprints'
-        '400':
-          $ref: '#/components/responses/AggregateTransactionBadRequestError'
-        '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'
   /payment-cards/transaction-footprints/notifications:
     post:
       tags:

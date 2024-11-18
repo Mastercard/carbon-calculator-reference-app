@@ -15,7 +15,6 @@
  */
 package com.mastercard.developers.carboncalculator.service;
 
-import com.mastercard.developers.carboncalculator.exception.ServiceException;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.ServiceProviderApi;
@@ -25,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import static com.mastercard.developers.carboncalculator.util.JSON.deserializeErrors;
 
 @Service
 public class ServiceProviderService {

@@ -131,18 +131,6 @@ public class CarbonCalculatorController {
         return ResponseEntity.ok(paymentCardReference);
     }
 
-    @PostMapping("/aggregate-transaction-footprints")
-    public ResponseEntity<Object> getPaymentCardAggregateTransactions(@RequestBody AggregateSearchCriteria aggregateSearchCriteria) {
-        AggregateTransactionFootprints aggregateTransactionFootprints = null;
-        try {
-            aggregateTransactionFootprints = paymentCardService.getPaymentCardAggregateTransactions(aggregateSearchCriteria);
-        } catch (ApiException exception) {
-            LOGGER.error("aggregate-transaction-footprints apiException : {}", exception.getResponseBody());
-            return getErrorObjectResponseEntity(exception);
-        }
-        return ResponseEntity.ok(aggregateTransactionFootprints);
-    }
-
     @PostMapping("/payment-cards/transaction-footprints/aggregates")
     public ResponseEntity<Object> getPaymentCardAggregateTransaction(@RequestHeader("x-openapi-clientid") String clientId,
                                                                      @RequestBody AggregateSearchCriteria aggregateSearchCriteria, @RequestHeader("channel") String channel, @RequestHeader("origMcApiClientId") String origMcApiClientId) {

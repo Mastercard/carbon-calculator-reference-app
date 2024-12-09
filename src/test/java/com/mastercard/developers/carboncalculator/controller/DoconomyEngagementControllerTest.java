@@ -7,6 +7,8 @@ import com.mastercard.developers.carboncalculator.service.*;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.model.Benchmark;
+import org.openapitools.client.model.Comparison;
+import org.openapitools.client.model.Personas;
 import org.openapitools.client.model.Profiles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -114,7 +116,7 @@ class DoconomyEngagementControllerTest {
     void updateUserInsights() throws Exception {
 
         String insightsJson = objectMapper.writeValueAsString(getMockInsightsRequest());
-        when(engagementService.updateUserInsights(getMockInsightsRequest(), "branding", false, 20, 2, "1.1", "en")).thenReturn((getMockInsightsResponse()));
+        when(engagementService.updateUserInsights(getMockInsightsRequest(), "branding", false, "20", "2", "1.1", "en")).thenReturn((getMockInsightsResponse()));
 
         MvcResult mvcResult = mockMvc.perform(put("/demo/insights").contentType("application/json").content(insightsJson)).andExpect(status().isOk()).andReturn();
 
@@ -125,7 +127,7 @@ class DoconomyEngagementControllerTest {
     void updateUserInsightsException() throws Exception {
 
         String insightsJson = objectMapper.writeValueAsString(getMockInsightsRequest());
-        when(engagementService.updateUserInsights(getMockInsightsRequest(), "branding", false, 20, 2, "1.1", "en")).thenThrow(apiException);
+        when(engagementService.updateUserInsights(getMockInsightsRequest(), "branding", false, "20", "2", "1.1", "en")).thenThrow(apiException);
 
         MvcResult mvcResult = mockMvc.perform(put("/demo/insights").contentType("application/json").content(insightsJson)
                 .params(prepareRequestParams())).andExpect(status().isBadRequest()).andReturn();
@@ -137,7 +139,6 @@ class DoconomyEngagementControllerTest {
     void testInsightsByIdSuccessResponse() throws Exception {
         String insightsJson = objectMapper.writeValueAsString(getMockInsightsByIdRequest());
 
-        // Mocking the service response
         when(engagementService.getInsightsById("T101", getMockInsightsByIdRequest(), "branding", "en", "1.1")).thenReturn(getMockInsightsByIdResponse());
 
         MvcResult mvcResult = mockMvc.perform(put("/demo/insights/{id}", "T101").contentType("application/json").content(insightsJson)).andExpect(status().isOk()).andReturn();
@@ -182,6 +183,81 @@ class DoconomyEngagementControllerTest {
 
         mockMvc.perform(get("/demo/benchmarks").param("country", country).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
+    @Test
+    void getPersonas_Success() throws Exception {
+        Personas mockPersonas = new Personas();
+        mockPersonas.setLanguage("en");
+
+        when(engagementService.getPersonas(" ", "en", "1", "1")).thenReturn(mockPersonas);
+
+        MvcResult mvcResult = mockMvc.perform(get("/demo/personas")
+                        .param("branding", "branding")
+                        .param("language", "en")
+                        .param("page_size", "1")
+                        .param("page", "1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        assertNotNull(mvcResult.getResponse().getContentAsString());
+    }
+
+    @Test
+    void getPersonas_Exception() throws Exception {
+        when(engagementService.getPersonas("branding", "en", "20", "1")).thenThrow(apiException);
+
+        MvcResult mvcResult = mockMvc.perform(get("/demo/personas")
+                        .param("branding", "branding")
+                        .param("language", "en")
+                        .param("page_size", "20")
+                        .param("page", "1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        assertNotNull(mvcResult.getResponse().getContentAsString());
+    }
+
+    @Test
+    void getComparisons_Success() throws Exception {
+        Comparison mockComparison = new Comparison();
+        mockComparison.setLanguage("en");
+        mockComparison.setVersion("1.0");
+
+        when(engagementService.getComparisons("branding", "en", "1.0", "category1", "spend1", "100")).thenReturn(mockComparison);
+
+        MvcResult mvcResult = mockMvc.perform(get("/demo/comparisons")
+                        .param("branding", "branding")
+                        .param("language", "en")
+                        .param("version", "1.0")
+                        .param("main_category", "category1")
+                        .param("spending_area_id", "spend1")
+                        .param("tonne", "100")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        assertNotNull(mvcResult.getResponse().getContentAsString());
+    }
+
+    @Test
+    void getComparisons_Exception() throws Exception {
+        when(engagementService.getComparisons("branding", "en", "1.0", "category1", "spend1", "100")).thenThrow(apiException);
+
+        MvcResult mvcResult = mockMvc.perform(get("/demo/comparisons")
+                        .param("branding", "branding")
+                        .param("language", "en")
+                        .param("version", "1.0")
+                        .param("main_category", "category1")
+                        .param("spending_area_id", "spend1")
+                        .param("tonne", "100")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        assertNotNull(mvcResult.getResponse().getContentAsString());
+    }
+
 
     private LinkedMultiValueMap<String, String> prepareRequestParams() {
         LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();

@@ -467,7 +467,7 @@ class ServiceTest {
         insightsRequestPayload.setInsightsPayload(insightsRequestPayloadInsightsPayload);
 
 
-        InsightsData insightsData = engagementService.updateUserInsights(insightsRequestPayload,"branding",false,20,2,"1.1","en");
+        InsightsData insightsData = engagementService.updateUserInsights(insightsRequestPayload,"branding",false,"20","2","1.1","en");
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -486,7 +486,7 @@ class ServiceTest {
 
 
         ApiException apiException = Assertions.assertThrows(ApiException.class,
-                () -> engagementService.updateUserInsights(insightsRequestPayload,"",false,1,1,"",""));
+                () -> engagementService.updateUserInsights(insightsRequestPayload,"",false,"1","mvn","",""));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -556,6 +556,68 @@ class ServiceTest {
 
         ApiException apiException = Assertions.assertThrows(ApiException.class,
                 () -> engagementService.getInsightsById("T101",insightsByIdRequestPayload,"","",""));
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        Assertions.assertNotNull(apiException.getResponseBody());
+    }
+    @Test
+    void getPersonas_Success() throws Exception {
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
+                new ApiResponse<>(200, new HashMap<>(), new Personas()));  // Adjust as necessary for Personas
+
+        Personas personas = engagementService.getPersonas("branding", "en", "20", "1");
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        assertNotNull(personas);
+    }
+    @Test
+    void getPersonas_ErrorScenario() throws Exception {
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenThrow(new ApiException(404, new HashMap<>(),
+                getErrorResponseBody(
+                        "ACCOUNT_NOT_FOUND",
+                        "We cannot find the account which you are using to access this service. Kindly register your account or contact your Mastercard associate if you have already registered with us earlier.",
+                        false,
+                        "")));
+
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
+                () -> engagementService.getPersonas("branding", "en", "20", "1"));
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        Assertions.assertNotNull(apiException.getResponseBody());
+    }
+    @Test
+    void getComparisons_Success() throws Exception {
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
+                new ApiResponse<>(200, new HashMap<>(), new Comparison()));
+
+        Comparison comparison = engagementService.getComparisons("branding", "en", "1.0", "category1", "spend1", "1");
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        assertNotNull(comparison);
+    }
+    @Test
+    void getComparisons_ErrorScenario() throws Exception {
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenThrow(new ApiException(404, new HashMap<>(),
+                getErrorResponseBody(
+                        "ACCOUNT_NOT_FOUND",
+                        "We cannot find the account which you are using to access this service. Kindly register your account or contact your Mastercard associate if you have already registered with us earlier.",
+                        false,
+                        "")));
+
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
+                () -> engagementService.getComparisons("branding", "en", "1.0", "category1", "spend1", "1"));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());

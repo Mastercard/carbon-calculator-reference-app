@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -70,7 +71,7 @@ class EngagementServiceSIT {
             insightsRequestPayload.setInsightsPayload(insightsRequestPayloadInsightsPayload);
 
 
-            var insightsData = engagementService.updateUserInsights(insightsRequestPayload, any(), false, 20, 2, "1.1", "en");
+            var insightsData = engagementService.updateUserInsights(insightsRequestPayload, any(), false, "20", "2", "1.1", "en");
 
             LOGGER.info("{}", insightsData);
 
@@ -118,5 +119,31 @@ class EngagementServiceSIT {
         }
 
     }
+    @Test
+    @DisplayName("Get Personas")
+    void getPersonasTest() {
+        Personas personas;
+        try {
+            personas = engagementService.getPersonas("", "en", "1", "1");
+            assertNotNull(personas);
+        } catch (ApiException e) {
+            LOGGER.info("Get Personas API call failed with error msg {}", e.getResponseBody());
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Get Comparisons")
+    void getComparisonsTest() {
+        Comparison comparison;
+        try {
+            comparison = engagementService.getComparisons("", "en", "1.0", null, null, "1");
+            assertNotNull(comparison);
+        } catch (ApiException e) {
+            LOGGER.info("Get Comparisons API call failed with error msg {}", e.getResponseBody());
+            Assertions.fail(e.getMessage());
+        }
+    }
+
 
 }

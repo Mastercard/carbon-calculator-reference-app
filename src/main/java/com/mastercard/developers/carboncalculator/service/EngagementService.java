@@ -39,7 +39,7 @@ public class EngagementService {
     }
 
 
-    public InsightsData updateUserInsights(InsightsRequestPayload insightsRequestPayload, String branding, Boolean heading, Integer pageSize, Integer page, String version, String language) throws ApiException {
+    public InsightsData updateUserInsights(InsightsRequestPayload insightsRequestPayload, String branding, Boolean heading, String pageSize, String page, String version, String language) throws ApiException {
         LOGGER.info("Updating Doconomy Engagement Insights API");
         InsightsData insightsData = engagementServicesApi.updateUserInsights(insightsRequestPayload, branding, heading, pageSize, page, version, language);
         LOGGER.info("Returning updated Doconomy Engagement Insights");
@@ -59,6 +59,21 @@ public class EngagementService {
         Benchmark benchmark = engagementServicesApi.getBenchmarksForCountry(country, period);
         LOGGER.info("Returning Doconomy Engagement Benchmarks");
         return benchmark;
+    }
+    public Personas getPersonas(String branding, String language, String pageSize, String page) throws ApiException
+    {
+        LOGGER.info("Calling Doconomy Engagement Personas API");
+        Personas personas = engagementServicesApi.getPersonas(branding, language, pageSize, page);
+        LOGGER.info("Returning Doconomy Engagement Personas");
+        return personas;
+    }
+
+    public Comparison getComparisons( String branding,String  language,String  version,String  mainCategory,String  spendingAreaId,String  tonne) throws ApiException
+    {
+        LOGGER.info("Calling Doconomy Engagement Comparisons API");
+        Comparison comparison = engagementServicesApi.getComparisons(branding, language, version, mainCategory, spendingAreaId, tonne);
+        LOGGER.info("Returning Doconomy Engagement Comparisons");
+        return comparison;
     }
 
 }

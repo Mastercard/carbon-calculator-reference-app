@@ -457,6 +457,47 @@ paths:
           $ref: "#/components/responses/BenchmarkBadRequestError"
         "404":
           $ref: '#/components/responses/BenchmarkNotFoundError'
+  /comparisons:
+    get:
+      operationId: getComparisons
+      description: Fetches comparisons data by comparing tonnes of Co2 with any day to day life examples.
+      summary: Fetches comparisons based on inputs.
+      tags:
+        - Engagement Services
+      parameters:
+        - $ref: '#/components/parameters/Branding'
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/Version'
+        - $ref: '#/components/parameters/MainCategory'
+        - $ref: '#/components/parameters/SpendingAreaId'
+        - $ref: '#/components/parameters/Tonne'
+      responses:
+        "200":
+          $ref: '#/components/responses/ComparisonsResponse'
+        "400":
+          $ref: '#/components/responses/ComparisonsBadRequestError'
+        "404":
+          $ref: "#/components/responses/ComparisonsNotFoundError"
+  /personas:
+    get:
+      tags:
+        - Engagement Services
+      summary: Returns a list of all the personas available.
+      description: >-
+        A persona is a type of character described based on the answers a user has given to survey questions. There is a list of personas, and one of them is assigned to the profile during profile creation.
+      operationId: getPersonas
+      parameters:
+        - $ref: '#/components/parameters/Branding'
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          $ref: '#/components/responses/Personas'
+        '400':
+          $ref: '#/components/responses/PersonasBadRequestError'
+        '404':
+          $ref: '#/components/responses/ServiceProviderNotFoundError'
 components:
   schemas:
     Surveys:
@@ -1596,6 +1637,158 @@ components:
       required:
         - insightPayload
       type: object
+    Personas:
+      properties:
+        items:
+          description: Returns the available list of all the personas.
+          items:
+            $ref: '#/components/schemas/Persona'
+          type: array
+        language:
+          description: ISO 639-1 format language code
+          maxLength: 2
+          minLength: 2
+          pattern: '^[a-z]{2}$'
+          type: string
+          example: "en"
+        page:
+          description: Page number of the page whose data should be present in response
+          maximum: 999
+          minimum: 1
+          type: integer
+          example: 1
+        totalItemCount:
+          description: total item count number
+          maximum: 1.7976931348623157e+308
+          minimum: 1
+          type: integer
+          example: 5
+        totalPageCount:
+          description: total page count
+          maximum: 999
+          minimum: 1
+          type: integer
+          example: 1
+      required:
+        - items
+        - page
+        - totalItemCount
+        - totalPageCount
+      type: object
+    Persona:
+      properties:
+        description:
+          description: Brief description of the persona
+          maxLength: 1000
+          minLength: 1
+          type: string
+          example: >-
+            I am curious about my own carbon footprint and how I personally
+            contribute to climate change
+        id:
+          description: Unique identifier for the persona
+          maxLength: 100
+          minLength: 1
+          type: string
+          example: "1"
+        language:
+          description: ISO 639-1 format language code
+          maxLength: 2
+          minLength: 2
+          pattern: '^[a-z]{2}$'
+          type: string
+          example: "en"
+
+        title:
+          description: Title of the persona
+          maxLength: 100
+          minLength: 1
+          type: string
+          example: "Climate Focused"
+      required:
+        - description
+        - id
+        - language
+        - title
+      type: object
+    Comparison:
+      properties:
+        content:
+          description: Content of comparison
+          maxLength: 16384
+          minLength: 1
+          type: string
+          example: Voluptate eiusmod culpa incididunt excepteur anim ipsum et ex elit laboris esse. Nostrud proident culpa exercitation eu dolore consectetur sit amet cillum veniam enim duis ut. Qui mollit fugiat tempor deserunt occaecat fugiat adipisicing ex cupidatat duis commodo id ea. Dolor laboris eu commodo ea reprehenderit in nisi proident. Fugiat cupidatat excepteur et ullamco anim. Cillum fugiat commodo ipsum consequat irure proident tempor nisi tempor ad.\nOccaecat est pariatur cillum commodo incididunt exercitation laboris consectetur eu mollit incididunt. Adipisicing quis incididunt mollit esse officia dolore fugiat reprehenderit nisi do velit ea. Id cillum consectetur mollit eu laborum nostrud nulla sint Lorem voluptate elit id.
+
+        description:
+          description: Description of comparison
+          maxLength: 999
+          minLength: 1
+          type: string
+          example: >-
+            I am curious about my own carbon footprint and how I personally
+            contribute to climate change
+        id:
+          description: The comparison Id
+          maxLength: 100
+          minLength: 1
+          type: string
+          example: "16"
+        language:
+          description: ISO 639-1 format language code
+          maxLength: 2
+          minLength: 2
+          pattern: '^[a-z]{2}$'
+          type: string
+          example: "en"
+        mainCategory:
+          description: Main category from ÅI 2.1
+          maxLength: 50
+          minLength: 0
+          type: string
+          example: "home"
+        source:
+          description: Source of comparison
+          maxLength: 999
+          minLength: 1
+          type: string
+          example: "DEFRA (Department for Environment, Food and Rural Affairs, UK GOV), conversion factors 2022."
+        sourceLink:
+          description: Link to source (if available)
+          maxLength: 2048
+          minLength: 0
+          type: string
+          example: "https://www.icao.int/environmental-protection/Carbonoffset/Pages/default.aspx"
+        spendingAreaId:
+          description: Spending Area Id from ÅI 3.0
+          maxLength: 10
+          minLength: 0
+          type: string
+          example: "40"
+        tonne:
+          description: Tonne for comparison
+          maxLength: 10
+          minLength: 1
+          type: string
+          example: "10"
+        version:
+          description: Comparison version number
+          maxLength: 10
+          minLength: 1
+          type: string
+          example: '1.0'
+      required:
+        - content
+        - description
+        - id
+        - language
+        - mainCategory
+        - source
+        - sourceLink
+        - spendingAreaId
+        - tonne
+        - version
+      type: object
     Profiles:
       title: profiles
       type: object
@@ -2359,6 +2552,8 @@ components:
       example: branding
       schema:
         type: string
+        minLength: 0
+        maxLength: 100
     Heading:
       name: heading
       in: query
@@ -2374,9 +2569,8 @@ components:
       required: false
       example: 20
       schema:
-        type: integer
-        minimum: 1
-        maximum: 100
+        type: string
+        pattern: '^(?!0)([1-9][0-9]{0,2})$'
     Page:
       name: page
       in: query
@@ -2384,8 +2578,8 @@ components:
       required: false
       example: 2
       schema:
-        type: integer
-        minimum: 1
+        type: string
+        pattern: '^(?!0)([1-9][0-9]{0,2})$'
     Version:
       name: version
       in: query
@@ -2402,7 +2596,8 @@ components:
       required: false
       example: en
       schema:
-        $ref: '#/components/schemas/LanguageCode'
+        type: string
+        pattern: '^[a-z]{2}$'
     Period:
       name: period
       in: query
@@ -2427,6 +2622,39 @@ components:
       example: T101
       schema:
         type: string
+    MainCategory:
+      name: main_category
+      in: query
+      description: Main category for which comparison needed
+      required: false
+      example: home
+      schema:
+        maxLength: 50
+        minLength: 0
+        type: string
+    SpendingAreaId:
+      name: spending_area_id
+      in: query
+      description: Spending area id for which comparison needed
+      required: false
+      example: '20'
+      schema:
+        maxLength: 10
+        minLength: 0
+        type: string
+    Tonne:
+      name: tonne
+      in: query
+      description: Specify tonne for comparison
+      required: false
+      example: "5"
+      schema:
+        enum:
+          - "1"
+          - "5"
+          - "10"
+        type: string
+        pattern: '^(?!\\s*$).+'
   requestBodies:
     ServiceProviderConfig:
       description: Configuration details for service provider which needs to be update. It should contain only those parameters which you want to update. If you are calling this API for the first time then it is recommended to send all the parameters.
@@ -2855,6 +3083,15 @@ components:
           examples:
             InsightsByIdResponse:
               $ref: '#/components/examples/InsightsByIdResponse'
+    ComparisonsResponse:
+      description: >-
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Comparison'
+          examples:
+            ComparisonsResponse:
+              $ref: '#/components/examples/ComparisonsResponse'
     MissingInsightAttributesBadRequestError:
       description: >-
         This response code is returned when one or more request parameters is
@@ -2918,6 +3155,60 @@ components:
               $ref: '#/components/examples/InsightItemNotFoundInVersionError'
             UnsupportedLanguageError:
               $ref: '#/components/examples/UnsupportedLanguageError'
+    Personas:
+      description: Returns the available list of all the personas.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Personas'
+          examples:
+            PersonasResponse:
+              $ref: '#/components/examples/PersonaResponseData'
+    PersonasBadRequestError:
+      description: >-
+        This response code is returned when one or more request parameters is
+        either missing or is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            UnsupportedLanguageError:
+              $ref: '#/components/examples/UnsupportedLanguageError'
+            PageNumberError:
+              $ref: '#/components/examples/PageNumberError'
+            PageSizeNumberError:
+              $ref: '#/components/examples/PageSizeNumberError'
+    ComparisonsNotFoundError:
+      description: >-
+        This response code is returned when the server cannot find the
+        version which has been used to call this API.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            ServiceProviderNotFoundError:
+              $ref: '#/components/examples/ServiceProviderNotFoundError'
+            ComparisonNotFoundInVersionError:
+              $ref: '#/components/examples/ComparisonNotFoundInVersionError'
+            UnsupportedLanguageError:
+              $ref: '#/components/examples/UnsupportedLanguageError'
+    ComparisonsBadRequestError:
+      description: >-
+        This response code is returned when one or more request parameters is
+        either missing or is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            UnsupportedLanguageError:
+              $ref: '#/components/examples/UnsupportedLanguageError'
+            UnsupportedTonneError:
+              $ref: '#/components/examples/UnsupportedTonneError'
+            UnsupportedVersionError:
+              $ref: '#/components/examples/UnsupportedVersionError'
 
   examples:
     PaymentCardEnrolments:
@@ -4046,3 +4337,71 @@ components:
               key2: 1
               key3: 2
           version: '1.0'
+    ComparisonsResponse:
+      value:
+        id: "1"
+        language: en
+        content: 5 tonne of CO2e correspond to the footprint from powering a freezer in the UK for about 18 years.
+        tonne: "5"
+        description: 'UK electricity 2022 Freezer power rating used: 150W'
+        mainCategory: home
+        spendingAreaId: "10"
+        source: DEFRA (Department for Environment, Food and Rural Affairs, UK GOV), conversion factors 2022 & UK Centre for Sustainable Energy
+        sourceLink: 'https://www.cse.org.uk/advice/advice-and-support/how-much-electricity-am-i-using'
+        version: "1.0"
+    ComparisonNotFoundInVersionError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: VERSION_NOT_FOUND
+              Description: "Comparisons unavailable in 1.0 (use: )"
+              Recoverable: false
+              Details: ""
+    UnsupportedTonneError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: "Tonne must be one of the following values: 1, 5, 10"
+              Recoverable: false
+              Details: ""
+    UnsupportedVersionError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: "Version must follow format: x.y (example: 1.0)"
+              Recoverable: false
+              Details: ""
+    PageNumberError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: "page must be less than or equals to 999"
+              Recoverable: false
+              Details: ""
+    PageSizeNumberError:
+      value:
+        Errors:
+          Error:
+            - Source: Carbon-Calculator
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: "pageSize must be less than or equals to 999"
+              Recoverable: false
+              Details: ""
+    PersonaResponseData:
+      value:
+        items:
+          - description: Individuals confident in understanding about climate changes.
+            id: "1"
+            language: "en"
+            title: "Climate Focused"
+        language: "en"
+        page: 1
+        totalItemCount: 1
+        totalPageCount: 1

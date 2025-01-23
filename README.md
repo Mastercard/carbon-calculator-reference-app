@@ -122,6 +122,12 @@ Fetches a given Insight and marks it as viewed in your profile. Issuer has to sa
 16. **Get Benchmarks** <br/>
 Returns a benchmark for a specific country for the year 2020, monthly or yearly.
 
+17. **Get Personas** <br/>
+A persona is a type of character described based on the answers a user has given to survey questions. There is a list of personas, and one of them is assigned to the profile during profile creation.
+
+18. **Get Comparisons** <br/>
+Fetches comparisons data by comparing tonnes of Co2 with any day to day life examples.
+
 More details can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/use-cases/).    
 
 
@@ -153,6 +159,8 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
                 - PUT <Host>/demo/insights <br>
                 - PUT <Host>/demo/insights/{id} <br>
                 - GET <Host>/demo/benchmarks        
+                - GET <Host>/demo/personas
+                - GET <Host>/demo/comparisons
           - APIs exposed on India Region:
                 - POST <Host>/demo/carbon-scores
                                                                                

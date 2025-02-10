@@ -539,6 +539,40 @@ class CarbonCalculatorControllerTest {
         assertNotNull(response);
     }
 
+    @Test
+    void addProfileToPaymentCard() throws Exception {
+
+        when(environmentalImpactService.addProfileToPaymentCard(any(),any())).thenReturn(getMockPaymentCardProfilesResponse());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonContent = objectMapper.writeValueAsString(getMockPaymentCardProfilesRequest());
+
+        MvcResult mvcResult = this.mockMvc.perform(post("/demo/payment-cards/{payment_card_id}/profiles".replace("{payment_card_id}", "73c0711e-1851-4771-950a-055dded7f162")).contentType(
+                MediaType.APPLICATION_JSON).content(
+                jsonContent)).andExpect(
+                status().isOk()).andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
+        assertNotNull(response);
+
+    }
+
+    @Test
+    void addProfileToPaymentCardException() throws Exception {
+
+        when(environmentalImpactService.addProfileToPaymentCard(any(),any())).thenThrow(apiException);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonContent = objectMapper.writeValueAsString(getMockPaymentCardProfilesRequest());
+
+        MvcResult mvcResult = this.mockMvc.perform(post("/demo/payment-cards/{payment_card_id}/profiles".replace("{payment_card_id}", "73c0711e-1851-4771-950")).contentType(
+                MediaType.APPLICATION_JSON).content(
+                jsonContent)).andExpect(
+                status().isBadRequest()).andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
+        assertNotNull(response);
+
+    }
+
     private CarbonScoreDetails getInvalidMccResponse(){
         CarbonScoreDetails scoreResponse = new CarbonScoreDetails();
 

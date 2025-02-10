@@ -16,6 +16,7 @@ import org.openapitools.client.api.PaymentCardApi;
 import org.openapitools.client.model.*;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,9 +46,6 @@ class ServiceTest {
 
     @InjectMocks
     private InsightsRequestPayload insightsRequestPayload;
-
-    @InjectMocks
-    private InsightsByIdRequestPayload insightsByIdRequestPayload;
 
     @InjectMocks
     private PaymentCardService paymentCardService;
@@ -388,7 +386,7 @@ class ServiceTest {
     void getSurveys() throws Exception {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(200, new HashMap<>(), surveys()));
-        Surveys surveys = engagementService.getSurveys();
+        Surveys surveys = engagementService.getSurvey();
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -406,7 +404,7 @@ class ServiceTest {
                         "")));
 
         ApiException apiException = Assertions.assertThrows(ApiException.class,
-                () -> engagementService.getSurveys());
+                () -> engagementService.getSurvey());
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -415,17 +413,15 @@ class ServiceTest {
         Assertions.assertNotNull(apiException.getResponseBody());
     }
     @Test
-    void updateUserProfile() throws Exception {
+    void userProfile() throws Exception {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(200, new HashMap<>(), MockData.getMockProfilesResponse()));
 
         Profiles profiles = new Profiles();
-        ProfilesProfilesPayload payload = new ProfilesProfilesPayload();
-        payload.setId("1");
-        payload.setVersion("v1.1");
-        profiles.setProfilesPayload(payload);
+        ProfilesSurveyioResults payload = new ProfilesSurveyioResults();
+        profiles.setSurveyioResults(payload);
 
-        Profile profile = engagementService.updateUserProfile(profiles);
+        Profile profile = engagementService.userProfile(profiles);
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -434,7 +430,7 @@ class ServiceTest {
         assertNotNull(profile);
     }
     @Test
-    void updateUserProfileErrorScenario() throws Exception {
+    void userProfileErrorScenario() throws Exception {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenThrow(new ApiException(404, new HashMap<>(),
                 getErrorResponseBody(
                         "ACCOUNT_NOT_FOUND",
@@ -444,7 +440,7 @@ class ServiceTest {
 
 
         ApiException apiException = Assertions.assertThrows(ApiException.class,
-                () -> engagementService.updateUserProfile(profiles));
+                () -> engagementService.userProfile(profiles));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -454,20 +450,18 @@ class ServiceTest {
     }
 
     @Test
-    void updateUserInsights() throws Exception {
+    void userInsights() throws Exception {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(200, new HashMap<>(), MockData.getMockInsightsResponse()));
         InsightsRequestPayload insightsRequestPayload = new InsightsRequestPayload();
-        InsightsRequestPayloadInsightsPayload insightsRequestPayloadInsightsPayload = new InsightsRequestPayloadInsightsPayload();
-        insightsRequestPayloadInsightsPayload.setDocc("");
-        insightsRequestPayloadInsightsPayload.setMain("shopping");
-        insightsRequestPayloadInsightsPayload.setMainCategory("shopping");
-        insightsRequestPayloadInsightsPayload.setSubCategory("clothes");
-        insightsRequestPayloadInsightsPayload.setSpendingAreaId("10");
-        insightsRequestPayload.setInsightsPayload(insightsRequestPayloadInsightsPayload);
+        insightsRequestPayload.setDocc("");
+        insightsRequestPayload.setMain("shopping");
+        insightsRequestPayload.setMainCategory("shopping");
+        insightsRequestPayload.setSubCategory("clothes");
+        insightsRequestPayload.setSpendingAreaId("10");
 
 
-        InsightsData insightsData = engagementService.updateUserInsights(insightsRequestPayload,"branding",false,"20","2","1.1","en");
+        InsightsData insightsData = engagementService.userInsights(insightsRequestPayload);
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -476,7 +470,7 @@ class ServiceTest {
         assertNotNull(insightsData);
     }
     @Test
-    void updateUserInsightsErrorScenario() throws Exception {
+    void userInsightsErrorScenario() throws Exception {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenThrow(new ApiException(404, new HashMap<>(),
                 getErrorResponseBody(
                         "ACCOUNT_NOT_FOUND",
@@ -486,7 +480,7 @@ class ServiceTest {
 
 
         ApiException apiException = Assertions.assertThrows(ApiException.class,
-                () -> engagementService.updateUserInsights(insightsRequestPayload,"",false,"1","mvn","",""));
+                () -> engagementService.userInsights(insightsRequestPayload));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -536,7 +530,7 @@ class ServiceTest {
                 new ApiResponse<>(200, new HashMap<>(), MockData.getMockInsightsByIdResponse()));
 
 
-        InsightsResponseById insightsResponseById   = engagementService.getInsightsById("T101",insightsByIdRequestPayload,"branding","en","1.1");
+        InsightsResponseById insightsResponseById   = engagementService.getInsightsById("T101", "branding","en");
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -555,7 +549,7 @@ class ServiceTest {
                         "")));
 
         ApiException apiException = Assertions.assertThrows(ApiException.class,
-                () -> engagementService.getInsightsById("T101",insightsByIdRequestPayload,"","",""));
+                () -> engagementService.getInsightsById("T101", "",""));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -568,7 +562,7 @@ class ServiceTest {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(200, new HashMap<>(), new Personas()));  // Adjust as necessary for Personas
 
-        Personas personas = engagementService.getPersonas("branding", "en", "20", "1");
+        Personas personas = engagementService.getPersonas("branding", "en");
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -586,7 +580,7 @@ class ServiceTest {
                         "")));
 
         ApiException apiException = Assertions.assertThrows(ApiException.class,
-                () -> engagementService.getPersonas("branding", "en", "20", "1"));
+                () -> engagementService.getPersonas("branding", "en"));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -599,8 +593,7 @@ class ServiceTest {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(200, new HashMap<>(), new Comparison()));
 
-        Comparison comparison = engagementService.getComparisons("branding", "en", "1.0", "category1", "spend1", "1");
-
+        Comparison comparison = engagementService.getComparisons("branding", "en", "category1", "spend1", BigDecimal.valueOf(1));
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
         verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
@@ -617,7 +610,42 @@ class ServiceTest {
                         "")));
 
         ApiException apiException = Assertions.assertThrows(ApiException.class,
-                () -> engagementService.getComparisons("branding", "en", "1.0", "category1", "spend1", "1"));
+                () -> engagementService.getComparisons("branding", "en", "category1", "spend1", BigDecimal.valueOf(1)));
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        Assertions.assertNotNull(apiException.getResponseBody());
+    }
+    @Test
+    void addProfileToPaymentCard_Success() throws Exception {
+        when(apiClient.escapeString(anyString())).thenReturn("randomString");
+
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
+                new ApiResponse<>(200, new HashMap<>(), new PaymentCardProfile()));
+
+        PaymentCardProfile paymentCardProfile = environmentalImpactService.addProfileToPaymentCard("8cd77c74-ca32-42f9-83fc-85ca2dfabe96", MockData.getMockPaymentCardProfilesRequest());
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        assertNotNull(paymentCardProfile);
+
+    }
+
+    @Test
+    void addProfileToPaymentCard_ErrorScenario() throws Exception {
+        when(apiClient.escapeString(anyString())).thenReturn("randomString");
+
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenThrow(new ApiException(404, new HashMap<>(),
+                getErrorResponseBody(
+                        "ACCOUNT_NOT_FOUND",
+                        "We cannot find the account which you are using to access this service. Kindly register your account or contact your Mastercard associate if you have already registered with us earlier.",
+                        false,
+                        "")));
+
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
+                () -> environmentalImpactService.addProfileToPaymentCard("73c0711e-1851-4771-950a-055dded7f162", getMockPaymentCardProfilesRequest()));
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -625,6 +653,5 @@ class ServiceTest {
 
         Assertions.assertNotNull(apiException.getResponseBody());
     }
-
 
 }

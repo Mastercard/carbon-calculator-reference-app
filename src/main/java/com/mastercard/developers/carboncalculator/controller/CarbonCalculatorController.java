@@ -44,6 +44,7 @@ import static com.mastercard.developers.carboncalculator.util.EncryptionHelper.g
  * 5. /aggregate-transaction-footprints
  * 6. /historical-transaction-footprints
  * 7. /service-provider
+ * 8. /payment-cards/{payment_card_id}/profiles
  * <p>
  * Issuer can consume these endpoints directly through their web or mobile application or add their implementation on top of this.
  */
@@ -227,6 +228,20 @@ public class CarbonCalculatorController {
             return getErrorObjectResponseEntity(exception);
         }
         return ResponseEntity.ok(paymentCardEnrolments);
+    }
+
+    @PostMapping("/payment-cards/{payment_card_id}/profiles")
+    public ResponseEntity<Object> addProfileToPaymentCard(@PathVariable("payment_card_id") String paymentCardId,@RequestBody CardClimateProfile cardClimateProfile) {
+
+        PaymentCardProfile paymentCardProfile = null;
+        try {
+            paymentCardProfile = environmentalImpactService.addProfileToPaymentCard(paymentCardId, cardClimateProfile);
+        } catch (ApiException exception) {
+            LOGGER.error("transaction-footprints apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(paymentCardProfile);
+
     }
 
 

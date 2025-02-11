@@ -89,7 +89,7 @@ public class ApiConfiguration {
     }
     @Bean
     @Qualifier("apiClientEngagement")
-    public ApiClient setupApiClientEngagement() {
+    public ApiClient apiClientEngagement() {
         var apiClient = new ApiClient();
 
         apiClient.setBasePath(basePathEngagement);

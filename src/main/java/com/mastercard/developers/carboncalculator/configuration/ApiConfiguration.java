@@ -88,8 +88,9 @@ public class ApiConfiguration {
         return apiClient;
     }
     @Bean
+    @SuppressWarnings("java:S6831")
     @Qualifier("apiClientEngagement")
-    public ApiClient apiClientEngagement() {
+    public ApiClient setupApiClientEngagement() {
         var apiClient = new ApiClient();
 
         apiClient.setBasePath(basePathEngagement);

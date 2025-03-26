@@ -2338,8 +2338,6 @@ components:
           example: "en"
         total:
           description: The total number of items in the collection.
-          maximum: 1.7976931348623157e+308
-          minimum: 1
           type: integer
           example: 5
       required:
@@ -2442,16 +2440,6 @@ components:
           minLength: 1
           type: string
           example: "10"
-      required:
-        - content
-        - description
-        - id
-        - language
-        - mainCategory
-        - source
-        - sourceLink
-        - spendingAreaId
-        - tonne
       type: object
     Benchmark:
       title: Benchmarks

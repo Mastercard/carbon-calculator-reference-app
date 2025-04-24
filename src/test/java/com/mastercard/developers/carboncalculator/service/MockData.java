@@ -228,20 +228,20 @@ public class MockData {
 
     public static Profiles getMockProfilesRequest() {
         ProfilesSurveyioResults surveyioResults = new ProfilesSurveyioResults();
-
-        surveyioResults.setSex("demo.f");
-        surveyioResults.setAge("12");
-        surveyioResults.setCountry("AX");
+        surveyioResults.setSex("demo.m");
+        surveyioResults.setAge("demo.lt60");
+        surveyioResults.setCountry("AS");
         surveyioResults.setInterest("stronglyDisagree");
         surveyioResults.setKnowledge("stronglyDisagree");
-        surveyioResults.setDiet("vegan");
-        surveyioResults.setRenewableElectricity("energy.idk");
-        surveyioResults.setHaveCar("Yes");
-        surveyioResults.setFlyFrequency("Yes");
-        surveyioResults.setShopFrequency("often");
-        surveyioResults.setDifference("disagree");
-        surveyioResults.setConsciousPurchasingDecision("disagree");
-        surveyioResults.setExplainCarbonFootprint("stronglyAgree");
+        surveyioResults.setDiet("diet.all");
+        surveyioResults.setRenewableElectricity("energy.not");
+        surveyioResults.setHaveCar("transport.hasCar");
+        surveyioResults.setCarFuel("transport.petrol");
+        surveyioResults.setFlyFrequency("transport.secondMonth");
+        surveyioResults.setShopFrequency("lifestyle.shopVeryOften");
+        surveyioResults.setDifference("somewhatDisagree");
+        surveyioResults.setConsciousPurchasingDecision("somewhatDisagree");
+        surveyioResults.setExplainCarbonFootprint("somewhatDisagree");
         Profiles profiles = new Profiles();
         profiles.setSurveyioResults(surveyioResults);
         return profiles;
@@ -269,25 +269,31 @@ public class MockData {
         response.setProfile(climateProfile);
         return response;
     }
-    public static CardClimateProfile getMockPaymentCardProfilesRequest() {
-        CardClimateProfileSurveyioResults surveyioResults = new CardClimateProfileSurveyioResults();
 
-        surveyioResults.setSex("demo.f");
-        surveyioResults.setAge("12");
-        surveyioResults.setCountry("AX");
-        surveyioResults.setInterest("stronglyDisagree");
-        surveyioResults.setKnowledge("stronglyDisagree");
-        surveyioResults.setDiet("vegan");
-        surveyioResults.setRenewableElectricity("energy.idk");
-        surveyioResults.setHaveCar("Yes");
-        surveyioResults.setFlyFrequency("Yes");
-        surveyioResults.setShopFrequency("often");
-        surveyioResults.setDifference("disagree");
-        surveyioResults.setConsciousPurchasingDecision("disagree");
-        surveyioResults.setExplainCarbonFootprint("stronglyAgree");
-        CardClimateProfile profiles = new CardClimateProfile();
-        profiles.setSurveyioResults(surveyioResults);
-        return profiles;
+    public static CardClimateProfile getMockPaymentCardProfilesRequest() {
+        CardClimateProfile cardClimateProfile = new CardClimateProfile();
+        ClimateProfile climateProfile = new ClimateProfile();
+        ClimateProfileUserAttributes userAttributes = new ClimateProfileUserAttributes();
+        ClimateProfileTraits climateProfileTraits = new ClimateProfileTraits();
+        userAttributes.setCountry("AX");
+        userAttributes.setDemo(new BigDecimal("34"));
+        userAttributes.setEnergy(new BigDecimal("34"));
+        userAttributes.setDiet(new BigDecimal("34"));
+        userAttributes.setTransport(new BigDecimal("34"));
+        userAttributes.setLifestyle(new BigDecimal("34"));
+
+        climateProfile.setUserAttributes(userAttributes);
+        climateProfile.setBenchmarks(Map.of("Benchmark", "Test"));
+        climateProfile.setCreated(OffsetDateTime.parse("2024-05-04T18:45:35.943Z"));
+        climateProfileTraits.knowledge(BigDecimal.valueOf(0.575));
+        climateProfileTraits.lifestyle(BigDecimal.valueOf(0.324));
+        climateProfileTraits.motivated(BigDecimal.valueOf(0.617));
+        climateProfile.setTraits(climateProfileTraits);
+        climateProfile.setPersona("2");
+        climateProfile.setSurveys(new HashMap<String, Object>());
+
+        cardClimateProfile.setProfile(climateProfile);
+        return cardClimateProfile;
     }
 
     public static InsightsRequestPayload getMockInsightsRequest() {

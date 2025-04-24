@@ -174,7 +174,7 @@ class EnvironmentalImpactServiceSIT {
     void addProfileToPaymentCard() {
 
         try {
-            PaymentCardProfile paymentCardProfile = environmentalImpactService.addProfileToPaymentCard("8cd77c74-ca32-42f9-83fc-85ca2dfabe96", MockData.getMockPaymentCardProfilesRequest());
+            PaymentCardProfile paymentCardProfile = environmentalImpactService.addProfileToPaymentCard("855ac7d6-6177-4a40-b280-9f55451b897a", MockData.getMockPaymentCardProfilesRequest());
 
 
             assertNotNull(paymentCardProfile);

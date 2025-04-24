@@ -230,8 +230,7 @@ paths:
         and nuanced representation of their climate preferences and
         perspectives. See (https://surveyjs.io/survey-creator)
       summary: >-
-        The profile service calculates a climate profile based on the answers
-        from a survey obtained from the surveys service.That profile will store with the provided payment card.
+        The climate profile of user will be stored with the provided payment card.
       tags:
         - Environmental Impact
       parameters:
@@ -510,97 +509,14 @@ components:
         - paymentCardId
         - profile
     CardClimateProfile:
-      title: CardClimateProfile
+      title: cardClimateProfile
       type: object
-      description: Payment card and climate profile of the user.
+      description: Climate profile of the user.
       properties:
-        surveyioResults:
-          type: object
-          properties:
-            sex:
-              type: string
-              description: "'demo.m' stands for Male, 'demo.f' stands for Female, 'demo.other' stands for other"
-              example: demo.m
-            age:
-              type: string
-              description: "'demo.lt10' for age in range 0-9, 'demo.lt20' for age in the range 10-19, 'demo.lt30' for age in the range 20-29, 'demo.lt40' for age in the range 30-39, 'demo.lt50' for age in the range 40-49, 'demo.lt60' for age in the range 50-59, 'demo.lt70' for age in the range 60-69, 'demo.lt80' for age in the range 70-79, 'demo.lt90' for age in the range 80-89, 'demo.gt90' for age greater than 90"
-              example: demo.lt30
-            country:
-              type: string
-              description: ISO 3166-1 alpha-2 format country code of country of residence. For example, 'IN' stands for India, 'US' stands for United States of America, 'BH' stands for Bahrain
-              example: IN
-            interest:
-              type: string
-              description: >-
-                'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
-              example: Neutral
-            knowledge:
-              type: string
-              description: >-
-                'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
-              example: Neutral
-            diet:
-              type: string
-              description: >-
-                'diet.all' stands for "I eat everything", 'diet.meatlessDay' stands for "One meatless day a week", 'diet.avoidRed' stands for "I try to avoid eating red meat", 'diet.noRed' stands for "I don't eat red meat", 'diet.pescetarian' stands for "Pescetarian(I don't eat meat except fish)", 'diet.vegetarian' stands for "Vegetarian", 'diet.vegan' stands for "Vegan"
-              example: diet.noRed
-            renewableElectricity:
-              type: string
-              description: >-
-                'energy.renewable' stands for "Yes, we use a supplier of renewable electricity", 'energy.selfProduced' stands for "Yes, we produce our own renewable electricity", 'energy.not' stands for "No", 'energy.idk' stands for "I don't know"
-              example: energy.renewable
-            haveCar:
-              type: string
-              description: >-
-                'transport.hasCar' stands for "Yes" and 'transport.noCar' stands for "No"
-              example: transport.hasCar
-            carFuel:
-              type: string
-              description: >-
-                'transport.petrol' stands for "Petrol", 'transport.diesel' stands for "Diesel", 'transport.bio' stands for "Bio-fuel or bio-gas", 'transport.hybrid' stands for "Hybrid", 'transport.phev' stands for "Plug-in hybrid", 'transport.electric' stands for "Electric", 'transport.idk' stands for "I don't know"
-              example: transport.petrol
-            flyFrequency:
-              type: string
-              description: >-
-                'transport.everyMonth' stands for "Every month or more", 'transport.secondMonth' stands for "Every second month", 'transport.twice' stands for "A couple of times a year", 'transport.once' stands for "Once a year or less", 'transport.Never' stands for "Never"
-              example: transport.twice
-            shopFrequency:
-              type: string
-              description: >-
-                'lifestyle.shopVeryOften' stands for "Every week or more often", 'lifestyle.shopOften' stands for "2-3 times every month", 'lifestyle.shopSometimes' stands for "Once a month", 'lifestyle.shopSeldom' stands for "1-2 times every 3 months", 'lifestyle.shopRarely' stands for "Less often or not at all"
-              example: once a month
-            difference:
-              type: string
-              description: >-
-                'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
-              example: somewhatAgree
-            consciousPurchasingDecision:
-              type: string
-              description: >-
-                'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
-              example: Neutral
-            explainCarbonFootprint:
-              type: string
-              description: >-
-                'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
-              example: stronglyDisagree
-          required:
-            - sex
-            - age
-            - country
-            - interest
-            - knowledge
-            - diet
-            - renewableElectricity
-            - haveCar
-            - flyFrequency
-            - shopFrequency
-            - difference
-            - consciousPurchasingDecision
-            - explainCarbonFootprint
-          additionalProperties: false
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
       required:
-        - surveyioResults
+        - profile
     Surveys:
       type: object
       title: Surveys
@@ -2688,7 +2604,7 @@ components:
         type: number
   requestBodies:
     CardClimateProfile:
-      description: Payment card id  with survey answers for profile creation.
+      description:  Consumer's climate profile.
       content:
         application/json:
           schema:
@@ -4347,20 +4263,28 @@ components:
         total: 5
     CardClimateProfile:
       value:
-        surveyioResults:
-          sex: demo.f
-          age: demo.lt20
-          country: AX
-          interest: stronglyDisagree
-          knowledge: stronglyDisagree
-          diet: diet.vegan
-          renewableElectricity: energy.idk
-          haveCar: transport.noCar
-          flyFrequency: transport.never
-          shopFrequency: lifestyle.shopRarely
-          difference: stronglyDisagree
-          consciousPurchasingDecision: stronglyDisagree
-          explainCarbonFootprint: stronglyDisagree
+        profile:
+          traits:
+            knowledge: 0
+            lifestyle: 0.683
+            motivated: 0.3
+          userAttributes:
+            demo: 34
+            diet: 16399
+            lifestyle: 16
+            energy: 0
+            transport: 0
+            country: AF
+          created: '2024-01-19T09:31:08.065Z'
+          surveys:
+            key1:
+              key2: 1
+              key3: 2
+          persona: '5'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
     PaymentCardProfile:
       value:
         paymentCardId: "c5d88571-ac15-465a-a0d8-1ad1327b9a06"

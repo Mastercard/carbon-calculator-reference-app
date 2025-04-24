@@ -1,6 +1,7 @@
 package com.mastercard.developers.carboncalculator.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
 import com.mastercard.developers.carboncalculator.configuration.ApiConfiguration;
 import com.mastercard.developers.carboncalculator.service.AddCardService;
@@ -545,6 +546,7 @@ class CarbonCalculatorControllerTest {
         when(environmentalImpactService.addProfileToPaymentCard(any(),any())).thenReturn(getMockPaymentCardProfilesResponse());
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         String jsonContent = objectMapper.writeValueAsString(getMockPaymentCardProfilesRequest());
 
         MvcResult mvcResult = this.mockMvc.perform(post("/demo/payment-cards/{payment_card_id}/profiles".replace("{payment_card_id}", "73c0711e-1851-4771-950a-055dded7f162")).contentType(
@@ -562,6 +564,7 @@ class CarbonCalculatorControllerTest {
         when(environmentalImpactService.addProfileToPaymentCard(any(),any())).thenThrow(apiException);
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         String jsonContent = objectMapper.writeValueAsString(getMockPaymentCardProfilesRequest());
 
         MvcResult mvcResult = this.mockMvc.perform(post("/demo/payment-cards/{payment_card_id}/profiles".replace("{payment_card_id}", "73c0711e-1851-4771-950")).contentType(

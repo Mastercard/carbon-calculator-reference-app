@@ -71,7 +71,7 @@ class EngagementServiceSIT {
             insightsRequestPayload.setMainCategory("shopping");
             insightsRequestPayload.subCategory("clothes");
             insightsRequestPayload.setMain("shopping");
-            insightsRequestPayload.setDocc("");
+            insightsRequestPayload.setDocc("60101");
             insightsRequestPayload.setSpendingAreaId("10");
             var insightsData = engagementService.userInsights(insightsRequestPayload);
             LOGGER.info("{}", insightsData);

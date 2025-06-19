@@ -733,7 +733,7 @@ components:
       example: 'AIIA'
       description: >-
         Type defines transaction scoring type, 
-        based on which score has been generated.Allowed value is AIIA.      
+        based on which score has been generated.Allowed value is AIIA.
     mcc:
       type: string
       description: >-
@@ -851,7 +851,7 @@ components:
               title: Classification
               type: object
               description: >-
-                  Classification for this transaction.
+                Classification for this transaction.
               properties:
                 type:
                   $ref: '#/components/schemas/ClassificationType'
@@ -865,31 +865,31 @@ components:
             spendingAreaId:
               type: number
               description: >-
-                  Spending area id
+                Spending area id
               example: 30
             scoreStatus:
               type: string
               example: 'SUCCESS'
               description: >-
-                  scoreStatus defines the status of carbon scoring for a given transaction. Possible values are,
-                  
-                  * SUCCESS = Transaction is scored successfully.
-                  
-                  * FAILURE = Transaction scoring is failed.
+                scoreStatus defines the status of carbon scoring for a given transaction. Possible values are,
+                
+                * SUCCESS = Transaction is scored successfully.
+                
+                * FAILURE = Transaction scoring is failed.
               minLength: 5
               maxLength: 7
             errorCode:
               type: string
               example: 'INVALID_MCC'
               description: >-
-                  A unique constant identifying the error case encountered during carbon scoring for a given transaction.
+                A unique constant identifying the error case encountered during carbon scoring for a given transaction.
               minLength: 1
               maxLength: 100
             errorMessage:
               type: string
               example: 'MCC Provided in the request is Invalid. Kindly Request again with valid MCC.'
               description: >-
-                  Short description of the errorCode field.
+                Short description of the errorCode field.
               minLength: 10
               maxLength: 1000
     AggregateSearchCriteria:
@@ -1662,69 +1662,97 @@ components:
               type: string
               description: "'demo.m' stands for Male, 'demo.f' stands for Female, 'demo.other' stands for other"
               example: demo.m
+              pattern: 'demo\.(f|m|other)'
+              x-pattern-message: "must be in valid format"
             age:
               type: string
               description: "'demo.lt10' for age in range 0-9, 'demo.lt20' for age in the range 10-19, 'demo.lt30' for age in the range 20-29, 'demo.lt40' for age in the range 30-39, 'demo.lt50' for age in the range 40-49, 'demo.lt60' for age in the range 50-59, 'demo.lt70' for age in the range 60-69, 'demo.lt80' for age in the range 70-79, 'demo.lt90' for age in the range 80-89, 'demo.gt90' for age greater than 90"
               example: demo.lt30
+              pattern: 'demo\.lt\d{2}|demo\.gt\d{2}'
+              x-pattern-message: "must be in valid format"
             country:
               type: string
               description: 2 letter country code of country of residence. For example, 'IN' stands for India, 'US' stands for United States of America, 'BH' stands for Bahrain
               example: IN
+              pattern: ^[A-Z]{2}$
+              x-pattern-message: "must be exactly 2 uppercase letters"
             interest:
               type: string
               description: >-
                 'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
               example: Neutral
+              pattern: 'stronglyAgree|somewhatAgree|neutral|somewhatDisagree|stronglyDisagree'
+              x-pattern-message: "must be in valid format"
             knowledge:
               type: string
               description: >-
                 'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
               example: Neutral
+              pattern: 'stronglyAgree|somewhatAgree|neutral|somewhatDisagree|stronglyDisagree'
+              x-pattern-message: "must be in valid format"
             diet:
               type: string
               description: >-
                 'diet.all' stands for "I eat everything", 'diet.meatlessDay' stands for "One meatless day a week", 'diet.avoidRed' stands for "I try to avoid eating red meat", 'diet.noRed' stands for "I don't eat red meat", 'diet.pescetarian' stands for "Pescetarian(I don't eat meat except fish)", 'diet.vegetarian' stands for "Vegetarian", 'diet.vegan' stands for "Vegan"
               example: diet.noRed
+              pattern: 'diet\.(?:all|meatlessDay|avoidRed|noRed|pescetarian|vegetarian|vegan)'
+              x-pattern-message: "must be in valid format"
             renewableElectricity:
               type: string
               description: >-
                 'energy.renewable' stands for "Yes, we use a supplier of renewable electricity", 'energy.selfProduced' stands for "Yes, we produce our own renewable electricity", 'energy.not' stands for "No", 'energy.idk' stands for "I don't know"
               example: energy.renewable
+              pattern: 'energy\.(?:renewable|selfProduced|not|idk)'
+              x-pattern-message: "must be in valid format"
             haveCar:
               type: string
               description: >-
                 'transport.hasCar' stands for "Yes" and 'transport.noCar' stands for "No"
               example: transport.hasCar
+              pattern: 'transport\.(?:hasCar|noCar)'
+              x-pattern-message: "must be in valid format"
             carFuel:
               type: string
               description: >-
                 'transport.petrol' stands for "Petrol", 'transport.diesel' stands for "Diesel", 'transport.bio' stands for "Bio-fuel or bio-gas", 'transport.hybrid' stands for "Hybrid", 'transport.phev' stands for "Plug-in hybrid", 'transport.electric' stands for "Electric", 'transport.idk' stands for "I don't know"
               example: transport.petrol
+              pattern: 'transport\.(?:petrol|diesel|bio|hybrid|phev|electric|idk)'
+              x-pattern-message: "must be in valid format"
             flyFrequency:
               type: string
               description: >-
                 'transport.everyMonth' stands for "Every month or more", 'transport.secondMonth' stands for "Every second month", 'transport.twice' stands for "A couple of times a year", 'transport.once' stands for "Once a year or less", 'transport.Never' stands for "Never"
               example: transport.twice
+              pattern: 'transport\.(?:everyMonth|secondMonth|twice|once|Never)'
+              x-pattern-message: 'must be in valid format'
             shopFrequency:
               type: string
               description: >-
                 'lifestyle.shopVeryOften' stands for "Every week or more often", 'lifestyle.shopOften' stands for "2-3 times every month", 'lifestyle.shopSometimes' stands for "Once a month", 'lifestyle.shopSeldom' stands for "1-2 times every 3 months", 'lifestyle.shopRarely' stands for "Less often or not at all"
               example: once a month
+              pattern: 'lifestyle\.(?:shopVeryOften|shopOften|shopSometimes|shopSeldom|shopRarely)'
+              x-pattern-message: 'must be in valid format'
             difference:
               type: string
               description: >-
                 'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
               example: somewhatAgree
+              pattern: 'stronglyAgree|somewhatAgree|neutral|somewhatDisagree|stronglyDisagree'
+              x-pattern-message: 'must be in valid format'
             consciousPurchasingDecision:
               type: string
               description: >-
                 'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
               example: Neutral
+              pattern: 'stronglyAgree|somewhatAgree|neutral|somewhatDisagree|stronglyDisagree'
+              x-pattern-message: 'must be in valid format'
             explainCarbonFootprint:
               type: string
               description: >-
                 'stronglyAgree' stands for 'Strongly Agree', 'somewhatAgree' stands for 'Somewhat Agree', 'Neutral' stands for 'Neutral', 'somewhatDisagree' stands for 'Somewhat Disagree' and 'stronglyDisagree' stands for 'Strongly Disagree'
               example: stronglyDisagree
+              pattern: 'stronglyAgree|somewhatAgree|neutral|somewhatDisagree|stronglyDisagree'
+              x-pattern-message: 'must be in valid format'
           required:
             - sex
             - age
@@ -1852,10 +1880,9 @@ components:
             country:
               type: string
               description: ISO 3166-1 alpha-2 format country code of issuer
-              minLength: 2
-              maxLength: 2
               pattern: '^[A-Z]{2}$'
               example: IN
+              x-pattern-message: "must be exactly 2 uppercase letters"
             demo:
               type: number
               maximum: 9007199254740991
@@ -1964,36 +1991,47 @@ components:
           minLength: 0
           description: document of insights
           example: '331010'
+          pattern: '^\d+$'
+          x-pattern-message: "must be in valid format"
         main:
           type: string
           maxLength: 50
           minLength: 0
           description: description of main category
           example: 'shopping'
+          pattern: '^[A-Za-z]+$'
+          x-pattern-message: "must be in valid format"
         mainCategory:
           type: string
           maxLength: 50
           minLength: 0
           description: details of main category
           example: 'shopping'
+          pattern: '^[A-Za-z]+$'
+          x-pattern-message: "must be in valid format"
         spendingAreaId:
           type: string
           maxLength: 10
           minLength: 0
           description: area of category in which expenditure was made
           example: '30'
+          pattern: '^\d+$'
+          x-pattern-message: "must be in valid format"
         subCategory:
           type: string
           maxLength: 50
           minLength: 0
           description: details of sub category
           example: 'clothes'
+          pattern: '^[A-Za-z]+$'
+          x-pattern-message: "must be in valid format"
         branding:
           type: string
           maxLength: 10
           minLength: 0
           description: document of insights
           example: '331010'
+          x-pattern-message: "branding must be in valid format"
         heading:
           description: Title of the insights content
           type: boolean
@@ -2003,13 +2041,10 @@ components:
           pattern: '^[a-z]{2}$'
           type: string
           example: "en"
+          x-pattern-message: "codes must follow ISO 639-1 format (example: 'en')"
         profile:
           $ref: '#/components/schemas/ClimateProfile'
-    LanguageCode:
-      description: ISO 639-1 format language code
-      example: es
-      pattern: '^[a-z]{2}$'
-      type: string
+
     TransactionDetails:
       title: TransactionDetails
       type: object
@@ -3279,7 +3314,7 @@ components:
           cardBrand: NC
           scoreReference: MID
           carbonEmissionInGrams: 469343.47
-          carbonEmissionInOunces: 16555.62  
+          carbonEmissionInOunces: 16555.62
         - transactionId: fdc4626c-f51e-4ba6-9728-c79ac1d9aec8
           mcc: 5962
           scoreReference: MCC
@@ -4094,7 +4129,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: "One of the request parameters is invalid, try again with correct request."
               Recoverable: false
@@ -4103,13 +4138,13 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: "One of the request parameters is invalid, try again with correct request."
               Recoverable: false
               Details: "profile.userAttributes must not be null"
 
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: "One of the request parameters is invalid, try again with correct request"
               Recoverable: false
@@ -4143,7 +4178,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: ITEM_NOT_FOUND
               Description: "Insight Item not found for the provided id"
               Recoverable: false
@@ -4152,7 +4187,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: VERSION_NOT_FOUND
               Description: "Insight T101 unavailable in 3.1 (use: 1.1)"
               Recoverable: false
@@ -4175,7 +4210,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: "One of the request parameters is invalid, try again with correct request."
               Recoverable: false
@@ -4184,7 +4219,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: "One of the request parameters is invalid, try again with correct request."
               Recoverable: false
@@ -4193,7 +4228,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: "One of the request parameters is invalid, try again with correct request."
               Recoverable: false
@@ -4202,7 +4237,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: "One of the request parameters is invalid, try again with correct request."
               Recoverable: false
@@ -4211,7 +4246,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: LANGUAGE_NOT_FOUND
               Description: "Unsupported language or branding"
               Recoverable: false
@@ -4220,7 +4255,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: "Tonne must be one of the following values: 1, 5, 10"
               Recoverable: false
@@ -4229,7 +4264,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: "Version must follow format: x.y (example: 1.0)"
               Recoverable: false
@@ -4238,7 +4273,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: "page must be less than or equals to 999"
               Recoverable: false
@@ -4247,7 +4282,7 @@ components:
       value:
         Errors:
           Error:
-            - Source: Carbon-Calculator
+            - Source: Carbon-Calculator-Engagement-Services
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: "pageSize must be less than or equals to 999"
               Recoverable: false

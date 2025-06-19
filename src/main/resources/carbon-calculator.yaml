@@ -1547,7 +1547,7 @@ components:
           description: >-
             The application name that generated this error. Every error message
             that is generated and returned by the gateway will have this field
-            equal to Gateway. Other possible values are 'Carbon-Calculator' and
+            equal to Gateway. Other possible values are 'Carbon-Calculator-Engagement-Services' and
             'Service-Provider'.
           minLength: 1
           maxLength: 100

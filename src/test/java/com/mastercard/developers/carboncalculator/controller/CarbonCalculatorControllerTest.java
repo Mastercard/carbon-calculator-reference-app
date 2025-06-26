@@ -438,37 +438,6 @@ class CarbonCalculatorControllerTest {
     }
 
     @Test
-    void batchRegistrationPaymentCards() throws Exception {
-
-
-        when(addCardService.registerBatchPaymentCards(any())).thenReturn(
-                batchPaymentEnrollment());
-
-        MvcResult mvcResult = this.mockMvc.perform(post("/demo/payment-card-enrolments").contentType(
-                MediaType.APPLICATION_JSON).content(
-                gson.toJson(listPaymentCardReference())))
-                .andExpect(status().isOk()).andReturn();
-
-        String response = mvcResult.getResponse().getContentAsString();
-        assertNotNull(response);
-    }
-
-    @Test
-    void batchRegistrationPaymentCardsException() throws Exception {
-
-
-        when(addCardService.registerBatchPaymentCards(any())).thenThrow(apiException);
-
-        MvcResult mvcResult = this.mockMvc.perform(post("/demo/payment-card-enrolments").contentType(
-                        MediaType.APPLICATION_JSON).content(
-                        gson.toJson(listPaymentCardReference())))
-                .andExpect(status().isBadRequest()).andReturn();
-
-        String response = mvcResult.getResponse().getContentAsString();
-        assertNotNull(response);
-    }
-
-    @Test
     void updateServiceProvider() throws Exception {
         ServiceProviderConfig providerConfig = new ServiceProviderConfig();
         providerConfig.setCustomerName("customerName");

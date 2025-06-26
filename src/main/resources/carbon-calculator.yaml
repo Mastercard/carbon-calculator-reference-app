@@ -173,28 +173,6 @@ paths:
           $ref: '#/components/responses/PaymentCardDeletionsBadRequestError'
         '404':
           $ref: '#/components/responses/PaymentCardByIdNotFoundError'
-  /payment-card-enrolments:
-    post:
-      tags:
-        - Payment Card
-      summary: Batch Registration of Payment Cards
-      description: >-
-        Allows a registered Service Provider to add a list of new Payment Cards **(at most maximum of 500 payment cards)**
-        to its profile. This endpoint uses [Mastercard payload
-        encryption](https://developer.mastercard.com/platform/documentation/security-and-authentication/securing-sensitive-data-using-payload-encryption/#mastercard-encryption). Refer to the [Payload
-        Encryption](https://developer.mastercard.com/platform/documentation/security-and-authentication/securing-sensitive-data-using-payload-encryption/)
-        section for implementation details.
-      operationId: BatchRegisterPaymentCards
-      x-mastercard-api-encrypted: true
-      requestBody:
-        $ref: '#/components/requestBodies/PaymentCards'
-      responses:
-        '200':
-          $ref: '#/components/responses/PaymentCardEnrolments'
-        '400':
-          $ref: '#/components/responses/PaymentCardEnrolmentsBadRequestError'
-        '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'
   '/payment-cards/{payment_card_id}/transaction-footprints':
     get:
       tags:

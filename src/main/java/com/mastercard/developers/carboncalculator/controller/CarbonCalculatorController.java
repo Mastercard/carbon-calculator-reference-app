@@ -205,18 +205,6 @@ public class CarbonCalculatorController {
         return ResponseEntity.ok(serviceProvider);
     }
 
-    @PostMapping("/payment-card-enrolments")
-    public ResponseEntity<Object> addBulkPaymentCards(@RequestBody List<PaymentCard> paymentCards) throws ApiException {
-        List<PaymentCardEnrolment> paymentCardEnrolments = null;
-        try {
-            paymentCardEnrolments = addCardService.registerBatchPaymentCards(paymentCards);
-        } catch (ApiException exception) {
-            LOGGER.error("payment-card-enrolments apiException : {}", exception.getResponseBody());
-            return getErrorObjectResponseEntity(exception);
-        }
-        return ResponseEntity.ok(paymentCardEnrolments);
-    }
-
     @PostMapping("/service-providers/payment-cards")
     public ResponseEntity<Object> addBatchPaymentCards(@RequestBody List<PaymentCard> paymentCards) {
         List<PaymentCardEnrolment> paymentCardEnrolments = null;

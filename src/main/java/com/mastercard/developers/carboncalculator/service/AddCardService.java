@@ -80,11 +80,6 @@ public class AddCardService {
 
     }
 
-    public List<PaymentCardEnrolment> registerBatchPaymentCards(List<PaymentCard> paymentCard) throws ApiException {
-        LOGGER.info("Calling Register Batch Payment Cards");
-        return paymentCardApi.batchRegisterPaymentCards(paymentCard);
-    }
-    
     public List<PaymentCardEnrolment> registerBatchPaymentCardsServiceProvider(List<PaymentCard> paymentCard) throws ApiException {
             LOGGER.info("Calling Service Provider Register Batch Payment Cards");
             return serviceProviderApi.bulkRegisterPaymentCards(paymentCard);

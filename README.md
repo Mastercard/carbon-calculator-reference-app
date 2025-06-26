@@ -150,7 +150,6 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
                 - POST <Host>/demo/aggregate-transaction-footprints  
                 - GET <Host>/demo/historical/{paymentcard_id}/transaction-footprints  
                 - GET <Host>/demo/service-providers  
-                - POST <Host>/demo/payment-card-enrolments           
                 - PUT <Host>/demo/service-providers <br>
                 - POST <Host>/demo/payment-card-deletions   
                 - POST <Host>/demo/service-providers/payment-cards 

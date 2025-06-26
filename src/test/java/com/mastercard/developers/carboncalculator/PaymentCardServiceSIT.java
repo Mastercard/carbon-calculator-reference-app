@@ -164,41 +164,6 @@ class PaymentCardServiceSIT {
 
 
     /**
-     * Use case 10. Enrol bulk FPAN(To be deprecated)
-     */
-    @Test
-    @DisplayName("Enroll bulk payment cards(To be deprecated)")
-    void enrollBulkPaymentCards() {
-
-        PaymentCard paymentCard1 = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
-        PaymentCard paymentCard2 = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
-
-        List<PaymentCard> paymentCards = new ArrayList<>();
-        paymentCards.add(paymentCard1);
-        paymentCards.add(paymentCard2);
-
-        try {
-            List<PaymentCardEnrolment> paymentCardEnrolmentList = addCardService.registerBatchPaymentCards(paymentCards);
-
-            LOGGER.info("Enrolled payment cards are {}", paymentCardEnrolmentList);
-
-            assertNotNull(paymentCardEnrolmentList);
-
-            paymentCardEnrolmentList
-                    .stream()
-                    .forEach(paymentCardEnrolment -> {
-                        assertNotNull(paymentCardEnrolment.getPaymentCardId());
-                        assertNotNull(paymentCardEnrolment.getLast4fpan());
-                    }
-            );
-
-
-        } catch (ApiException e) {
-            Assertions.fail(e.getMessage());
-        }
-    }
-    
-    /**
      * Use case 11. Enrol bulk FPAN
      */
     @Test

@@ -519,6 +519,8 @@ components:
       title: PaymentCardEnrolment
       type: object
       description: The response object which contains Payment Card information.
+      required:
+        - id
       properties:
         id:
           type: string

@@ -206,7 +206,7 @@ public class CarbonCalculatorController {
     }
 
     @PostMapping("/service-providers/payment-cards")
-    public ResponseEntity<Object> addBatchPaymentCards(@RequestBody List<PaymentCard> paymentCards) {
+    public ResponseEntity<Object> addBatchPaymentCards(@RequestBody List<PaymentCards> paymentCards) {
         List<PaymentCardEnrolment> paymentCardEnrolments = null;
         try {
             paymentCardEnrolments = addCardService.registerBatchPaymentCardsServiceProvider(paymentCards);

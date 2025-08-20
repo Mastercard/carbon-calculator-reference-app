@@ -192,9 +192,9 @@ public class MockData {
         return paymentCardEnrolment;
     }
 
-    public static List<PaymentCard> listPaymentCardReference() {
-        List<PaymentCard> paymentCards = new ArrayList<>();
-        paymentCards.add(new PaymentCard().fpan("5344035171229750").cardBaseCurrency("EUR"));
+    public static List<PaymentCards> listPaymentCardReference() {
+        List<PaymentCards> paymentCards = new ArrayList<>();
+        paymentCards.add(new PaymentCards().id("2875e003-1264-4f68-a198-a363ff957bdd").fpan("5344035171229750").cardBaseCurrency("EUR"));
         return paymentCards;
     }
     

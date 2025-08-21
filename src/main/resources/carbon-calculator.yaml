@@ -519,7 +519,16 @@ components:
       title: PaymentCardEnrolment
       type: object
       description: The response object which contains Payment Card information.
+      required:
+        - id
       properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^[\\w-]{1,100}'
+          description: Id of the payment card. Received from the request.
+          example: '1c40daf6-69c9-4055-ab72-d46ed0a30ca5'
         paymentCardId:
           $ref: '#/components/schemas/PaymentCardId'
         bin:
@@ -1186,9 +1195,6 @@ components:
           maxItems: 100
           items:
             $ref: '#/components/schemas/CrossPANAggregation'
-
-
-
     CrossPANAggregation:
       title: CrossPANAggregation
       description: Cross PAN aggregated carbon footprint for given aggregate type.
@@ -1207,7 +1213,6 @@ components:
           example: 'Week-26|2019'
       allOf:
         - $ref: '#/components/schemas/CarbonUsage'
-
     CarbonUsage:
       title: CarbonUsage
       type: object
@@ -1223,7 +1228,6 @@ components:
           type: number
           description: The transaction's CO2 emission in ounces.
           example: 1.71
-
     AggregateTransactionFootprint:
       title: AggregateTransactionFootprint
       type: object
@@ -1261,7 +1265,6 @@ components:
                 * Weekly = Week-22|2019 (i.e., Week of the year).
 
                 * Monthly = July|2019
-
     PaymentCard:
       title: PaymentCard
       type: object
@@ -1321,6 +1324,37 @@ components:
             Status of a Payment Card on the server. Possible values are ACTIVE &
             DELETED.
           example: ACTIVE
+    PaymentCards:
+      title: PaymentCards
+      type: object
+      description: >-
+        The request object for registering a new Payment Cards. This object will
+        be encrypted before sending it to the server.
+      required:
+        - id
+        - fpan
+        - cardBaseCurrency
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^[\\w-]{1,100}'
+          description: Id of the payment card. Received from the request.
+          example: '1c40daf6-69c9-4055-ab72-d46ed0a30ca5'
+        fpan:
+          type: string
+          minLength: 16
+          maxLength: 16
+          pattern: '^\d{16}'
+          description: Original payment card number in full.
+          example: '5344035171229750'
+        cardBaseCurrency:
+          $ref: '#/components/schemas/CurrencyCode'
+      example:
+        id: '1c40daf6-69c9-4055-ab72-d46ed0a30ca5'
+        fpan: '5344035171229750'
+        cardBaseCurrency: EUR
     PaymentCardId:
       type: string
       minLength: 36
@@ -2656,17 +2690,21 @@ components:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/PaymentCard'
+              $ref: '#/components/schemas/PaymentCards'
             minItems: 1
             maxItems: 500
             example:
-              - fpan: '5455029300268351'
+              - id: '4a737ddd-9e8e-4047-b214-8d350fb541f9'
+                fpan: '5455029300268351'
                 cardBaseCurrency: EUR
-              - fpan: '5455023979760762'
+              - id: 'bba90cdd-76f1-4bfc-95f0-e938b9db528f'
+                fpan: '5455023979760762'
                 cardBaseCurrency: USD
-              - fpan: '5455023979762834'
+              - id: '7df233aa-8de3-4a2e-a9dd-382a670c907b'
+                fpan: '5455023979762834'
                 cardBaseCurrency: USD
-              - fpan: '5455023979762824'
+              - id : '243adcd2-517d-4671-b292-9cd78016f2ce'
+                fpan: '5455023979762824'
                 cardBaseCurrency: USD
     PaymentCardIds:
       description: >-
@@ -3191,18 +3229,22 @@ components:
   examples:
     PaymentCardEnrolments:
       value:
-        - bin: '545502'
+        - id: '4a737ddd-9e8e-4047-b214-8d350fb541f9'
+          bin: '545502'
           last4fpan: '8351'
           status: ACTIVE
           paymentCardId: 9f12f385-0b47-4cca-9e9d-baced21bca63
-        - bin: '545502'
+        - id: 'bba90cdd-76f1-4bfc-95f0-e938b9db528f'
+          bin: '545502'
           last4fpan: '0762'
           status: ACTIVE
           paymentCardId: f506521c-38c6-4e87-bf1a-14023ce10d4e
-        - bin: '545502'
+        - id: '7df233aa-8de3-4a2e-a9dd-382a670c907b'
+          bin: '545502'
           last4fpan: '2834'
           errorCode: PAYMENT_CARD_ALREADY_EXISTS
-        - bin: '545502'
+        - id: '243adcd2-517d-4671-b292-9cd78016f2ce'
+          bin: '545502'
           last4fpan: '2824'
           errorCode: INVALID_FPAN
     TransactionFootprintsData:

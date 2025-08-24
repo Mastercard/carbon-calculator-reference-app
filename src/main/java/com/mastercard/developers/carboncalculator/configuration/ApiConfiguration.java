@@ -17,6 +17,9 @@ package com.mastercard.developers.carboncalculator.configuration;
 
 import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
 import com.mastercard.developer.utils.AuthenticationUtils;
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import org.openapitools.client.ApiClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -24,11 +27,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
 import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
 /**
  * Api Client Setup
  */
-
 @Configuration
 public class ApiConfiguration {
 
@@ -49,9 +53,6 @@ public class ApiConfiguration {
 
     @Value("${mastercard.api.encryption.key-file}")
     private Resource encryptionKeyFile;
-
-    @Value("${mastercard.api.encryption.fingerprint}")
-    private String encryptionFingerprint;
 
     public String getConsumerKey() {
         return consumerKey;
@@ -87,7 +88,7 @@ public class ApiConfiguration {
                     p12File.getFile().getAbsolutePath(),
                     keyAlias,
                     String.valueOf(userPasscode));
-        } catch (Exception e) {
+        } catch (IOException | KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException | CertificateException e) {
             throw new IllegalArgumentException(e);
         }
     }

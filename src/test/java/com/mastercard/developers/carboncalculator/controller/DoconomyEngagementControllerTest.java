@@ -222,7 +222,6 @@ class DoconomyEngagementControllerTest {
     void getComparisons_Success() throws Exception {
         Comparison mockComparison = new Comparison();
         mockComparison.setLanguage("en");
-        mockComparison.setVersion("1.0");
 
         when(engagementService.getComparisons("branding", "en", "1.0", "category1", "spend1", "100")).thenReturn(mockComparison);
 

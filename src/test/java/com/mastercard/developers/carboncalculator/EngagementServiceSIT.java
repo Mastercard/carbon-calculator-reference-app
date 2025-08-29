@@ -62,14 +62,6 @@ class EngagementServiceSIT {
 
         try {
             InsightsRequestPayload insightsRequestPayload = new InsightsRequestPayload();
-            InsightsRequestPayloadInsightsPayload insightsRequestPayloadInsightsPayload = new InsightsRequestPayloadInsightsPayload();
-            insightsRequestPayloadInsightsPayload.setMainCategory("shopping");
-            insightsRequestPayloadInsightsPayload.subCategory("clothes");
-            insightsRequestPayloadInsightsPayload.setMain("shopping");
-            insightsRequestPayloadInsightsPayload.setDocc("");
-            insightsRequestPayloadInsightsPayload.setSpendingAreaId("10");
-            insightsRequestPayload.setInsightsPayload(insightsRequestPayloadInsightsPayload);
-
 
             var insightsData = engagementService.updateUserInsights(insightsRequestPayload, any(), false, "20", "2", "1.1", "en");
 

@@ -16,7 +16,6 @@ public class MockData {
     private static final String SOURCE = "Carbon-Calculator";
 
     public static List<TransactionData> transactions() {
-//        List<TransactionData> mcTransactions = new ArrayList<>();
         TransactionData transactionFootprint = (TransactionData) new TransactionData().transactionId("TX-1")
                 .mcc("3000").amount(
                         new Amount().currencyCode("EUR").value(new BigDecimal(150)));
@@ -129,7 +128,7 @@ public class MockData {
 
     public static AggregateTransactionFootprints aggregateTransactionFootprint() {
 
-        FootprintAggregation footprintAggregation = new FootprintAggregation().aggregateValue("2");
+        FootprintAggregation footprintAggregation = new FootprintAggregation();
         footprintAggregation.carbonEmissionInGrams(BigDecimal.valueOf(205688.73)).carbonEmissionInOunces(
                 BigDecimal.valueOf(7255.46));
 
@@ -139,7 +138,7 @@ public class MockData {
         aggregateTransactionFootprint.paymentCardId("testPaymentCardId").addFootprintAggregationsItem(
                 footprintAggregation);
         listAggregateTransactionFootprint.add(aggregateTransactionFootprint);
-        aggregateTransactionFootprints.setAggregateTransactionFootprint(listAggregateTransactionFootprint);
+        aggregateTransactionFootprints.setAggregateTransactionFootprints(listAggregateTransactionFootprint);
         return aggregateTransactionFootprints;
     }
 
@@ -230,27 +229,6 @@ public class MockData {
     }
 
     public static Profiles getMockProfilesRequest() {
-        ProfilesProfilesPayloadSurveyioResults profilesResults = new ProfilesProfilesPayloadSurveyioResults();
-
-        profilesResults.setSex("demo.m");
-        profilesResults.setAge("demo.lt60");
-        profilesResults.setCountry("AS");
-        profilesResults.setInterest("stronglyDisagree");
-        profilesResults.setKnowledge("stronglyDisagree");
-        profilesResults.setDiet("diet.all");
-        profilesResults.setRenewableElectricity("energy.not");
-        profilesResults.setHaveCar("transport.hasCar");
-        profilesResults.carFuel("transport.petrol");
-        profilesResults.setFlyFrequency("transport.secondMonth");
-        profilesResults.setShopFrequency("lifestyle.shopVeryOften");
-        profilesResults.setDifference("somewhatDisagree");
-        profilesResults.setConsciousPurchasingDecision("somewhatDisagree");
-        profilesResults.setExplainCarbonFootprint("somewhatDisagree");
-
-        ProfilesProfilesPayload payload = new ProfilesProfilesPayload();
-        payload.setSurveyioResults(profilesResults);
-        payload.setId("onboarding");
-        payload.setVersion("1.1");
 
         Profiles profiles = new Profiles();
         ClimateProfile climateProfile = new ClimateProfile();
@@ -264,30 +242,11 @@ public class MockData {
         climateProfile.setUserAttributes(attributes);
         climateProfile.setSurveys(null);
         climateProfile.setBenchmarks(null);
-        climateProfile.setComparisons(null);
-        climateProfile.setInsights(null);
-        profiles.setProfilesPayload(payload);
-        profiles.setProfile(climateProfile);
+
         return profiles;
     }
 
     public static Profiles getMockProfilesRequestTwo() {
-        ProfilesProfilesPayloadSurveyioResults profilesResults = new ProfilesProfilesPayloadSurveyioResults();
-
-        profilesResults.setSex("demo.m");
-        profilesResults.setAge("demo.lt60");
-        profilesResults.setCountry("AS");
-        profilesResults.setInterest("stronglyDisagree");
-        profilesResults.setKnowledge("stronglyDisagree");
-        profilesResults.setDiet("diet.all");
-        profilesResults.setRenewableElectricity("energy.not");
-        profilesResults.setHaveCar("transport.hasCar");
-        profilesResults.carFuel("transport.petrol");
-        profilesResults.setFlyFrequency("transport.secondMonth");
-        profilesResults.setShopFrequency("lifestyle.shopVeryOften");
-        profilesResults.setDifference("somewhatDisagree");
-        profilesResults.setConsciousPurchasingDecision("somewhatDisagree");
-        profilesResults.setExplainCarbonFootprint("somewhatDisagree");
 
         Profiles profiles = new Profiles();
         ClimateProfile climateProfile = new ClimateProfile();
@@ -301,9 +260,7 @@ public class MockData {
         climateProfile.setUserAttributes(attributes);
         climateProfile.setSurveys(null);
         climateProfile.setBenchmarks(null);
-        climateProfile.setComparisons(null);
-        climateProfile.setInsights(null);
-        profiles.setProfile(climateProfile);
+
         return profiles;
     }
 
@@ -332,12 +289,7 @@ public class MockData {
 
     public static InsightsRequestPayload getMockInsightsRequest() {
         InsightsRequestPayload insightsRequestPayload = new InsightsRequestPayload();
-        InsightsRequestPayloadInsightsPayload insightsRequestPayloadInsightsPayload = new InsightsRequestPayloadInsightsPayload();
-        insightsRequestPayloadInsightsPayload.setDocc("");
-        insightsRequestPayloadInsightsPayload.setMain("shopping");
-        insightsRequestPayloadInsightsPayload.setMainCategory("shopping");
-        insightsRequestPayloadInsightsPayload.setSubCategory("clothes");
-        insightsRequestPayloadInsightsPayload.setSpendingAreaId("10");
+
         ClimateProfile climateProfile = new ClimateProfile();
         climateProfile.setCreated(OffsetDateTime.parse("2024-09-11T17:49:25.025125100Z"));
         climateProfile.setVersion("1.0");
@@ -347,8 +299,7 @@ public class MockData {
         ClimateProfileUserAttributes attributes = new ClimateProfileUserAttributes().country("IN").demo(BigDecimal.ONE)
                 .diet(BigDecimal.ONE).energy(BigDecimal.ONE).lifestyle(BigDecimal.ONE).transport(BigDecimal.ONE);
         climateProfile.setUserAttributes(attributes);
-        insightsRequestPayload.setInsightsPayload(insightsRequestPayloadInsightsPayload);
-        insightsRequestPayload.setProfile(climateProfile);
+         insightsRequestPayload.setProfile(climateProfile);
         return insightsRequestPayload;
     }
 
@@ -368,26 +319,6 @@ public class MockData {
     }
     public static InsightsResponseById getMockInsightsByIdResponse() {
         InsightsResponseById insightsResponseById = new InsightsResponseById();
-        InsightsResponseByIdInsightsByIdPayload mockInsightsByIdPayloadResponse = new InsightsResponseByIdInsightsByIdPayload();
-
-        mockInsightsByIdPayloadResponse.setId("T101");
-        mockInsightsByIdPayloadResponse.setVersion("1.1");
-        mockInsightsByIdPayloadResponse.setLanguage("en");
-        mockInsightsByIdPayloadResponse.setHeading("Recycle your e-waste");
-        mockInsightsByIdPayloadResponse.setContent("Voluptate eiusmod culpa incididunt excepteur anim ipsum et ex " +
-                "elit laboris esse. Nostrud proident culpa exercitation eu dolore consectetur sit amet cillum veniam enim duis ut. " +
-                "Qui mollit fugiat tempor deserunt occaecat fugiat adipisicing ex cupidatat duis commodo id ea. Dolor laboris eu commodo " +
-                "ea reprehenderit in nisi proident. Fugiat cupidatat excepteur et ullamco anim. Cillum fugiat commodo ipsum consequat irure proident tempor nisi tempor ad." +
-                "\nOccaecat est pariatur cillum commodo incididunt exercitation laboris consectetur eu mollit incididunt. " +
-                "Adipisicing quis incididunt mollit esse officia dolore fugiat reprehenderit nisi do velit ea. Id cillum consectetur mollit eu laborum nostrud nulla sint Lorem voluptate elit id.");
-        mockInsightsByIdPayloadResponse.setNotification("");
-        mockInsightsByIdPayloadResponse.setMainCategory("home");
-        mockInsightsByIdPayloadResponse.setSubCategory("electronics");
-        mockInsightsByIdPayloadResponse.setSpendingAreaId("10");
-        mockInsightsByIdPayloadResponse.setSource("The Global E-waste Monitor 2020");
-        mockInsightsByIdPayloadResponse.setSourceDescription("The Global E-waste Monitor 2020");
-        mockInsightsByIdPayloadResponse.setSourceLink("https://ewastemonitor.info/wp-content/uploads/2020/11/GEM_2020_def_july1_low.pdf");
-        mockInsightsByIdPayloadResponse.setSourceDate("2020-07-01");
         ClimateProfile profileResponse = new ClimateProfile();
 
         ClimateProfileTraits traits = new ClimateProfileTraits();
@@ -409,8 +340,6 @@ public class MockData {
         profileResponse.setSurveys(null);
         profileResponse.setVersion("1.0");
 
-        insightsResponseById.setInsightsByIdPayload(mockInsightsByIdPayloadResponse);
-        insightsResponseById.setProfile(profileResponse);
         return insightsResponseById;
     }
     public static LinkedMultiValueMap<Object, String> prepareRequestParams() {
@@ -425,21 +354,21 @@ public class MockData {
     public static List<InsightItem> getInsightItems() {
         InsightItem insightItem = new InsightItem();
         insightItem.setId("T100");
-        insightItem.setVersion("1.1");
+
         insightItem.setSeen(false);
         insightItem.setMainCategory("shopping");
         insightItem.setSpendingAreaId("30");
         insightItem.setSubCategory("electricUtilities");
         InsightItem insightItem1 = new InsightItem();
         insightItem1.setId("T101");
-        insightItem1.setVersion("1.1");
+
         insightItem1.setSeen(false);
         insightItem1.setMainCategory("home");
         insightItem1.setSpendingAreaId("10");
         insightItem1.setSubCategory("electronics");
         InsightItem insightItem2 = new InsightItem();
         insightItem2.setId("T102");
-        insightItem2.setVersion("1.1");
+
         insightItem2.setSeen(false);
         insightItem2.setMainCategory("home");
         insightItem2.setSpendingAreaId("10");
@@ -454,14 +383,7 @@ public class MockData {
 
     public static InsightsData getMockInsightsResponse() {
         InsightsData insightsData = new InsightsData();
-        InsightsDataInsightPayload mockInsightsPayloadResponse = new InsightsDataInsightPayload();
-        List<InsightItem> listItem = getInsightItems();
 
-        mockInsightsPayloadResponse.setInsights(listItem);
-        mockInsightsPayloadResponse.setPage(BigDecimal.valueOf(1));
-        mockInsightsPayloadResponse.setTotalItemCount(BigDecimal.valueOf(100));
-        mockInsightsPayloadResponse.setTotalPageCount(BigDecimal.valueOf(5));
-        mockInsightsPayloadResponse.setLanguage("es");
         ClimateProfile profileResponse = new ClimateProfile();
 
         ClimateProfileTraits traits = new ClimateProfileTraits();
@@ -483,7 +405,6 @@ public class MockData {
         profileResponse.setSurveys(null);
         profileResponse.setVersion("1.0");
 
-        insightsData.setInsightPayload(mockInsightsPayloadResponse);
         insightsData.setProfile(profileResponse);
         return insightsData;
     }

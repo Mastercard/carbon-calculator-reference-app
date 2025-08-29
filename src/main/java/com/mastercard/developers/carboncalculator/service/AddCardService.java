@@ -23,6 +23,7 @@ import org.openapitools.client.ApiException;
 import org.openapitools.client.api.PaymentCardApi;
 import org.openapitools.client.api.ServiceProviderApi;
 import org.openapitools.client.model.PaymentCard;
+import org.openapitools.client.model.PaymentCards;
 import org.openapitools.client.model.PaymentCardEnrolment;
 import org.openapitools.client.model.PaymentCardReference;
 import org.slf4j.Logger;
@@ -80,9 +81,9 @@ public class AddCardService {
 
     }
 
-    public List<PaymentCardEnrolment> registerBatchPaymentCardsServiceProvider(List<PaymentCard> paymentCard) throws ApiException {
+    public List<PaymentCardEnrolment> registerBatchPaymentCardsServiceProvider(List<PaymentCards> paymentCards) throws ApiException {
             LOGGER.info("Calling Service Provider Register Batch Payment Cards");
-            return serviceProviderApi.bulkRegisterPaymentCards(paymentCard);
+            return serviceProviderApi.bulkRegisterPaymentCards(paymentCards);
     }
 
 }

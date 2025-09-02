@@ -128,8 +128,6 @@ A persona is a type of character described based on the answers a user has given
 18. **Get Comparisons** <br/>
 Fetches comparisons data by comparing tonnes of Co2 with any day to day life examples.
 
-19. **Add profile to payment card** <br/>
-The climate profile of user will be stored with the provided payment card.
 
 More details can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/use-cases/).    
 
@@ -157,7 +155,6 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
                 - PUT <Host>/demo/service-providers <br>
                 - POST <Host>/demo/payment-card-deletions   
                 - POST <Host>/demo/service-providers/payment-cards 
-                - POST <Host>/demo/payment-cards/{payment_card_id}/profiles
                 - GET <Host>/demo/surveys <br>
                 - POST <Host>/demo/profiles <br>
                 - POST <Host>/demo/insights <br>

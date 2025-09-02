@@ -77,15 +77,4 @@ public class EnvironmentalImpactService {
             return aggregateTransactionFootprintList;
     }
 
-    public PaymentCardProfile addProfileToPaymentCard(String paymentCardId, CardClimateProfile cardClimateProfile) throws ApiException {
-
-        LOGGER.info("Calling add profile to payment card.");
-
-        PaymentCardProfile paymentCardProfile = environmentalImpactApi.addProfileToPaymentCard(paymentCardId,cardClimateProfile);
-
-        LOGGER.info("Returning profile added to payment card.");
-
-        return paymentCardProfile;
-
-    }
 }

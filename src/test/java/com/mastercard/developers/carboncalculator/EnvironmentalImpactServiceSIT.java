@@ -169,23 +169,6 @@ class EnvironmentalImpactServiceSIT {
         	}
     }
 
-    @Test
-    @DisplayName("Add profile to payment card")
-    void addProfileToPaymentCard() {
-
-        try {
-            PaymentCardProfile paymentCardProfile = environmentalImpactService.addProfileToPaymentCard("855ac7d6-6177-4a40-b280-9f55451b897a", MockData.getMockPaymentCardProfilesRequest());
-
-
-            assertNotNull(paymentCardProfile);
-
-            LOGGER.info("{}", paymentCardProfile);
-        } catch (ApiException e) {
-            LOGGER.info(e.getResponseBody());
-            Assertions.fail(e.getMessage());
-        }
-
-    }
 
     private static List<TransactionData> mockTransactions() {
         List<TransactionData> mcTransactions = new ArrayList<>();

@@ -157,6 +157,7 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
                 - PUT <Host>/demo/service-providers <br>
                 - POST <Host>/demo/payment-card-deletions   
                 - POST <Host>/demo/service-providers/payment-cards 
+                - POST <Host>/demo/payment-cards/{payment_card_id}/profiles
                 - GET <Host>/demo/surveys <br>
                 - PUT <Host>/demo/profiles <br>
                 - PUT <Host>/demo/insights <br>

@@ -217,5 +217,17 @@ public class CarbonCalculatorController {
         return ResponseEntity.ok(paymentCardEnrolments);
     }
 
+    @PostMapping("/payment-cards/{payment_card_id}/profiles")
+    public ResponseEntity<Object> addProfileToPaymentCard(@PathVariable("payment_card_id") String paymentCardId,@RequestBody CardClimateProfile cardClimateProfile) {
 
+        PaymentCardProfile paymentCardProfile = null;
+        try {
+            paymentCardProfile = environmentalImpactService.addProfileToPaymentCard(paymentCardId, cardClimateProfile);
+        } catch (ApiException exception) {
+            LOGGER.error("transaction-footprints apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(paymentCardProfile);
+
+    }
 }

@@ -197,6 +197,31 @@ paths:
           $ref: '#/components/responses/TransactionHistoryBadRequestError'
         '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
+  /payment-cards/{payment_card_id}/profiles:
+    post:
+      operationId: AddProfileToPaymentCard
+      description: >-
+        The profile service employs a sophisticated algorithm to compute a
+        detailed climate profile, drawing upon the responses gathered through a
+        survey obtained from the surveys service. This process involves a
+        meticulous analysis of user-provided answers to generate a comprehensive
+        and nuanced representation of their climate preferences and
+        perspectives. See (https://surveyjs.io/survey-creator)
+      summary: >-
+        The climate profile of user will be stored with the provided payment card.
+      tags:
+        - Environmental Impact
+      parameters:
+        - $ref: '#/components/parameters/PaymentCardId'
+      requestBody:
+        $ref: '#/components/requestBodies/CardClimateProfile'
+      responses:
+        '200':
+          $ref: '#/components/responses/PaymentCardProfile'
+        '400':
+          $ref: '#/components/responses/CardClimateProfilePayloadBadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
   /payment-cards/transaction-footprints/aggregates:
     post:
       tags:
@@ -478,6 +503,25 @@ paths:
           $ref: '#/components/responses/ServiceProviderNotFoundError'
 components:
   schemas:
+    PaymentCardProfile:
+      type: object
+      properties:
+        paymentCardId:
+          $ref: '#/components/schemas/PaymentCardId'
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
+      required:
+        - paymentCardId
+        - profile
+    CardClimateProfile:
+      title: cardClimateProfile
+      type: object
+      description: Climate profile of the user.
+      properties:
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
+      required:
+        - profile
     Surveys:
       type: object
       properties:
@@ -2668,6 +2712,16 @@ components:
         type: string
         pattern: '^(?!\\s*$).+'
   requestBodies:
+    CardClimateProfile:
+      description: Consumer's climate profile.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CardClimateProfile'
+          examples:
+            CardProfileRequest:
+              $ref: '#/components/examples/CardClimateProfile'
+      required: true
     ServiceProviderConfig:
       description: Configuration details for service provider which needs to be update. It should contain only those parameters which you want to update. If you are calling this API for the first time then it is recommended to send all the parameters.
       required: true
@@ -2800,6 +2854,42 @@ components:
               $ref: '#/components/examples/ScoreRequestDetails'
       required: true
   responses:
+    NotFoundError:
+      description: >-
+        This response code is returned when the server cannot find the payment card, account which
+        has been used to call this API.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            ServiceProviderNotFoundError:
+              $ref: '#/components/examples/ProfileServiceProviderNotFoundError'
+            PaymentCardNotFoundError:
+              $ref: '#/components/examples/ProfilePaymentCardNotFoundError'
+    CardClimateProfilePayloadBadRequestError:
+      description: >-
+        This response code is returned when one or more request parameters is
+        either missing or is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            BadRequestError:
+              $ref: '#/components/examples/CardClimateProfilePayloadBadRequestError'
+            PaymentCardInactiveError:
+              $ref: '#/components/examples/PaymentCardInactiveError'
+    PaymentCardProfile:
+      description: The profile created for payment card id.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentCardProfile'
+          examples:
+            PaymentCardProfile:
+              $ref: '#/components/examples/PaymentCardProfile'
+
     PaymentCardEnrolments:
       description: >-
         The response object that contains the list of Payment Cards information
@@ -3227,6 +3317,36 @@ components:
               $ref: '#/components/examples/UnsupportedVersionError'
 
   examples:
+    ProfilePaymentCardNotFoundError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider-Mgmt
+              ReasonCode: PAYMENT_CARD_NOT_FOUND
+              Description: Payment-card not found for the given payment card id.
+              Recoverable: false
+              Details: ""
+    ProfileServiceProviderNotFoundError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider-Mgmt
+              ReasonCode: ACCOUNT_NOT_FOUND
+              Description: "We cannot find the account which you are using to access this
+                        service. Kindly register your account or contact your Mastercard
+                        associate if you have already registered with us earlier."
+              Recoverable: false
+              Details: ""
+    CardClimateProfilePayloadBadRequestError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider-Mgmt
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: "One of the request parameters is invalid, try again with correct request."
+              Recoverable: false
+              Details: "paymentCardId must match \"^[0-9A-Fa-f\\-]{36}\""
+
     PaymentCardEnrolments:
       value:
         - id: '4a737ddd-9e8e-4047-b214-8d350fb541f9'
@@ -4425,3 +4545,61 @@ components:
         page: 1
         totalItemCount: 1
         totalPageCount: 1
+    CardClimateProfile:
+      value:
+        profile:
+          traits:
+            knowledge: 0
+            lifestyle: 0.683
+            motivated: 0.3
+          userAttributes:
+            demo: 34
+            diet: 16399
+            lifestyle: 16
+            energy: 0
+            transport: 0
+            country: AF
+          created: '2024-01-19T09:31:08.065Z'
+          surveys:
+            key1:
+              key2: 1
+              key3: 2
+          persona: '5'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+    PaymentCardProfile:
+      value:
+        paymentCardId: "c5d88571-ac15-465a-a0d8-1ad1327b9a06"
+        profile:
+          traits:
+            knowledge: 0
+            lifestyle: 0.683
+            motivated: 0.3
+          userAttributes:
+            demo: 34
+            diet: 16399
+            lifestyle: 16
+            energy: 0
+            transport: 0
+            country: AF
+          created: '2024-01-19T09:31:08.065Z'
+          surveys:
+            key1:
+              key2: 1
+              key3: 2
+          persona: '5'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+    PaymentCardInactiveError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider-Mgmt
+              ReasonCode: PAYMENT CARD ID INACTIVE
+              Description: "Payment card id is - c2c76ec0-4056-44ba-b14f-6654c9ba5722 INACTIVE . Please try again with ACTIVE payment card id."
+              Recoverable: false
+              Details: ""

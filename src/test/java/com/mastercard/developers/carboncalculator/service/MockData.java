@@ -487,4 +487,53 @@ public class MockData {
         insightsData.setProfile(profileResponse);
         return insightsData;
     }
+
+    public static PaymentCardProfile getMockPaymentCardProfilesResponse() {
+        PaymentCardProfile paymentCardProfile = new PaymentCardProfile();
+        org.openapitools.client.model.ClimateProfile climateProfile = new org.openapitools.client.model.ClimateProfile();
+        ClimateProfileUserAttributes userAttributes = new ClimateProfileUserAttributes();
+        userAttributes.setCountry("AX");
+        userAttributes.setDemo(new BigDecimal("34"));
+        userAttributes.setEnergy(new BigDecimal("34"));
+        userAttributes.setDiet(new BigDecimal("34"));
+        userAttributes.setTransport(new BigDecimal("34"));
+        userAttributes.setLifestyle(new BigDecimal("34"));
+
+        climateProfile.setUserAttributes(userAttributes);
+        climateProfile.setBenchmarks(Map.of("Benchmark", "Test"));
+        climateProfile.setCreated(OffsetDateTime.parse("2024-05-04T18:45:35.943Z"));
+        climateProfile.setTraits(new ClimateProfileTraits());
+        climateProfile.setPersona("2");
+        climateProfile.setSurveys(new HashMap<String, Object>());
+
+        paymentCardProfile.setPaymentCardId("73c0711e-1851-4771-950a-055dded7f162");
+        paymentCardProfile.setProfile(climateProfile);
+        return paymentCardProfile;
+    }
+
+    public static CardClimateProfile getMockPaymentCardProfilesRequest() {
+        CardClimateProfile cardClimateProfile = new CardClimateProfile();
+        ClimateProfile climateProfile = new ClimateProfile();
+        ClimateProfileUserAttributes userAttributes = new ClimateProfileUserAttributes();
+        ClimateProfileTraits climateProfileTraits = new ClimateProfileTraits();
+        userAttributes.setCountry("AX");
+        userAttributes.setDemo(new BigDecimal("34"));
+        userAttributes.setEnergy(new BigDecimal("34"));
+        userAttributes.setDiet(new BigDecimal("34"));
+        userAttributes.setTransport(new BigDecimal("34"));
+        userAttributes.setLifestyle(new BigDecimal("34"));
+
+        climateProfile.setUserAttributes(userAttributes);
+        climateProfile.setBenchmarks(Map.of("Benchmark", "Test"));
+        climateProfile.setCreated(OffsetDateTime.parse("2024-05-04T18:45:35.943Z"));
+        climateProfileTraits.knowledge(BigDecimal.valueOf(0.575));
+        climateProfileTraits.lifestyle(BigDecimal.valueOf(0.324));
+        climateProfileTraits.motivated(BigDecimal.valueOf(0.617));
+        climateProfile.setTraits(climateProfileTraits);
+        climateProfile.setPersona("2");
+        climateProfile.setSurveys(new HashMap<String, Object>());
+
+        cardClimateProfile.setProfile(climateProfile);
+        return cardClimateProfile;
+    }
 }

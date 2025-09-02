@@ -626,5 +626,40 @@ class ServiceTest {
         Assertions.assertNotNull(apiException.getResponseBody());
     }
 
+    @Test
+    void addProfileToPaymentCard_Success() throws Exception {
+        when(apiClient.escapeString(anyString())).thenReturn("randomString");
 
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
+                new ApiResponse<>(200, new HashMap<>(), new PaymentCardProfile()));
+
+        PaymentCardProfile paymentCardProfile = environmentalImpactService.addProfileToPaymentCard("8cd77c74-ca32-42f9-83fc-85ca2dfabe96", MockData.getMockPaymentCardProfilesRequest());
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        assertNotNull(paymentCardProfile);
+
+    }
+
+    @Test
+    void addProfileToPaymentCard_ErrorScenario() throws Exception {
+        when(apiClient.escapeString(anyString())).thenReturn("randomString");
+
+        when(apiClient.execute(any(Call.class), any(Type.class))).thenThrow(new ApiException(404, new HashMap<>(),
+                getErrorResponseBody(
+                        "ACCOUNT_NOT_FOUND",
+                        "We cannot find the account which you are using to access this service. Kindly register your account or contact your Mastercard associate if you have already registered with us earlier.",
+                        false,
+                        "")));
+
+        ApiException apiException = Assertions.assertThrows(ApiException.class,
+                () -> environmentalImpactService.addProfileToPaymentCard("73c0711e-1851-4771-950a-055dded7f162", getMockPaymentCardProfilesRequest()));
+
+        verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
+                anyMap(), anyMap(), any(), any());
+        verify(apiClient, atMostOnce()).execute(any(Call.class), any(Type.class));
+
+        Assertions.assertNotNull(apiException.getResponseBody());
+    }
 }

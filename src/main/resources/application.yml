@@ -15,6 +15,7 @@ test:
   data:
     bin: 5425  # Update with your bin
     card-base-currency: USD
+    id: 3879551b-d9eb-4288-834a-3fb2845474f9,18c5ca6b-74c6-4d9a-9cee-f4de9aac4845
 
 spring:
   jackson:

@@ -3453,31 +3453,23 @@ components:
             knowledge: 0.65
             lifestyle: 0.445
             motivated: 0.683
-        userAttributes:
-          demo: 66
-          diet: 256
-          lifestyle: 4
-          energy: 12288
-          transport: 36933
-          country: US
-        created: '2024-01-31T10:57:36.161Z'
-        surveys:
-          viewed:
-            onboardingVersion: 1
-        persona: '3'
-        benchmarks:
-          key1:
-            key2: 1
-            key3: 2
-        comparisons:
-          key1:
-            key2: 1
-            key3: 2
-        insights:
-          key1:
-            key2: 1
-            key3: 2
-        version: '1.0'
+          userAttributes:
+            demo: 66
+            diet: 256
+            lifestyle: 4
+            energy: 12288
+            transport: 36933
+            country: US
+          created: '2024-01-31T10:57:36.161Z'
+          surveys:
+            viewed:
+              onboardingVersion: 1
+          persona: '3'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+          version: '1.0'
     PaymentCardEnrolments:
       value:
         - id: '4a737ddd-9e8e-4047-b214-8d350fb541f9'
@@ -4234,114 +4226,105 @@ components:
             key1:
               key2: 1
               key3: 2
-          comparisons:
-            key1:
-              key2: 1
-              key3: 2
-          insights:
-            key1:
-              key2: 1
-              key3: 2
           version: '1.0'
     InsightsResponseData:
       value:
-        value:
-          insightPayload:
-            language: en
-            insights:
-              - id: T13
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T14
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T2
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T23
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T24
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T6
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T78
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T79
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T92
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T20
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T21
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T75
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T76
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T77
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-              - id: T9
-                version: '1.1'
-                mainCategory: shopping
-                subCategory: clothes
-                seen: false
-                spendingAreaId: '30'
-            page: 1
-            totalItemCount: 15
-            totalPageCount: 1
+        insightPayload:
+          language: en
+          insights:
+            - id: T13
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T14
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T2
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T23
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T24
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T6
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T78
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T79
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T92
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T20
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T21
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T75
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T76
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T77
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+            - id: T9
+              version: '1.1'
+              mainCategory: shopping
+              subCategory: clothes
+              seen: false
+              spendingAreaId: '30'
+          page: 1
+          totalItemCount: 15
+          totalPageCount: 1
         profile:
           traits:
             knowledge: 0.65
@@ -4361,14 +4344,6 @@ components:
               key3: 2
           persona: '3'
           benchmarks:
-            key1:
-              key2: 1
-              key3: 2
-          comparisons:
-            key1:
-              key2: 1
-              key3: 2
-          insights:
             key1:
               key2: 1
               key3: 2
@@ -4400,14 +4375,6 @@ components:
               key3: 2
           persona: '3'
           benchmarks:
-            key1:
-              key2: 1
-              key3: 2
-          comparisons:
-            key1:
-              key2: 1
-              key3: 2
-          insights:
             key1:
               key2: 1
               key3: 2
@@ -4450,14 +4417,6 @@ components:
               key3: 2
           persona: '3'
           benchmarks:
-            key1:
-              key2: 1
-              key3: 2
-          comparisons:
-            key1:
-              key2: 1
-              key3: 2
-          insights:
             key1:
               key2: 1
               key3: 2
@@ -4551,14 +4510,6 @@ components:
               onboardingVersion: 1
           persona: '3'
           benchmarks:
-            key1:
-              key2: 1
-              key3: 2
-          comparisons:
-            key1:
-              key2: 1
-              key3: 2
-          insights:
             key1:
               key2: 1
               key3: 2
@@ -4683,12 +4634,12 @@ components:
               Details: ""
     PersonaResponseData:
       value:
-        language: "en"
         items:
           - description: Individuals confident in understanding about climate changes.
             id: "1"
             language: "en"
             title: "Climate Focused"
+        language: "en"
         page: 1
         totalItemCount: 1
         totalPageCount: 1

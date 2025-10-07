@@ -115,9 +115,9 @@ paths:
       operationId: PaymentCardDeletion
       parameters:
         - $ref: '#/components/parameters/PaymentCardId'
-        - $ref: '#/components/parameters/X-Openapi-Client-Id'
-        - $ref: '#/components/parameters/Channel-Type'
-        - $ref: '#/components/parameters/Orig-Mc-Api-Client-Id'
+        - $ref: '#/components/parameters/x-openapi-clientid'
+        - $ref: '#/components/parameters/channel'
+        - $ref: '#/components/parameters/origMcApiClientId'
       responses:
         '202':
           $ref: '#/components/responses/Accepted'
@@ -200,9 +200,9 @@ paths:
 
       operationId: GetPaymentCardAggregateTransaction
       parameters:
-        - $ref: '#/components/parameters/X-Openapi-Client-Id'
-        - $ref: '#/components/parameters/Channel-Type'
-        - $ref: '#/components/parameters/Orig-Mc-Api-Client-Id'
+        - $ref: '#/components/parameters/x-openapi-clientid'
+        - $ref: '#/components/parameters/channel'
+        - $ref: '#/components/parameters/origMcApiClientId'
       requestBody:
         $ref: "#/components/requestBodies/AggregateSearchCriteria"
       responses:
@@ -459,9 +459,9 @@ paths:
         amount and the merchant category code.
       operationId: CarbonScoresByTransactionData
       parameters:
-        - $ref: '#/components/parameters/X-Openapi-Client-Id'
-        - $ref: '#/components/parameters/Channel-Type'
-        - $ref: '#/components/parameters/Orig-Mc-Api-Client-Id'
+        - $ref: '#/components/parameters/x-openapi-clientid'
+        - $ref: '#/components/parameters/channel'
+        - $ref: '#/components/parameters/origMcApiClientId'
       requestBody:
         $ref: '#/components/requestBodies/ScoreRequestDetails'
       responses:
@@ -1950,7 +1950,7 @@ components:
           minLength: 2
           maxLength: 10
         type:
-          description: survey type
+          description: The survey type
           type: string
           example: survey
           minLength: 6
@@ -2016,11 +2016,11 @@ components:
         text:
           type: string
           example: What kind of car is it?
-          description: survey question
+          description: The survey question
         value:
           type: string
           example: Diesel
-          description: survey answer
+          description: The survey answer
       required:
         - text
         - value
@@ -2364,7 +2364,7 @@ components:
         insightsByIdPayload:
           properties:
             content:
-              description: Insight content
+              description: This is Insight content
               type: string
               example: Voluptate eiusmod culpa incididunt excepteur anim ipsum et ex elit laboris esse. Nostrud proident culpa exercitation eu dolore consectetur sit amet cillum veniam enim duis ut. Qui mollit fugiat tempor deserunt occaecat fugiat adipisicing ex cupidatat duis commodo id ea. Dolor laboris eu commodo ea reprehenderit in nisi proident. Fugiat cupidatat excepteur et ullamco anim. Cillum fugiat commodo ipsum consequat irure proident tempor nisi tempor ad.\nOccaecat est pariatur cillum commodo incididunt exercitation laboris consectetur eu mollit incididunt. Adipisicing quis incididunt mollit esse officia dolore fugiat reprehenderit nisi do velit ea. Id cillum consectetur mollit eu laborum nostrud nulla sint Lorem voluptate elit id.
             heading:
@@ -2372,7 +2372,7 @@ components:
               type: string
               example: Recycle your e-waste
             id:
-              description: Insight Id
+              description: This is Insight Id
               type: string
               example: T101
             mainCategory:
@@ -2392,7 +2392,7 @@ components:
               type: string
               example: 2020-07-01
             sourceDescription:
-              description: Source description
+              description: Source of description
               type: string
               example: The Global E-waste Monitor 2020
             sourceLink:
@@ -2404,7 +2404,7 @@ components:
               type: string
               example: 10
             subCategory:
-              description: Sub category
+              description: This is Sub category
               type: string
               example: electronics
             version:
@@ -2686,9 +2686,9 @@ components:
         default: 50
         minimum: 5
         maximum: 50
-    X-Openapi-Client-Id:
+    x-openapi-clientid:
       in: header
-      name: X-Openapi-Client-Id
+      name: x-openapi-clientid
       description: Unique Client Id as assigned by Mastercard Developers after creating a project. This will also be a unique Id of your Service Provider record.
       required: true
       schema:
@@ -2697,9 +2697,9 @@ components:
         maxLength: 200
         pattern: ^[\w\d\-\_]{1,200}
         example: 'fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5'
-    Channel-Type:
+    channel:
       in: header
-      name: Channel-Type
+      name: channel
       description: Channel of onboarding from which service provider onboarded and now the API call has been initiated. Possible values are,
 
         * CC = Indicates that service provider is onboarded directly on Carbon Calculator. And API calls has been initiated directly.
@@ -2711,9 +2711,9 @@ components:
         type: string
         enum: [ CC, CT ]
         example: 'CT'
-    Orig-Mc-Api-Client-Id:
+    origMcApiClientId:
       in: header
-      name: Orig-Mc-Api-Client-Id
+      name: origMcApiClientId
       description: Client Id of originator issuer from where the API call has been initiated.
       required: false
       schema:

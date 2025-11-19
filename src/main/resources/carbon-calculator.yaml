@@ -1030,6 +1030,13 @@ components:
           example: 3000
         category:
           $ref: '#/components/schemas/Category'
+        scoreReference:
+          type: string
+          description: >-
+            Reference used to calculate the carbon footprint score.
+          minLength: 3
+          maxLength: 7
+          example: Profile
       required:
         - transactionId
         - mcc
@@ -1222,6 +1229,29 @@ components:
             subCategory: Hotels & Vacation
             sector: 'Hotels, Motels & Resorts'
             sectorCode: '604'
+          scoreReference: 'Profile'
+        profile:
+          traits:
+            knowledge: 0.65
+            lifestyle: 0.445
+            motivated: 0.683
+          userAttributes:
+            demo: 66
+            diet: 256
+            lifestyle: 4
+            energy: 12288
+            transport: 36933
+            country: AX
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+          created: '2024-01-31T10:57:36.161Z'
+          surveys:
+            viewed:
+              onboardingVersion: 40
+          persona: '3'
+
     Category:
       title: Category
       type: object
@@ -1390,9 +1420,9 @@ components:
           type: string
           description: >-
             Score Reference defines transaction scoring type,
-            based on which score has been generated. Possible values are MCC or AIIA.
+            based on which score has been generated. Possible values are MCC or AIIA or PROFILE.
           minLength: 3
-          maxLength: 4
+          maxLength: 7
           example: MCC
 
     CarbonUsage:
@@ -3649,7 +3679,28 @@ components:
                 subCategory: Public Services
                 sector: Government Services
                 sectorCode: "801"
-              scoreReference: MCC
+              scoreReference: Profile
+            profile:
+              traits:
+                knowledge: 0.65
+                lifestyle: 0.445
+                motivated: 0.683
+              userAttributes:
+                demo: 66
+                diet: 256
+                lifestyle: 4
+                energy: 12288
+                transport: 36933
+                country: AX
+              benchmarks:
+                key1:
+                  key2: 1
+                  key3: 2
+              created: '2024-01-31T10:57:36.161Z'
+              surveys:
+                viewed:
+                  onboardingVersion: 40
+              persona: '3'
 
     WeeklyAggregateTransactionFootprints:
       value:

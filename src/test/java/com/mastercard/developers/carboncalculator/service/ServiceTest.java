@@ -191,10 +191,10 @@ class ServiceTest {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(200, new HashMap<>(), MockData.serviceProvider()));
 
-        ServiceProviderConfig serviceProviderConfig = new ServiceProviderConfig();
-        serviceProviderConfig.setCustomerName("Customer1");
+        ServiceProviderConfig serviceProviderConfig1 = new ServiceProviderConfig();
+        serviceProviderConfig1.setCustomerName("Customer1");
 
-        ServiceProvider serviceProvider = serviceProviderService.updateServiceProvider(serviceProviderConfig);
+        ServiceProvider serviceProvider = serviceProviderService.updateServiceProvider(serviceProviderConfig1);
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -419,13 +419,9 @@ class ServiceTest {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(200, new HashMap<>(), MockData.getMockProfilesResponse()));
 
-        Profiles profiles = new Profiles();
-        ProfilesProfilesPayload payload = new ProfilesProfilesPayload();
-        payload.setId("1");
-        payload.setVersion("v1.1");
-        profiles.setProfilesPayload(payload);
+        Profiles profiles1 = new Profiles();
 
-        Profile profile = engagementService.updateUserProfile(profiles);
+        Profile profile = engagementService.updateUserProfile(profiles1);
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());
@@ -457,17 +453,9 @@ class ServiceTest {
     void updateUserInsights() throws Exception {
         when(apiClient.execute(any(Call.class), any(Type.class))).thenReturn(
                 new ApiResponse<>(200, new HashMap<>(), MockData.getMockInsightsResponse()));
-        InsightsRequestPayload insightsRequestPayload = new InsightsRequestPayload();
-        InsightsRequestPayloadInsightsPayload insightsRequestPayloadInsightsPayload = new InsightsRequestPayloadInsightsPayload();
-        insightsRequestPayloadInsightsPayload.setDocc("");
-        insightsRequestPayloadInsightsPayload.setMain("shopping");
-        insightsRequestPayloadInsightsPayload.setMainCategory("shopping");
-        insightsRequestPayloadInsightsPayload.setSubCategory("clothes");
-        insightsRequestPayloadInsightsPayload.setSpendingAreaId("10");
-        insightsRequestPayload.setInsightsPayload(insightsRequestPayloadInsightsPayload);
+        InsightsRequestPayload insightsRequestPayload1 = new InsightsRequestPayload();
 
-
-        InsightsData insightsData = engagementService.updateUserInsights(insightsRequestPayload,"branding",false,"20","2","1.1","en");
+        InsightsData insightsData = engagementService.updateUserInsights(insightsRequestPayload1,"branding",false,"20","2","1.1","en");
 
         verify(apiClient, atMostOnce()).buildCall(anyString(), anyString(), anyList(), anyList(), any(), anyMap(),
                 anyMap(), anyMap(), any(), any());

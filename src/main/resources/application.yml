@@ -2,7 +2,6 @@ mastercard:
   api:
     environment:
       base-path: https://sandbox.api.mastercard.com/carbon  # Refers to sandbox endpoint
-      base-path-engagement: https://sandbox.api.mastercard.com/engagement # Refers to sandbox endpoint
     authentication:
       key-file: classpath:your-p12-file.p12 # Copy .p12 file in src/main/resources and set value as classpath:nameOfYourP12File.p12
       consumer-key: Consumer-key # Copy the Consumer key from "Sandbox/Production Keys" section on your project page

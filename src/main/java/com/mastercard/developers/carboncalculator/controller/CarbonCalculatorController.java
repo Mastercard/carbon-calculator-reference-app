@@ -205,20 +205,8 @@ public class CarbonCalculatorController {
         return ResponseEntity.ok(serviceProvider);
     }
 
-    @PostMapping("/payment-card-enrolments")
-    public ResponseEntity<Object> addBulkPaymentCards(@RequestBody List<PaymentCard> paymentCards) throws ApiException {
-        List<PaymentCardEnrolment> paymentCardEnrolments = null;
-        try {
-            paymentCardEnrolments = addCardService.registerBatchPaymentCards(paymentCards);
-        } catch (ApiException exception) {
-            LOGGER.error("payment-card-enrolments apiException : {}", exception.getResponseBody());
-            return getErrorObjectResponseEntity(exception);
-        }
-        return ResponseEntity.ok(paymentCardEnrolments);
-    }
-
     @PostMapping("/service-providers/payment-cards")
-    public ResponseEntity<Object> addBatchPaymentCards(@RequestBody List<PaymentCard> paymentCards) {
+    public ResponseEntity<Object> addBatchPaymentCards(@RequestBody List<PaymentCards> paymentCards) {
         List<PaymentCardEnrolment> paymentCardEnrolments = null;
         try {
             paymentCardEnrolments = addCardService.registerBatchPaymentCardsServiceProvider(paymentCards);
@@ -227,6 +215,19 @@ public class CarbonCalculatorController {
             return getErrorObjectResponseEntity(exception);
         }
         return ResponseEntity.ok(paymentCardEnrolments);
+    }
+
+    @PostMapping("/payment-cards/{payment_card_id}/profiles")
+    public ResponseEntity<Object> addProfileToPaymentCard(@PathVariable("payment_card_id") String paymentCardId,@RequestBody CardClimateProfile cardClimateProfile) {
+
+        PaymentCardProfile paymentCardProfile = null;
+        try {
+            paymentCardProfile = environmentalImpactService.addProfileToPaymentCard(paymentCardId, cardClimateProfile);
+        } catch (ApiException exception) {
+            LOGGER.error("service-providers-payment-cards-profiles apiException : {}", exception.getResponseBody());
+            return getErrorObjectResponseEntity(exception);
+        }
+        return ResponseEntity.ok(paymentCardProfile);
     }
 
 

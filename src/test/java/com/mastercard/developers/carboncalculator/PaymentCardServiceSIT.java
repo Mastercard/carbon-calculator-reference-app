@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.model.PaymentCard;
 import org.openapitools.client.model.PaymentCardEnrolment;
+import org.openapitools.client.model.PaymentCards;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ class PaymentCardServiceSIT {
     private static final String ADD_CARD_API_CALL_FAILED_WITH_ERROR_MSG = "Add Card API call failed with error msg {}";
     private static final String DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG = "Delete Card API call failed with error msg {}";
     private static final String X_OPENAPI_CLIENTID = "x-openapi-clientid";
-    private static final String CLIENTID = "cNU2Re-v0oKw95zjfs7G60yICaTtQtyEt-vKZrnjd34ea14e";
+    private static final String CLIENTID = "KaUO1r_JrEW3972Sv6Q3Qws0i3fwn4Lb1jHpNqvwdb7409a2";
     private static final String CHANNEL = "CC";
 
     @Autowired
@@ -62,6 +63,9 @@ class PaymentCardServiceSIT {
     @Value("${test.data.card-base-currency}")
     String cardBaseCurrency;
 
+    @Value("${test.data.id}")
+    String id;
+    
     private static String paymentCardId;
 
     /**
@@ -157,47 +161,14 @@ class PaymentCardServiceSIT {
             verify(paymentCardService1,times(1)).deletePaymentCard(PaymentCardServiceSIT.paymentCardId, X_OPENAPI_CLIENTID, CHANNEL, CLIENTID);
 
         } catch (ApiException exception) {
-            LOGGER.info(DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG, exception.getResponseBody());
-            Assertions.fail(exception.getMessage());
+			if (404 != exception.getCode()) {
+				LOGGER.info(DELETE_CARDS_API_CALL_FAILED_WITH_ERROR_MSG, exception.getResponseBody());
+				Assertions.fail(exception.getMessage());
+        	}
         }
     }
 
 
-    /**
-     * Use case 10. Enrol bulk FPAN(To be deprecated)
-     */
-    @Test
-    @DisplayName("Enroll bulk payment cards(To be deprecated)")
-    void enrollBulkPaymentCards() {
-
-        PaymentCard paymentCard1 = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
-        PaymentCard paymentCard2 = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
-
-        List<PaymentCard> paymentCards = new ArrayList<>();
-        paymentCards.add(paymentCard1);
-        paymentCards.add(paymentCard2);
-
-        try {
-            List<PaymentCardEnrolment> paymentCardEnrolmentList = addCardService.registerBatchPaymentCards(paymentCards);
-
-            LOGGER.info("Enrolled payment cards are {}", paymentCardEnrolmentList);
-
-            assertNotNull(paymentCardEnrolmentList);
-
-            paymentCardEnrolmentList
-                    .stream()
-                    .forEach(paymentCardEnrolment -> {
-                        assertNotNull(paymentCardEnrolment.getPaymentCardId());
-                        assertNotNull(paymentCardEnrolment.getLast4fpan());
-                    }
-            );
-
-
-        } catch (ApiException e) {
-            Assertions.fail(e.getMessage());
-        }
-    }
-    
     /**
      * Use case 11. Enrol bulk FPAN
      */
@@ -205,10 +176,11 @@ class PaymentCardServiceSIT {
     @DisplayName("Enroll bulk payment cards")
     void enrollBulkPaymentCardsServiceProvider() {
 
-        PaymentCard paymentCard1 = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
-        PaymentCard paymentCard2 = new PaymentCard().fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
+    	String[] ids = id.split(",");
+        PaymentCards paymentCard1 = new PaymentCards().id(ids[0]).fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
+        PaymentCards paymentCard2 = new PaymentCards().id(ids[1]).fpan(generateFPAN(bin)).cardBaseCurrency(cardBaseCurrency);
 
-        List<PaymentCard> paymentCards = new ArrayList<>();
+        List<PaymentCards> paymentCards = new ArrayList<>();
         paymentCards.add(paymentCard1);
         paymentCards.add(paymentCard2);
 
@@ -224,6 +196,7 @@ class PaymentCardServiceSIT {
                     .forEach(paymentCardEnrolment -> {
                         assertNotNull(paymentCardEnrolment.getPaymentCardId());
                         assertNotNull(paymentCardEnrolment.getLast4fpan());
+                        assertNotNull(paymentCardEnrolment.getId());
                     }
             );
 

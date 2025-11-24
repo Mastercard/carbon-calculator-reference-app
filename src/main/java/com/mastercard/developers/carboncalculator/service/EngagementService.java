@@ -7,7 +7,6 @@ import org.openapitools.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,7 +21,8 @@ public class EngagementService {
     private final EngagementServicesApi engagementServicesApi;
 
     @Autowired
-    public EngagementService( @Qualifier("apiClientEngagement")ApiClient apiClient) {        LOGGER.info("Initializing Doconomy Engagement APIs");
+    public EngagementService(ApiClient apiClient) {
+        LOGGER.info("Initializing Doconomy Engagement APIs");
         engagementServicesApi = new EngagementServicesApi(apiClient);
     }
 

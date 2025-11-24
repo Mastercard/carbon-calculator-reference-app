@@ -12,11 +12,11 @@ info:
   version: 1.2.0
 externalDocs:
   description: ISO 4217 - Currency Code
-  url: 'https://en.wikipedia.org/wiki/ISO_4217'
+  url: "https://en.wikipedia.org/wiki/ISO_4217"
 servers:
-  - url: 'https://sandbox.api.mastercard.com/carbon'
+  - url: "https://sandbox.api.mastercard.com/carbon"
     description: Sandbox
-  - url: 'https://api.mastercard.com/carbon'
+  - url: "https://api.mastercard.com/carbon"
     description: Production
 tags:
   - name: Service Provider
@@ -29,7 +29,7 @@ tags:
       retrieving the transaction footprints of those cards.
   - name: Environmental Impact
     description: >-
-      APIs for caluclating carbon emission for transactions, reviewing carbon emission of past transactions and sending near real time notification for enrolled cards.
+      APIs for calculating carbon emission based on provided payment transactions.
   - name: Supported Parameters
     description: >-
       APIs for fetching the supported merchants and
@@ -48,10 +48,10 @@ paths:
         server.
       operationId: GetServiceProviderById
       responses:
-        '200':
-          $ref: '#/components/responses/ServiceProvider'
-        '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'
+        "200":
+          $ref: "#/components/responses/ServiceProvider"
+        "404":
+          $ref: "#/components/responses/ServiceProviderNotFoundError"
     put:
       tags:
         - Service Provider
@@ -62,87 +62,39 @@ paths:
         project on Mastercard Developers before they call other APIs.
       operationId: UpdateServiceProvider
       requestBody:
-        $ref: '#/components/requestBodies/ServiceProviderConfig'
+        $ref: "#/components/requestBodies/ServiceProviderConfig"
       responses:
-        '200':
-          $ref: '#/components/responses/ServiceProvider'
-        '400':
-          $ref: '#/components/responses/ServiceProviderBadRequestError'
-        '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'
-  '/service-providers/payment-cards':
+        "200":
+          $ref: "#/components/responses/ServiceProvider"
+        "400":
+          $ref: "#/components/responses/ServiceProviderBadRequestError"
+        "404":
+          $ref: "#/components/responses/ServiceProviderNotFoundError"
+        "415":
+          $ref: "#/components/responses/ServiceProviderUnsupportedMediaTypeError"
+  /service-providers/payment-cards:
     post:
       tags:
         - Service Provider
-      summary: Batch Registration of Payment Cards
+      summary: Bulk Registration of Payment Cards
       description: >-
-        Allows a registered Service Provider to add a list of new Payment Cards
-        to its profile. This endpoint uses [Mastercard payload
-        encryption](https://mstr.cd/2UPfda0). Please refer to the [Payload
+        Allows a registered service provider to add a list of new payment cards
+        to its profile. This endpoint uses [Mastercard payload encryption](https://mstr.cd/2UPfda0). Refer to the [Payload
         Encryption](https://developer.mastercard.com/carbon-calculator/documentation/tutorials-and-guides/payload-encryption/)
         page for implementation details.
       operationId: BulkRegisterPaymentCards
       x-mastercard-api-encrypted: true
       requestBody:
-        $ref:  '#/components/requestBodies/PaymentCards'
+        $ref: "#/components/requestBodies/PaymentCards"
       responses:
-        '200':
-          $ref: '#/components/responses/PaymentCardEnrolments'
-        '400':
-          $ref: '#/components/responses/PaymentCardEnrolmentsBadRequestError'
-        '403':
-          $ref: '#/components/responses/ServiceProviderICAValidationError'
-        '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'
-  /payment-cards:
-    post:
-      tags:
-        - Payment Card
-      summary: Register a Payment Card
-      description: >-
-        Allows a registered Service Provider to add a new Payment Card to its
-        profile. This endpoint uses [Mastercard payload
-        encryption](https://developer.mastercard.com/platform/documentation/security-and-authentication/securing-sensitive-data-using-payload-encryption/#mastercard-encryption). Refer to the [Payload
-        Encryption](https://developer.mastercard.com/platform/documentation/security-and-authentication/securing-sensitive-data-using-payload-encryption/)
-        section for implementation details.
-      operationId: RegisterPaymentCard
-      x-mastercard-api-encrypted: true
-      requestBody:
-        $ref: '#/components/requestBodies/PaymentCard'
-      responses:
-        '200':
-          $ref: '#/components/responses/PaymentCardReference'
-        '400':
-          $ref: '#/components/responses/RegisterPaymentCardBadRequestError'
-        '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'
-  /payment-card-deletions:
-    post:
-      tags:
-        - Payment Card
-      summary: Delete one or more Payment Cards
-      description: >
-        Allows a registered Service Provider to delete one or more Payment Cards
-        from its profile. Any data associated with a requested paymentCardId
-        will also be deleted permanently.
-
-
-        On the successful response from the server, a Service Provider should remove all
-        the requested paymentCardIds from the system.
-
-
-        Once a request has been received from a Service Provider, data deletion
-        will happen immediately.
-      operationId: PaymentCardDeletions
-      requestBody:
-        $ref: '#/components/requestBodies/PaymentCardIds'
-      responses:
-        '202':
-          $ref: '#/components/responses/Accepted'
-        '400':
-          $ref: '#/components/responses/PaymentCardDeletionsBadRequestError'
-        '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'
+        "200":
+          $ref: "#/components/responses/PaymentCardEnrolments"
+        "400":
+          $ref: "#/components/responses/PaymentCardEnrolmentsBadRequestError"
+        "403":
+          $ref: "#/components/responses/ServiceProviderICAValidationError"
+        "404":
+          $ref: "#/components/responses/ServiceProviderNotFoundError"
   /service-providers/payment-cards/{payment_card_id}:
     delete:
       tags:
@@ -163,9 +115,9 @@ paths:
       operationId: PaymentCardDeletion
       parameters:
         - $ref: '#/components/parameters/PaymentCardId'
-        - $ref: '#/components/parameters/XOpenapiClientId'
-        - $ref: '#/components/parameters/Channel'
-        - $ref: '#/components/parameters/OrigMcApiClientId'
+        - $ref: '#/components/parameters/x-openapi-clientid'
+        - $ref: '#/components/parameters/channel'
+        - $ref: '#/components/parameters/origMcApiClientId'
       responses:
         '202':
           $ref: '#/components/responses/Accepted'
@@ -195,7 +147,7 @@ paths:
           $ref: '#/components/responses/PaymentCardEnrolmentsBadRequestError'
         '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
-  '/payment-cards/{payment_card_id}/transaction-footprints':
+  "/payment-cards/{payment_card_id}/transaction-footprints":
     get:
       tags:
         - Payment Card
@@ -207,18 +159,43 @@ paths:
         /payment-cards service.
       operationId: GetPaymentCardTransactionHistory
       parameters:
+        - $ref: "#/components/parameters/PaymentCardId"
+        - $ref: "#/components/parameters/FromDate"
+        - $ref: "#/components/parameters/ToDate"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          $ref: "#/components/responses/HistoricalTransactionFootprints"
+        "400":
+          $ref: "#/components/responses/TransactionHistoryBadRequestError"
+        "404":
+          $ref: "#/components/responses/ServiceProviderNotFoundError"
+  /payment-cards/{payment_card_id}/profiles:
+    post:
+      operationId: AddProfileToPaymentCard
+      description: >-
+        The profile service employs a sophisticated algorithm to compute a
+        detailed climate profile, drawing upon the responses gathered through a
+        survey obtained from the surveys service. This process involves a
+        meticulous analysis of user-provided answers to generate a comprehensive
+        and nuanced representation of their climate preferences and
+        perspectives. See (https://surveyjs.io/survey-creator)
+      summary: >-
+        The climate profile of user will be stored with the provided payment card.
+      tags:
+        - Environmental Impact
+      parameters:
         - $ref: '#/components/parameters/PaymentCardId'
-        - $ref: '#/components/parameters/FromDate'
-        - $ref: '#/components/parameters/ToDate'
-        - $ref: '#/components/parameters/Offset'
-        - $ref: '#/components/parameters/Limit'
+      requestBody:
+        $ref: '#/components/requestBodies/CardClimateProfile'
       responses:
         '200':
-          $ref: '#/components/responses/HistoricalTransactionFootprints'
+          $ref: '#/components/responses/PaymentCardProfile'
         '400':
-          $ref: '#/components/responses/TransactionHistoryBadRequestError'
+          $ref: '#/components/responses/CardClimateProfilePayloadBadRequestError'
         '404':
-          $ref: '#/components/responses/ServiceProviderNotFoundError'
+          $ref: '#/components/responses/NotFoundError'
   /payment-cards/transaction-footprints/aggregates:
     post:
       tags:
@@ -241,11 +218,80 @@ paths:
 
         If no transaction is found for a particular paymentCardId then the response
         will have an empty list against that paymentCardId.
+
+
+        The date range is valid for 26 weeks for weekly aggregate and 12 months for monthly aggregate.
+
       operationId: GetPaymentCardAggregateTransaction
       parameters:
-        - $ref: '#/components/parameters/XOpenapiClientId'
-        - $ref: '#/components/parameters/Channel'
-        - $ref: '#/components/parameters/OrigMcApiClientId'
+        - $ref: '#/components/parameters/x-openapi-clientid'
+        - $ref: '#/components/parameters/channel'
+        - $ref: '#/components/parameters/origMcApiClientId'
+      requestBody:
+        $ref: "#/components/requestBodies/AggregateSearchCriteria"
+      responses:
+        "200":
+          $ref: "#/components/responses/AggregateTransactionFootprints"
+        "400":
+          $ref: "#/components/responses/AggregateTransactionBadRequestError"
+        "403":
+          $ref: "#/components/responses/ServiceProviderICAValidationError"
+        "404":
+          $ref: "#/components/responses/ServiceProviderNotFoundError"
+        "415":
+          $ref: "#/components/responses/ServiceProviderUnsupportedMediaTypeError"
+  /payment-cards:
+    post:
+      tags:
+        - Payment Card
+      summary: Register a Payment Card (to be deprecated)
+      description: >-
+        Allows a registered Service Provider to add a new Payment Card to its
+        profile. This endpoint uses [Mastercard payload
+        encryption](https://developer.mastercard.com/platform/documentation/security-and-authentication/securing-sensitive-data-using-payload-encryption/#mastercard-encryption). Refer to the [Payload
+        Encryption](https://developer.mastercard.com/platform/documentation/security-and-authentication/securing-sensitive-data-using-payload-encryption/)
+        section for implementation details.
+      operationId: RegisterPaymentCard
+      x-mastercard-api-encrypted: true
+      requestBody:
+        $ref: "#/components/requestBodies/PaymentCard"
+      responses:
+        "200":
+          $ref: "#/components/responses/PaymentCardReference"
+        "400":
+          $ref: "#/components/responses/RegisterPaymentCardBadRequestError"
+        "404":
+          $ref: "#/components/responses/ServiceProviderNotFoundError"
+        "415":
+          $ref: "#/components/responses/ServiceProviderUnsupportedMediaTypeError"
+  /payment-cards/aggregate-transaction-footprints:
+    post:
+      tags:
+        - Payment Card
+      summary: >-
+        Fetches carbon score for payment cards and aggregates the same on a
+        weekly and monthly basis. The result will be in descending
+        order.
+      description: >
+        Allows a Service Provider to fetch aggregate carbon score for a single
+        or multiple payment card. A payment card has to be registered first
+        using `/payment-cards` or `/payment-card-enrolments` endpoint before this endpoint can be called. The
+        aggregate can be requested for weekly or monthly. Note
+        that **ONLY** cleared transactions will be returned.
+
+
+        If any of the paymentCardIds is not valid or not registered, then the entire
+        request will be rejected, and no aggregate will be returned.
+
+
+        If no transaction is found for a particular paymentCardId then the response
+        will have an empty list against that paymentCardId.
+
+        If not provided any crossPANAggregate value then default will be considered as 'N'.
+
+        Date Range is valid for 26 weeks for weekly aggregate and 12 months for monthly aggregate.
+
+      operationId: GetPaymentCardAggregateTransactions
       requestBody:
         $ref: '#/components/requestBodies/AggregateSearchCriteria'
       responses:
@@ -253,10 +299,37 @@ paths:
           $ref: '#/components/responses/AggregateTransactionFootprints'
         '400':
           $ref: '#/components/responses/AggregateTransactionBadRequestError'
-        '403':
-          $ref: '#/components/responses/ServiceProviderICAValidationError'
         '404':
           $ref: '#/components/responses/ServiceProviderNotFoundError'
+  /payment-card-deletions:
+    post:
+      tags:
+        - Payment Card
+      summary: Delete one or more Payment Cards (to be deprecated)
+      description: >
+        Allows a registered Service Provider to delete one or more Payment Cards
+        from its profile. Any data associated with a requested paymentCardId
+        will also be deleted permanently.
+
+
+        On the successful response from the server, a Service Provider should remove all
+        the requested paymentCardIds from the system.
+
+
+        Once a request has been received from a Service Provider, data deletion
+        will happen immediately.
+      operationId: PaymentCardDeletions
+      requestBody:
+        $ref: "#/components/requestBodies/PaymentCardIds"
+      responses:
+        "202":
+          $ref: "#/components/responses/Accepted"
+        "400":
+          $ref: "#/components/responses/PaymentCardDeletionsBadRequestError"
+        "404":
+          $ref: "#/components/responses/PaymentCardDeletionsNotFoundError"
+        "415":
+          $ref: "#/components/responses/ServiceProviderUnsupportedMediaTypeError"
   /payment-cards/transaction-footprints/notifications:
     post:
       tags:
@@ -284,18 +357,22 @@ paths:
       summary: Calculate Transaction Footprints
       description: >-
         Calculates carbon emission based on the payment transaction
-        amount and the merchant category code. You can send **one or approx 5000
+        amount, the merchant category code and the AIIA code. You can send **one or more
         transactions** together to get the transaction footprints.
+        <br>
+        Below is the approach to deliver **MCC** or **AIIA** based scoring.
+        <li><b>If only `mcc` field provided in the request with required fields :</b> MCC based scoring will be delivered.</li>
+         <li><b>If `type` and `additionalInformation` field provided in the request with required fields :</b> AIIA based scoring will be delivered.</li>
       operationId: FootprintsByTransactionData
       requestBody:
-        $ref: '#/components/requestBodies/Transactions'
+        $ref: "#/components/requestBodies/Transactions"
       responses:
-        '200':
-          $ref: '#/components/responses/TransactionFootprintsData'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '415':
-          $ref: '#/components/responses/UnsupportedMediaTypeError'
+        "200":
+          $ref: "#/components/responses/TransactionFootprintsData"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "415":
+          $ref: "#/components/responses/UnsupportedMediaTypeError"
   /supported-currencies:
     get:
       tags:
@@ -307,12 +384,12 @@ paths:
         from one of the supported currencies. It is recommended to cache this
         list and use it for checking before sending transactions for footprint
         calculation.
-        Generally this list doesn't change that often, but
-        it is recommended to refresh this data every 24-hours.
+        Generally, this list doesn't change that often, but
+        it is recommended to refresh this data every 24 hours.
       operationId: GetSupportedCurrencies
       responses:
-        '200':
-          $ref: '#/components/responses/SupportedCurrencies'
+        "200":
+          $ref: "#/components/responses/SupportedCurrencies"
   /supported-merchant-categories:
     get:
       tags:
@@ -324,34 +401,12 @@ paths:
         from one of the supported merchant categories. It is recommended to
         cache this list and use it for checking before sending transactions for
         footprint calculation.
-        Generally this list doesn't change that
-        often, but it is recommended to refresh this data every 24-hours.
+        Generally, this list doesn't change that
+        often, but it is recommended to refresh this data every 24 hours.
       operationId: GetSupportedMerchantCategories
       responses:
-        '200':
-          $ref: '#/components/responses/SupportedMerchantCategories'
-  /carbon-scores:
-    post:
-      tags:
-        - Environmental Impact
-      summary: Calculate Transaction Footprints
-      description: >-
-        Calculates carbon emission based on the payment transaction
-        amount and the merchant category code.
-      operationId: CarbonScoresByTransactionData
-      parameters:
-        - $ref: '#/components/parameters/XOpenapiClientId'
-        - $ref: '#/components/parameters/Channel'
-        - $ref: '#/components/parameters/OrigMcApiClientId'
-      requestBody:
-        $ref: '#/components/requestBodies/ScoreRequestDetails'
-      responses:
-        '200':
-          $ref: '#/components/responses/CarbonScoreDetails'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '415':
-          $ref: '#/components/responses/UnsupportedMediaTypeError'
+        "200":
+          $ref: "#/components/responses/SupportedMerchantCategories"
   /surveys:
     get:
       tags:
@@ -399,6 +454,28 @@ paths:
           $ref: '#/components/responses/Insights'
         "400":
           $ref: "#/components/responses/InsightsBadRequestError"
+  /carbon-scores:
+    post:
+      tags:
+        - Environmental Impact
+      summary: Calculate Transaction Footprints
+      description: >-
+        Calculates carbon emission based on the payment transaction
+        amount and the merchant category code.
+      operationId: CarbonScoresByTransactionData
+      parameters:
+        - $ref: '#/components/parameters/x-openapi-clientid'
+        - $ref: '#/components/parameters/channel'
+        - $ref: '#/components/parameters/origMcApiClientId'
+      requestBody:
+        $ref: '#/components/requestBodies/ScoreRequestDetails'
+      responses:
+        '200':
+          $ref: '#/components/responses/CarbonScoreDetails'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaTypeError'
   '/insights/{id}':
     get:
       operationId: getInsightsById
@@ -470,8 +547,39 @@ paths:
         '400':
           $ref: '#/components/responses/PersonasBadRequestError'
 components:
+  headers:
+    Location:
+      description: The URL to check on status of resource
+      schema:
+        type: string
+    X-MC-Correlation-ID:
+      description: This id is unique per request and is used to co-relate a request to its response. Customers must share this id while raising any incident for this API.
+      schema:
+        $ref: "#/components/schemas/X-MC-Correlation-ID"
   schemas:
 
+    X-MC-Correlation-ID:
+      type: string
+      example: X-MC-Correlation-ID:5e4b7f904d2820f688c67ef9fc0035
+    PaymentCardProfile:
+      type: object
+      properties:
+        paymentCardId:
+          $ref: '#/components/schemas/PaymentCardId'
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
+      required:
+        - paymentCardId
+        - profile
+    CardClimateProfile:
+      title: cardClimateProfile
+      type: object
+      description: Climate profile of the user.
+      properties:
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
+      required:
+        - profile
     Surveys:
       type: object
       title: Surveys
@@ -507,20 +615,6 @@ components:
           $ref: '#/components/schemas/ClimateProfile'
       required:
         - profile
-    ClassificationType:
-      type: string
-      minLength: 3
-      maxLength: 5
-      pattern: ^(mcc|docc|MCC|plaid)$
-      example: MCC
-      description: >-
-        Classification for this transaction.
-        Possible values are,
-        
-        * mcc
-        * docc
-        * MCC
-        * plaid
     PaymentCardEnrolments:
       title: PaymentCardEnrolments
       type: array
@@ -531,14 +625,23 @@ components:
         cards. This information should be used to identify the success and
         failure enrolments and take appropriate next steps.
       items:
-        $ref: '#/components/schemas/PaymentCardEnrolment'
+        $ref: "#/components/schemas/PaymentCardEnrolment"
     PaymentCardEnrolment:
       title: PaymentCardEnrolment
       type: object
       description: The response object which contains Payment Card information.
+      required:
+        - id
       properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^[\\w-]{1,100}'
+          description: Id of the payment card. Received from the request.
+          example: '1c40daf6-69c9-4055-ab72-d46ed0a30ca5'
         paymentCardId:
-          $ref: '#/components/schemas/PaymentCardId'
+          $ref: "#/components/schemas/PaymentCardId"
         bin:
           type: string
           minLength: 4
@@ -548,7 +651,7 @@ components:
             First 4 to 8 digits of BIN will be present in response only in case
             of success already exists card and if valid supported FPAN bin
             range.
-          example: '545502'
+          example: "545502"
         last4fpan:
           type: string
           minLength: 4
@@ -557,21 +660,21 @@ components:
           description: >-
             Last 4 digits of a payment card number will be present only if the
             card number in the request is valid.
-          example: '8351'
+          example: "8351"
         status:
           type: string
           minLength: 6
           maxLength: 7
           description: >-
             Status of a Payment Card on the server. Possible values are ACTIVE &
-            DELETED.
+            PENDING. The cards that are in PENDING state will move to ACTIVE state in background as soon as their enrolment is complete. The paymentCardId will remain same.
           example: ACTIVE
         errorCode:
           title: errorCode
           type: string
           minLength: 10
           maxLength: 30
-          example: PAYMENT_CARD_ALREADY_EXISTS
+          example: INVALID_FPAN
           description: >-
             Error code in case of registration failed. Possible values are,
 
@@ -586,15 +689,12 @@ components:
 
             * UNSUPPORTED_CURRENCY = The currency in the request is not
             supported, try again with a different one.
-
-            * PAYMENT_CARD_ALREADY_EXISTS = The card number in the request is
-            already registered on the server, try again with a different one.
     CurrencyCode:
       type: string
       description: Currency code as per ISO 4217
       minLength: 3
       maxLength: 3
-      pattern: '^[A-Za-z]{3}$'
+      pattern: "^[A-Za-z]{3}$"
     TransactionId:
       type: string
       description: >-
@@ -613,13 +713,14 @@ components:
       minItems: 1
       maxItems: 5000
       items:
-        $ref: '#/components/schemas/TransactionData'
+        $ref: "#/components/schemas/TransactionData"
       example:
-        - transactionId: 'fdc4626c-f51e-4ba6-9728-c79ac1d9aec8'
-          mcc: 5962
+        - transactionId: ee421c25-f928-4bf6-b884-3600b76b860d
+          mcc: 3997
+          cardBrand: OTH
           amount:
-            value: 50
-            currencyCode: 'EUR'
+            currencyCode: USD
+            value: 123
           profile:
             traits:
               knowledge: 0.65
@@ -642,10 +743,34 @@ components:
               key1:
                 key2: 1
                 key3: 2
+        - transactionId: fdc4626c-f51e-4ba6-9728-c79ac1d9aec8
+          mcc: 3000
+          cardBrand: OTH
+          amount:
+            currencyCode: USD
+            value: 10.35
+        - transactionId: 0218BC0251FEB8F8E063C6979E0AE0DD
+          mcc: 1234
+          cardBrand: OTH
+          amount:
+            currencyCode: USD
+            value: 123
+        - transactionId: odc4626c-f51e-4ba6-9728-c79ac1d9aec9
+          mcc: 3997
+          type: AIIA
+          amount:
+            value: 100
+            currencyCode: USD
+          cardBrand: OTH
+          additionalInformation:
+            - key: aiiaCode
+              value: '101'
     TransactionData:
       title: TransactionData
       type: object
-      description: Object which holds information about payment transaction for carbon scoring and other properties.
+      description: >-
+        Object which holds information about payment transaction for carbon
+        scoring and other properties.
       allOf:
         - $ref: '#/components/schemas/Transaction'
       properties:
@@ -656,8 +781,8 @@ components:
       type: object
       description: A single payment transaction for carbon scoring.
       required:
-        - amount
         - transactionId
+        - amount
       properties:
         transactionId:
           $ref: '#/components/schemas/TransactionId'
@@ -680,15 +805,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdditionalInformation'
-    Type:
-      title: Type
-      type: string
-      minLength: 3
-      maxLength: 4
-      example: 'AIIA'
-      description: >-
-        Type defines transaction scoring type, 
-        based on which score has been generated.Allowed value is AIIA.
+
     mcc:
       type: string
       description: >-
@@ -704,14 +821,14 @@ components:
       minLength: 1
       maxLength: 3
       pattern: '^(MA|OTH|NC)$'
-      example: 'MA'
+      example: "MA"
       description: >-
         Brand type of the payment card through which transaction done. Possible values are,
 
         * MA = Mastercard branded payment card.
-        
+
         * OTH = Payment card brand other than Mastercard.
-        
+
         * NC = Non card based transaction.
     Amount:
       title: Amount
@@ -730,24 +847,7 @@ components:
           exclusiveMinimum: false
           example: 100
         currencyCode:
-          $ref: '#/components/schemas/CurrencyCode'
-    AdditionalInformation:
-      title: AdditionalInformation
-      description: Additional Information object with key value pair.
-      type: object
-      properties:
-        key:
-          type: string
-          minLength: 1
-          maxLength: 50
-          example: 'aiiaCode'
-          description: A unique key within `AdditionalInformation` which describes a specific input. For example aiiaCode.
-        value:
-          type: string
-          minLength: 1
-          maxLength: 50
-          example: '115'
-          description: A value against particular key.
+          $ref: "#/components/schemas/CurrencyCode"
     TransactionFootprintsData:
       title: TransactionFootprintsData
       type: array
@@ -757,17 +857,81 @@ components:
       minItems: 1
       maxItems: 5000
       items:
-        $ref: '#/components/schemas/TransactionFootprintData'
+        $ref: "#/components/schemas/TransactionFootprintData"
     TransactionFootprintData:
       title: TransactionFootprintData
       type: object
       description: >-
         A single transaction footprint calculated for a corresponding transaction.
       allOf:
-        - $ref: '#/components/schemas/TransactionFootprint'
+        - $ref: "#/components/schemas/TransactionFootprint"
       properties:
         cardBrand:
           $ref: '#/components/schemas/CardBrand'
+        scoreStatus:
+          type: string
+          example: SUCCESS
+          description: >-
+            scoreStatus defines the status of carbon scoring for a given
+            transaction. Possible values are,
+
+            * SUCCESS = Transaction is scored successfully.
+
+            * FAILURE = Transaction scoring is failed.
+          minLength: 5
+          maxLength: 7
+        errorCode:
+          type: string
+          example: INVALID_MCC
+          description: >-
+            A unique constant identifying the error case encountered during
+            carbon scoring for a given transaction.
+          minLength: 1
+          maxLength: 100
+        errorMessage:
+          type: string
+          example: >-
+            MCC provided in the request is invalid. Kindly request again with a
+            valid MCC.
+          description: Short description of the errorCode field.
+          minLength: 10
+          maxLength: 1000
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
+        classification:
+          title: Classification
+          type: object
+          description: >-
+            Classification for this transaction.
+          properties:
+            type:
+              $ref: '#/components/schemas/ClassificationType'
+            id:
+              type: string
+              example: "5411"
+              description: specifies Id of Classification
+          required:
+            - id
+            - type
+        spendingAreaId:
+          type: number
+          description: >-
+            Spending area id
+          example: 30
+    ClassificationType:
+      type: string
+      minLength: 3
+      maxLength: 5
+      pattern: ^(mcc|docc|MCC|plaid)$
+      example: MCC
+      description: >-
+        Classification for this transaction.
+        Possible values are,
+
+        * mcc
+        * docc
+        * MCC
+        * plaid
     TransactionFootprint:
       title: TransactionFootprint
       type: object
@@ -776,77 +940,10 @@ components:
         transaction.
       required:
         - transactionId
-        - scoreStatus
+        - mcc
       allOf:
-        - $ref: '#/components/schemas/CarbonUsage'
-        - type: object
-          properties:
-            transactionId:
-              $ref: '#/components/schemas/TransactionId'
-            mcc:
-              type: string
-              description: >-
-                Merchant category code of a payment transaction that uniquely
-                defines a merchant business (same as in request).
-              minLength: 1
-              maxLength: 4
-              pattern: '^\d{1,4}'
-            category:
-              $ref: '#/components/schemas/Category'
-            scoreReference:
-              type: string
-              description: >-
-                Score Reference defines transaction scoring type, 
-                based on which score has been generated. Possible values are MCC or AIIA.
-              minLength: 3
-              maxLength: 3
-            profile:
-              $ref: '#/components/schemas/ClimateProfile'
-            classification:
-              title: Classification
-              type: object
-              description: >-
-                Classification for this transaction.
-              properties:
-                type:
-                  $ref: '#/components/schemas/ClassificationType'
-                id:
-                  type: string
-                  example: "5411"
-                  description: specifies Id of Classification
-              required:
-                - id
-                - type
-            spendingAreaId:
-              type: number
-              description: >-
-                Spending area id
-              example: 30
-            scoreStatus:
-              type: string
-              example: 'SUCCESS'
-              description: >-
-                scoreStatus defines the status of carbon scoring for a given transaction. Possible values are,
-                
-                * SUCCESS = Transaction is scored successfully.
-                
-                * FAILURE = Transaction scoring is failed.
-              minLength: 5
-              maxLength: 7
-            errorCode:
-              type: string
-              example: 'INVALID_MCC'
-              description: >-
-                A unique constant identifying the error case encountered during carbon scoring for a given transaction.
-              minLength: 1
-              maxLength: 100
-            errorMessage:
-              type: string
-              example: 'MCC Provided in the request is Invalid. Kindly Request again with valid MCC.'
-              description: >-
-                Short description of the errorCode field.
-              minLength: 10
-              maxLength: 1000
+        - $ref: "#/components/schemas/CarbonUsage"
+        - $ref: "#/components/schemas/TransactionScoreRef"
     AggregateSearchCriteria:
       title: AggregateSearchCriteria
       type: object
@@ -860,9 +957,11 @@ components:
         paymentCardIds:
           type: array
           items:
-            $ref: '#/components/schemas/PaymentCardId'
+            $ref: "#/components/schemas/PaymentCardId"
           minItems: 1
           maxItems: 5
+          example: c5d88571-ac15-465a-a0d8-1ad1327b9a06
+          description: Unique ID provided in the response while registering a payment card.
         aggregateType:
           type: integer
           minimum: 1
@@ -879,19 +978,19 @@ components:
           type: string
           minLength: 1
           maxLength: 1
-          pattern: '^(?:Y|N|y|n)$'
+          pattern: "^(?:Y|N|y|n)$"
           example: Y
           description: >
-            Wheter to retrieve cross PAN aggregate carbon footprint or not. Supported
+            Whether to retrieve cross PAN aggregate carbon footprint or not. Supported
             values are:
 
             <li> Y = Retrieve cross PAN aggregate.
             <li> N = Do not retrieve cross PAN aggregate.
             <br> If not provided then default will be considered as 'N'.
         fromDate:
-          $ref: '#/components/schemas/Day'
+          $ref: "#/components/schemas/Day"
         toDate:
-          $ref: '#/components/schemas/Day'
+          $ref: "#/components/schemas/Day"
       example:
         aggregateType: 1
         crossPANAggregate: Y
@@ -915,11 +1014,14 @@ components:
             The number of items you asked the start of the list to be offset
             from.
           type: integer
+          minimum: 0
           example: 1
         limit:
           description: The number of items you asked the list to be limited to.
           type: integer
-          example: 2
+          minimum: 5
+          maximum: 50
+          example: 5
         total:
           description: The total number of items in the collection.
           type: integer
@@ -931,7 +1033,7 @@ components:
           minItems: 1
           maxItems: 5000
           items:
-            $ref: '#/components/schemas/HistoricalTransactionFootprint'
+            $ref: "#/components/schemas/HistoricalTransactionFootprint"
     HistoricalTransactionFootprint:
       title: HistoricalTransactionFootprint
       type: object
@@ -943,9 +1045,54 @@ components:
         - transactionFootprint
       properties:
         transactionMetadata:
-          $ref: '#/components/schemas/TransactionMetadata'
+          $ref: "#/components/schemas/TransactionMetadata"
         transactionFootprint:
-          $ref: '#/components/schemas/TransactionFootprint'
+          $ref: "#/components/schemas/TransactionFootprint"
+    TransactionFootprintForNotification:
+      title: TransactionFootprintForNotification
+      type: object
+      description: >
+        A single transaction footprint calculated for a corresponding payment transaction.
+      required:
+        - transactionId
+        - mcc
+      allOf:
+        - $ref: '#/components/schemas/CarbonAndWaterUsage'
+        - $ref: '#/components/schemas/TransactionFootprintForNotificationProperties'
+
+    TransactionFootprintForNotificationProperties:
+      type: object
+      properties:
+        transactionId:
+          $ref: '#/components/schemas/TransactionId'
+        mcc:
+          type: string
+          description: >
+            Merchant category code of a payment transaction that uniquely defines a merchant business (same as in request).
+          minLength: 1
+          maxLength: 4
+          pattern: '^\d{1,4}'
+          example: 3000
+        category:
+          $ref: '#/components/schemas/Category'
+      required:
+        - transactionId
+        - mcc
+    CarbonAndWaterUsage:
+      title: CarbonAndWaterUsage
+      type: object
+      description: Object to hold carbon usage data.
+      properties:
+        carbonEmissionInGrams:
+          title: carbonEmissionInGrams
+          type: number
+          description: The transaction's CO2 emission in grams.
+          example: 48.52, -48.52 (in case of Refund Transaction)
+        carbonEmissionInOunces:
+          title: carbonEmissionInOunces
+          type: number
+          description: The transaction's CO2 emission in ounces.
+          example: 1.71
     TransactionMetadata:
       title: TransactionMetadata
       type: object
@@ -970,6 +1117,30 @@ components:
           minLength: 1
           pattern: '^[\w\-\_]{1,100}'
           example: ee421c25-f928-4bf6-b884-3600b76b860d
+        traceId:
+          title: traceId
+          type: string
+          description: A unique ID associated with a transaction.
+          maxLength: 100
+          minLength: 65
+          pattern: '([A-Za-z0-9]{10,100})'
+          example: 9A52386ce297173Ecfeb9120aabb0805bbeeb1350ce1de640864852e800bd2067
+        banknetReferenceNumber:
+          title: banknetReferenceNumber
+          type: string
+          description: DE 63 subelement 2 (POS_BANKNET_REF) is a reference number generated by authorization platform.
+          maxLength: 13
+          minLength: 6
+          pattern: '([A-Za-z0-9]{6,13})'
+          example: MPL0R6B2R
+        banknetDate:
+          title: banknetDate
+          type: string
+          description: DE 7 subelement 1 (POS_BANKNET_DATE) is a date when transaction message enters into Mastercard network.
+          maxLength: 4
+          minLength: 4
+          pattern: '([0-9]{4})'
+          example: '0525'
         retrievalRefNumber:
           title: retrievalRefNumber
           type: string
@@ -988,7 +1159,7 @@ components:
             transaction type.
           maxLength: 2
           minLength: 2
-          example: '00'
+          example: "00"
         authCode:
           title: authCode
           type: string
@@ -997,7 +1168,7 @@ components:
             assign by authorizing institute.
           maxLength: 6
           minLength: 1
-          example: '01423Z'
+          example: "01423Z"
         dateAndTime:
           title: dateAndTime
           type: string
@@ -1006,7 +1177,7 @@ components:
             (For example, YYYY-MM-DDThh:mmTZD).
           maxLength: 25
           minLength: 22
-          example: '2018-07-02T00:00+00:00'
+          example: "2018-07-02T00:00+00:00"
         merchantName:
           title: merchantName
           type: string
@@ -1033,21 +1204,21 @@ components:
             institution (for example, merchant bank) or its agent.
           maxLength: 11
           minLength: 11
-          example: '12312312312'
+          example: "12312312312"
         amount:
           title: amount
           type: number
-          description: Transaction Amount.
+          description: Transaction amount for the given transaction.
           maxLength: 10
           minLength: 1
           example: 25.5
         currencyCode:
-          $ref: '#/components/schemas/CurrencyCode'
+          $ref: "#/components/schemas/CurrencyCode"
         indicator:
           title: indicator
           type: string
           description: >-
-            Transaction type (AUTH = AT, CLEAR = CL, REVERSAL = RT or REFUND =
+            Transaction type (AUTH = AT, CLEAR = CL or REFUND =
             RFT).
           maxLength: 8
           minLength: 2
@@ -1068,11 +1239,14 @@ components:
         transactionMetadata:
           $ref: '#/components/schemas/TransactionMetadata'
         transactionFootprint:
-          $ref: '#/components/schemas/TransactionFootprint'
+          $ref: '#/components/schemas/TransactionFootprintForNotification'
       example:
         paymentCardId: c5d88571-ac15-465a-a0d8-1ad1327b9a06
         transactionMetadata:
           id: ee421c25-f928-4bf6-b884-3600b76b860d
+          traceId: 9f52386ce297173ecfeb9120aabb0805bbeeb1350ce1de640864852e800bd206
+          banknetReferenceNumber: MPL0R6B2R
+          banknetDate: '0525'
           retrievalRefNumber: MCC000100
           processingCode: '00'
           authCode: '444236'
@@ -1083,8 +1257,9 @@ components:
           amount: '25.50'
           currencyCode: USD
           indicator: AT
-        transactionFootPrint:
+        transactionFootprint:
           mcc: 3997
+          transactionId: 1000000000014
           carbonEmissionInGrams: 48.52
           carbonEmissionInOunces: 1.71
           category:
@@ -1128,7 +1303,7 @@ components:
           minLength: 3
           maxLength: 3
           pattern: '^\d{3}'
-          example: '302'
+          example: "302"
     SupportedCurrencies:
       title: SupportedCurrencies
       type: array
@@ -1136,7 +1311,7 @@ components:
       minItems: 1
       maxItems: 1000
       items:
-        $ref: '#/components/schemas/Currency'
+        $ref: "#/components/schemas/Currency"
     Currency:
       title: Currency
       type: object
@@ -1145,7 +1320,33 @@ components:
         - currencyCode
       properties:
         currencyCode:
-          $ref: '#/components/schemas/CurrencyCode'
+          $ref: "#/components/schemas/CurrencyCode"
+    Type:
+      title: Type
+      type: string
+      minLength: 3
+      maxLength: 4
+      example: "AIIA"
+      description: >-
+        Type defines transaction scoring type,
+        based on which score has been generated.Allowed value is AIIA.
+    AdditionalInformation:
+      title: AdditionalInformation
+      description: Additional Information object with key value pair.
+      type: object
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: "aiiaCode"
+          description: A unique key within `AdditionalInformation` which describes a specific input. For example aiiaCode.
+        value:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: "101"
+          description: A value against particular key.
     SupportedMerchantCategories:
       title: SupportedMerchantCategories
       type: array
@@ -1153,7 +1354,7 @@ components:
       minItems: 1
       maxItems: 5000
       items:
-        $ref: '#/components/schemas/MerchantCategory'
+        $ref: "#/components/schemas/MerchantCategory"
     MerchantCategory:
       title: MerchantCategory
       type: object
@@ -1170,23 +1371,23 @@ components:
           description: >-
             Merchant category code of a payment transaction that uniquely
             defines a merchant business.
-          example: '3862'
+          example: "3862"
         category:
-          $ref: '#/components/schemas/Category'
+          $ref: "#/components/schemas/Category"
     AggregateTransactionFootprints:
       title: AggregateTransactionFootprints
       type: object
       description: List of AggregateTransactionFootprint.
       required:
-        - aggregateTransactionFootprint
+        - aggregateTransactionFootprints
       properties:
-        aggregateTransactionFootprint:
+        aggregateTransactionFootprints:
           description: Array of `crossPANAggregations` based on given aggregation level.
           type: array
           minItems: 1
           maxItems: 100
           items:
-            $ref: '#/components/schemas/AggregateTransactionFootprint'
+            $ref: "#/components/schemas/AggregateTransactionFootprint"
         crossPANAggregations:
           description: Array of `crossPANAggregations` based on given aggregation level.
           type: array
@@ -1194,9 +1395,6 @@ components:
           maxItems: 100
           items:
             $ref: '#/components/schemas/CrossPANAggregation'
-
-
-
     CrossPANAggregation:
       title: CrossPANAggregation
       description: Cross PAN aggregated carbon footprint for given aggregate type.
@@ -1212,9 +1410,35 @@ components:
             week 1 to week 26).
 
             * Monthly = July|2019
-          example: 'Week-26|2019'
+          example: "Week-26|2019"
       allOf:
-        - $ref: '#/components/schemas/CarbonUsage'
+        - $ref: "#/components/schemas/CarbonUsage"
+
+    TransactionScoreRef:
+      title: TransactionScoreRef
+      type: object
+      properties:
+        transactionId:
+          $ref: "#/components/schemas/TransactionId"
+        mcc:
+          type: string
+          description: >-
+            Merchant category code of a payment transaction that uniquely
+            defines a merchant business (same as in request).
+          minLength: 1
+          maxLength: 4
+          pattern: '^\d{1,4}'
+          example: 5277
+        category:
+          $ref: "#/components/schemas/Category"
+        scoreReference:
+          type: string
+          description: >-
+            Score Reference defines transaction scoring type,
+            based on which score has been generated. Possible values are MCC or AIIA.
+          minLength: 3
+          maxLength: 4
+          example: MCC
 
     CarbonUsage:
       title: CarbonUsage
@@ -1231,7 +1455,6 @@ components:
           type: number
           description: The transaction's CO2 emission in ounces.
           example: 1.71
-
     AggregateTransactionFootprint:
       title: AggregateTransactionFootprint
       type: object
@@ -1241,14 +1464,14 @@ components:
         - footprintAggregations
       properties:
         paymentCardId:
-          $ref: '#/components/schemas/PaymentCardId'
+          $ref: "#/components/schemas/PaymentCardId"
         footprintAggregations:
           description: Array of FootprintAggregation based on given aggregation level.
           type: array
           minItems: 1
           maxItems: 186
           items:
-            $ref: '#/components/schemas/FootprintAggregation'
+            $ref: "#/components/schemas/FootprintAggregation"
     FootprintAggregation:
       title: FootprintAggregation
       type: object
@@ -1256,19 +1479,8 @@ components:
         Aggregation of carbon score for a payment card ID and given
         aggregation level.
       allOf:
-        - $ref: '#/components/schemas/CarbonUsage'
-        - type: object
-          properties:
-            aggregateValue:
-              type: string
-              minLength: 10
-              maxLength: 25
-              description: >
-                Aggregate duration for which aggregate has been calculated.
-
-                * Weekly = Week-22|2019 (i.e., Week of the year).
-
-                * Monthly = July|2019
+        - $ref: "#/components/schemas/CarbonUsage"
+        - $ref: "#/components/schemas/CrossPANAggregation"
 
     PaymentCard:
       title: PaymentCard
@@ -1286,11 +1498,11 @@ components:
           maxLength: 16
           pattern: '^\d{16}'
           description: Original payment card number in full.
-          example: '5344035171229750'
+          example: "5344035171229750"
         cardBaseCurrency:
-          $ref: '#/components/schemas/CurrencyCode'
+          $ref: "#/components/schemas/CurrencyCode"
       example:
-        fpan: '5344035171229750'
+        fpan: "5344035171229750"
         cardBaseCurrency: EUR
     PaymentCardReference:
       title: PaymentCardReference
@@ -1306,29 +1518,60 @@ components:
         - last4fpan
       properties:
         paymentCardId:
-          $ref: '#/components/schemas/PaymentCardId'
+          $ref: "#/components/schemas/PaymentCardId"
         bin:
           type: string
           minLength: 4
           maxLength: 8
           pattern: '^\d{4,8}'
           description: First 4 to 8 digits of a payment card number.
-          example: '534403'
+          example: "534403"
         last4fpan:
           type: string
           minLength: 4
           maxLength: 4
           pattern: '^\d{4}'
           description: Last 4 digits of a payment card number.
-          example: '9750'
+          example: "9750"
         status:
           type: string
           minLength: 6
           maxLength: 7
           description: >-
             Status of a Payment Card on the server. Possible values are ACTIVE &
-            DELETED.
+            PENDING. The cards that are in PENDING state will move to ACTIVE state in background as soon as their enrolment is complete. The paymentCardId will remain same.
           example: ACTIVE
+    PaymentCards:
+      title: PaymentCards
+      type: object
+      description: >-
+        The request object for registering a new Payment Cards. This object will
+        be encrypted before sending it to the server.
+      required:
+        - id
+        - fpan
+        - cardBaseCurrency
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^[\\w-]{1,100}'
+          description: Id of the payment card. Received from the request.
+          example: '1c40daf6-69c9-4055-ab72-d46ed0a30ca5'
+        fpan:
+          type: string
+          minLength: 16
+          maxLength: 16
+          pattern: '^\d{16}'
+          description: Original payment card number in full.
+          example: '5344035171229750'
+        cardBaseCurrency:
+          $ref: '#/components/schemas/CurrencyCode'
+      example:
+        id: '1c40daf6-69c9-4055-ab72-d46ed0a30ca5'
+        fpan: '5344035171229750'
+        cardBaseCurrency: EUR
     PaymentCardId:
       type: string
       pattern: '^[0-9A-Fa-f\-]{36}'
@@ -1339,11 +1582,12 @@ components:
       minLength: 10
       maxLength: 10
       pattern: ^((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$
-      example: '2020-09-19'
+      example: "2020-09-19"
     ServiceProvider:
       title: ServiceProvider
       type: object
       description: Information about a Service Provider as available on the server.
+
       required:
         - clientId
         - customerName
@@ -1368,13 +1612,13 @@ components:
           example: fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5
         customerId:
           type: string
-          pattern: '^(?:[1-9]\d{0,9}|9999999999)$'
           minLength: 1
-          maxLength: 10
+          maxLength: 200
+          pattern: '^[\w\d]{1,200}'
           description: >-
             Unique Service Provider identifier assigned by Mastercard which
             remains same across all Mastercard systems.
-          example: '1234567'
+          example: customerid1
         customerName:
           type: string
           minLength: 1
@@ -1392,7 +1636,7 @@ components:
           description: >-
             Comma separated account range supported by a Service Provider as
             available on the server.
-          example: '534403,518145,518152,5403,5424'
+          example: "534403,518145,518152,5403,5424"
         email:
           type: string
           description: Email address of a Service Provider as registered on the server.
@@ -1409,22 +1653,20 @@ components:
           example: ACTIVE
         senderId:
           type: string
-          minLength: 1
-          maxLength: 200
-          description: Logical address of the service provider.
-          example: ''
+          description: Logical address of the service provider which has been configured in NGFT(Next Gen File Transfer).
+          example: "cc-fp@anz"
         ica:
           type: string
           minLength: 1
           maxLength: 11
           description: Activity ICA value of the customer.
-          example: '8142'
+          example: "24528"
         cardHolderBase:
           type: string
           minLength: 1
           maxLength: 20
-          description: Total cardholder base of the issuer.
-          example: '54123'
+          description: Total cardholder base of the service provider.
+          example: '9900000'
         channel:
           type: string
           minLength: 2
@@ -1432,6 +1674,7 @@ components:
           description: Channel of onboarding from which service provider onboarded. Possible values are,
             * CC = Indicates that service provider is onboarded directly on Carbon Calculator.
             * CT = Indicates that service provider is onboarded via Carbon Tracker/Carbon Calculator Experience.
+          example: 'CC'
     ServiceProviderConfig:
       title: ServiceProviderConfig
       type: object
@@ -1441,29 +1684,29 @@ components:
           type: string
           minLength: 1
           maxLength: 200
-          pattern: ^[\w\s]{1,200}
+          pattern: ^(?!\s*$)[\w]{1,200}(?:\s[\w]+)*$
           description: Name with which a Service Provider is registered and will be identified on the server. This doesn't have to be a legal name.
-          example: 'ABC Bank'
+          example: "ABC Bank"
         supportedAccountRange:
           type: string
           minLength: 1
           pattern: ^[\d\,]{1,}
           description: Comma separated account range supported by a Service Provider.
-          example: '534403,518145,518152,5403,5424'
+          example: "534403,518145,518152,5403,5424"
         senderId:
           type: string
           minLength: 1
           maxLength: 200
-          description: Logical address of the service provider.
-          example: 'cc-fp@anz'
+          description: Logical address of the service provider which has been configured in NGFT(Next Gen File Transfer).
+          example: "cc-fp@anz"
         cardHolderBase:
           type: string
-          pattern: '^(?:[1-9]\d{0,14}|999999999999999)$'
-          minLength: 1
-          maxLength: 15
+          pattern: '^\d+'
+          minimum: 1
+          maximum: 999999999999999
           exclusiveMinimum: false
-          description: Total card holder base details of issuer.
-          example: '1221'
+          description: Total card holder base details of service provider.
+          example: '9900000'
     ErrorWrapper:
       title: ErrorWrapper
       type: object
@@ -1472,7 +1715,7 @@ components:
         - Errors
       properties:
         Errors:
-          $ref: '#/components/schemas/Errors'
+          $ref: "#/components/schemas/Errors"
     Errors:
       title: Errors
       type: object
@@ -1481,12 +1724,12 @@ components:
         - Error
       properties:
         Error:
-          $ref: '#/components/schemas/ErrorList'
+          $ref: "#/components/schemas/ErrorList"
     ErrorList:
       type: array
       minItems: 1
       items:
-        $ref: '#/components/schemas/Error'
+        $ref: "#/components/schemas/Error"
     Error:
       title: Error
       type: object
@@ -1506,7 +1749,7 @@ components:
             'Service-Provider'.
           minLength: 1
           maxLength: 100
-          example: Service-Provider
+          example: Service-Provider-Mgmt
         ReasonCode:
           type: string
           description: >-
@@ -2024,10 +2267,6 @@ components:
           $ref: '#/components/schemas/CardBrand'
         mcc:
           $ref: '#/components/schemas/MCC'
-        additionalInformation:
-          type: array
-          items:
-            $ref: '#/components/schemas/AdditionalInformation'
     ScoreRequestDetails:
       title: ScoreRequestDetails
       type: object
@@ -2092,23 +2331,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/CarbonUsage'
         - $ref: '#/components/schemas/CarbonScoreData'
-        - type: object
-          properties:
-            id:
-              $ref: '#/components/schemas/Id'
-            mcc:
-              type: string
-              description: >-
-                Merchant category code of a payment transaction that uniquely
-                defines a merchant business (same as in request).
-              minLength: 1
-              maxLength: 4
-              pattern: '^\d{1,4}'
-              example: '3447'
-            category:
-              $ref: '#/components/schemas/Category'
-            cardBrand:
-              $ref: '#/components/schemas/CardBrand'
+        - $ref: '#/components/schemas/MerchantCategoryDetails'
     CarbonScoreData:
       title: CarbonScoreData
       type: object
@@ -2130,9 +2353,9 @@ components:
           description: >-
             scoreStatus defines the status of carbon scoring for a given
             transaction. Possible values are,
-            
+
             * SUCCESS = Transaction is scored successfully.
-            
+
             * FAILURE = Transaction scoring is failed.
           minLength: 5
           maxLength: 7
@@ -2152,6 +2375,31 @@ components:
           description: Short description of the errorCode field.
           minLength: 10
           maxLength: 1000
+    MerchantCategoryDetails:
+      title: MerchantCategoryDetails
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        mcc:
+          type: string
+          description: >
+            Merchant category code of a payment transaction that uniquely defines a merchant business (same as in request).
+          minLength: 1
+          maxLength: 4
+          pattern: '^\d{1,4}'
+          example: '3447'
+        category:
+          $ref: '#/components/schemas/Category'
+        cardBrand:
+          $ref: '#/components/schemas/CardBrand'
+    InsightsByIdRequestPayload:
+      title: InsightsByIdRequestPayload
+      type: object
+      description: The request object which contains climate Profile
+      properties:
+        profile:
+          $ref: '#/components/schemas/ClimateProfile'
     InsightsResponseById:
       properties:
         content:
@@ -2442,23 +2690,23 @@ components:
       required: true
       example: 83c0711e-1851-4771-950a-055dded7f168
       schema:
-        $ref: '#/components/schemas/PaymentCardId'
+        $ref: "#/components/schemas/PaymentCardId"
     FromDate:
       name: from_date
       in: query
       description: Start date for searching transaction (Format- YYYY-MM-DD).
       required: true
-      example: '2018-05-07'
+      example: "2018-05-07"
       schema:
-        $ref: '#/components/schemas/Day'
+        $ref: "#/components/schemas/Day"
     ToDate:
       name: to_date
       in: query
       description: End date for searching transaction (Format- YYYY-MM-DD).
       required: true
-      example: '2021-05-07'
+      example: "2021-05-07"
       schema:
-        $ref: '#/components/schemas/Day'
+        $ref: "#/components/schemas/Day"
     Offset:
       name: offset
       in: query
@@ -2474,13 +2722,13 @@ components:
       in: query
       description: The number of items you asked the list to be limited to.
       required: false
-      example: 100
+      example: 50
       schema:
         type: integer
         default: 50
         minimum: 5
         maximum: 50
-    XOpenapiClientId:
+    x-openapi-clientid:
       in: header
       name: x-openapi-clientid
       description: Unique Client Id as assigned by Mastercard Developers after creating a project. This will also be a unique Id of your Service Provider record.
@@ -2491,7 +2739,7 @@ components:
         maxLength: 200
         pattern: ^[\w\d\-\_]{1,200}
         example: 'fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5'
-    Channel:
+    channel:
       in: header
       name: channel
       description: Channel of onboarding from which service provider onboarded and now the API call has been initiated. Possible values are,
@@ -2505,7 +2753,7 @@ components:
         type: string
         enum: [ CC, CT ]
         example: 'CT'
-    OrigMcApiClientId:
+    origMcApiClientId:
       in: header
       name: origMcApiClientId
       description: Client Id of originator issuer from where the API call has been initiated.
@@ -2593,39 +2841,53 @@ components:
           - 10
         type: number
   requestBodies:
+    CardClimateProfile:
+      description: Consumer's climate profile.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CardClimateProfile'
+          examples:
+            CardProfileRequest:
+              $ref: '#/components/examples/CardClimateProfile'
+      required: true
     ServiceProviderConfig:
-      description: Configuration details for service provider which needs to be update. It should contain only those parameters which you want to update. If you are calling this API for the first time then it is recommended to send all the parameters.
+      description: Configuration details for service provider which needs to be updated. It should contain only those parameters which you want to update. If you are calling this API for the first time then it is recommended to send all the parameters.
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ServiceProviderConfig'
+            $ref: "#/components/schemas/ServiceProviderConfig"
     PaymentCard:
-      description: Payment card to be enroled.
+      description: Payment card to be enrolled.
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PaymentCard'
+            $ref: "#/components/schemas/PaymentCard"
     PaymentCards:
       required: true
-      description: List of payment cards to be enroled.
+      description: List of payment cards to be enrolled.
       content:
         application/json:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/PaymentCard'
+              $ref: '#/components/schemas/PaymentCards'
             minItems: 1
-            maxItems: 500
+            maxItems: 100
             example:
-              - fpan: '5455029300268351'
+              - id: '4a737ddd-9e8e-4047-b214-8d350fb541f9'
+                fpan: '5455029300268351'
                 cardBaseCurrency: EUR
-              - fpan: '5455023979760762'
+              - id: 'bba90cdd-76f1-4bfc-95f0-e938b9db528f'
+                fpan: '5455023979760762'
                 cardBaseCurrency: USD
-              - fpan: '5455023979762834'
+              - id: '7df233aa-8de3-4a2e-a9dd-382a670c907b'
+                fpan: '5455023979762834'
                 cardBaseCurrency: USD
-              - fpan: '5455023979762824'
+              - id : '243adcd2-517d-4671-b292-9cd78016f2ce'
+                fpan: '5455023979762824'
                 cardBaseCurrency: USD
     PaymentCardIds:
       description: >-
@@ -2637,9 +2899,9 @@ components:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/PaymentCardId'
+              $ref: "#/components/schemas/PaymentCardId"
             minItems: 1
-            maxItems: 500
+            maxItems: 100
           example:
             - c5d88571-ac15-465a-a0d8-1ad1327b9a06
             - 8a581a55-bcea-4c3e-8e0f-9b4726e5e6d3
@@ -2661,7 +2923,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/AggregateSearchCriteria'
+            $ref: "#/components/schemas/AggregateSearchCriteria"
     NotifyTransactionFootprint:
       description: >-
         Single payment transaction information along with its transaction
@@ -2676,7 +2938,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Transactions'
+            $ref: "#/components/schemas/Transactions"
       required: true
     ProfileRequest:
       description: Profile request containing the survey results
@@ -2710,211 +2972,20 @@ components:
             ScoreRequestDetails:
               $ref: '#/components/examples/ScoreRequestDetails'
       required: true
+    InsightsByIdRequest:
+      description: Represents a Climate Profile for a User.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InsightsByIdRequestPayload'
+          examples:
+            InsightsByIdRequest:
+              $ref: '#/components/examples/InsightsByIdRequest'
+      required: true
   responses:
-
-
-
-
-    PaymentCardEnrolments:
+    NotFoundError:
       description: >-
-        The response object that contains the list of Payment Cards information
-        after batch registration.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PaymentCardEnrolments'
-          examples:
-            PaymentCardEnrolments:
-              $ref: '#/components/examples/PaymentCardEnrolments'
-    PaymentCardEnrolmentsBadRequestError:
-      description: >-
-        This response code is returned when a request is invalid, or data in the
-        request is not valid.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorWrapper'
-          examples:
-            PaymentCardEnrolmentsRequestValidationError:
-              $ref: '#/components/examples/RegisterPaymentCardRequestValidationError'
-            PaymentCardEnrolmentsRequestDecryptionError:
-              $ref: '#/components/examples/RegisterPaymentCardRequestDecryptionError'
-    TransactionFootprintsData:
-      description: >-
-        This response code is returned when a request is accepted and
-        successfully processed. A corresponding response will be returned for
-        the API caller.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/TransactionFootprintsData'
-          examples:
-            TransactionFootprints:
-              $ref: '#/components/examples/TransactionFootprintsData'
-    PaymentCardDeletionsBadRequestError:
-      description: >-
-        This response code is returned when either a request is invalid or one
-        or more paymentCardIds are invalid.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorWrapper'
-          examples:
-            PaymentCardDeletionsRequestValidationError:
-              $ref: '#/components/examples/PaymentCardDeletionsRequestValidationError'
-            PaymentCardDeletionsInvalidCardIdError:
-              $ref: '#/components/examples/PaymentCardDeletionsInvalidCardIdError'
-    HistoricalTransactionFootprints:
-      description: >-
-        This response code is returned when a request is accepted and
-        successfully processed. A corresponding response will be returned for
-        the API caller.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/HistoricalTransactionFootprints'
-          examples:
-            HistoricalTransactionFootprints:
-              $ref: '#/components/examples/HistoricalTransactionFootprints'
-    AggregateTransactionFootprints:
-      description: >-
-        This response code is returned when a request is accepted and
-        successfully processed.  A corresponding response will be returned for
-        the API caller.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AggregateTransactionFootprints'
-          examples:
-            WeeklyAggregateTransactionFootprints:
-              $ref: '#/components/examples/WeeklyAggregateTransactionFootprints'
-            MonthlyAggregateTransactionFootprints:
-              $ref: '#/components/examples/MonthlyAggregateTransactionFootprints'
-            MonthlyCategoryAggregateTransactionFootprints:
-              $ref: '#/components/examples/MonthlyCategoryAggregateTransactionFootprints'
-    SupportedCurrencies:
-      description: >-
-        This response code is returned when a request is accepted and
-        successfully processed. A corresponding response will be returned for
-        the API caller.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SupportedCurrencies'
-          examples:
-            SupportedCurrencies:
-              $ref: '#/components/examples/SupportedCurrencies'
-    SupportedMerchantCategories:
-      description: >-
-        This response code is returned when a request is accepted and
-        successfully processed. A corresponding response will be returned for
-        the API caller.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SupportedMerchantCategories'
-          examples:
-            SupportedMerchantCategories:
-              $ref: '#/components/examples/SupportedMerchantCategories'
-    PaymentCardReference:
-      description: >-
-        The response object that contains Payment Card information after a
-        successful registration.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PaymentCardReference'
-          examples:
-            PaymentCardReference:
-              $ref: '#/components/examples/PaymentCardReference'
-    ServiceProvider:
-      description: >-
-        The response object that contains the latest information of a Service
-        Provider as available on the server.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ServiceProvider'
-          examples:
-            ServiceProviderDetails:
-              $ref: '#/components/examples/ServiceProviderDetails'
-    UnsupportedMediaTypeError:
-      description: >-
-        This response code is returned when the MediaType in the request is other
-        than application/json.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorWrapper'
-          examples:
-            UnsupportedMediaTypeError:
-              $ref: '#/components/examples/UnsupportedMediaTypeError'
-    BadRequestError:
-      description: >-
-        This response code is returned when one or more request parameters is
-        either missing or is invalid. A caller should update his request as per
-        error details before trying again.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorWrapper'
-          examples:
-            BadRequestError:
-              $ref: '#/components/examples/BadRequestError'
-    TransactionHistoryBadRequestError:
-      description: >-
-        This response code is returned when a request is invalid or data in the
-        request is not valid.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorWrapper'
-          examples:
-            TransactionHistoryPaymentCardNotFoundError:
-              $ref: '#/components/examples/TransactionHistoryPaymentCardNotFoundError'
-            TransactionHistoryInvalidDateRangeError:
-              $ref: '#/components/examples/TransactionHistoryInvalidDateRangeError'
-            InvalidDateFormatError:
-              $ref: '#/components/examples/InvalidDateFormatError'
-    AggregateTransactionBadRequestError:
-      description: >-
-        This response code is returned when a request is invalid or data in the
-        request is not valid.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorWrapper'
-          examples:
-            InvalidPaymentCardError:
-              $ref: '#/components/examples/InvalidPaymentCardError'
-            InvalidDateFormatError:
-              $ref: '#/components/examples/InvalidDateFormatError'
-            AggregateTransactionInvalidDateRangeError:
-              $ref: '#/components/examples/AggregateTransactionInvalidDateRangeError'
-            AggregateTransactionInvalidAggregateTypeError:
-              $ref: '#/components/examples/AggregateTransactionInvalidAggregateTypeError'
-    RegisterPaymentCardBadRequestError:
-      description: >-
-        This response code is returned when a request is invalid or data in the
-        request is not valid or a card is already registered on the server.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorWrapper'
-          examples:
-            RegisterPaymentCardRequestValidationError:
-              $ref: '#/components/examples/RegisterPaymentCardRequestValidationError'
-            RegisterPaymentCardUnsupportedCardCurrencyError:
-              $ref: '#/components/examples/RegisterPaymentCardUnsupportedCardCurrencyError'
-            RegisterPaymentCardInvalidFPANError:
-              $ref: '#/components/examples/RegisterPaymentCardInvalidFPANError'
-            RegisterPaymentCardAlreadyRegisteredError:
-              $ref: '#/components/examples/RegisterPaymentCardAlreadyRegisteredError'
-            RegisterPaymentCardRequestDecryptionError:
-              $ref: '#/components/examples/RegisterPaymentCardRequestDecryptionError'
-    ServiceProviderNotFoundError:
-      description: >-
-        This response code is returned when the server cannot find the account which
+        This response code is returned when the server cannot find the payment card, account which
         has been used to call this API.
       content:
         application/json:
@@ -2922,40 +2993,9 @@ components:
             $ref: '#/components/schemas/ErrorWrapper'
           examples:
             ServiceProviderNotFoundError:
-              $ref: '#/components/examples/ServiceProviderNotFoundError'
-    ServiceProviderBadRequestError:
-      description: This response code is returned when either a request is invalid or data provided in the request is in invalid format.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorWrapper'
-          examples:
-            ServiceProviderInvalidRequestParameterError:
-              $ref: '#/components/examples/ServiceProviderInvalidRequestParameterError'
-    ServiceProviderICAValidationError:
-      description: This response code is returned when activity ICA validation is enabled and ICA of that service provider is unvalidated.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorWrapper'
-          examples:
-            ServiceProviderICAValidationError:
-              $ref: '#/components/examples/ServiceProviderICAValidationError'
-    PaymentCardByIdNotFoundError:
-      description: >-
-        This response code is returned when the server cannot find the paymentcard which
-        has been used to call this API.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorWrapper'
-          examples:
-            PaymentCardByIdNotFoundError:
-              $ref: '#/components/examples/PaymentCardByIdNotFoundError'
-    Accepted:
-      description: Accepted
-    Ok:
-      description: OK
+              $ref: '#/components/examples/ProfileServiceProviderNotFoundError'
+            PaymentCardNotFoundError:
+              $ref: '#/components/examples/ProfilePaymentCardNotFoundError'
     CarbonScoreDetails:
       description: >-
         This response code is returned when a request is valid and the carbon
@@ -2967,6 +3007,321 @@ components:
           examples:
             CarbonScoreDetails:
               $ref: '#/components/examples/CarbonScoreDetails'
+    CardClimateProfilePayloadBadRequestError:
+      description: >-
+        This response code is returned when one or more request parameters is
+        either missing or is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            BadRequestError:
+              $ref: '#/components/examples/CardClimateProfilePayloadBadRequestError'
+            PaymentCardInactiveError:
+              $ref: '#/components/examples/PaymentCardInactiveError'
+
+    PaymentCardProfile:
+      description: The profile created for payment card id.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentCardProfile'
+          examples:
+            PaymentCardProfile:
+              $ref: '#/components/examples/PaymentCardProfile'
+
+    PaymentCardEnrolments:
+      description: >-
+        The response object that contains the list of payment cards information
+        after batch registration.
+      headers:
+        X-MC-Correlation-ID:
+          $ref: "#/components/headers/X-MC-Correlation-ID"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PaymentCardEnrolments"
+          examples:
+            PaymentCardEnrolments:
+              $ref: "#/components/examples/PaymentCardEnrolments"
+    PaymentCardEnrolmentsBadRequestError:
+      description: >-
+        This response code is returned when a request is invalid, or data in the
+        request is not valid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorWrapper"
+          examples:
+            PaymentCardEnrolmentsRequestValidationError:
+              $ref: "#/components/examples/RegisterPaymentCardRequestValidationError"
+            PaymentCardEnrolmentsRequestDecryptionError:
+              $ref: "#/components/examples/RegisterPaymentCardRequestDecryptionError"
+    TransactionFootprintsData:
+      description: >-
+        This response code is returned when a request is accepted and
+        successfully processed. A corresponding response will be returned for
+        the API caller.
+      headers:
+        X-MC-Correlation-ID:
+          $ref: "#/components/headers/X-MC-Correlation-ID"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TransactionFootprintsData"
+          examples:
+            TransactionFootprints:
+              $ref: "#/components/examples/TransactionFootprintsData"
+    PaymentCardDeletionsBadRequestError:
+      description: >-
+        This response code is returned when either a request is invalid or one
+        or more paymentCardIds are invalid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorWrapper"
+          examples:
+            PaymentCardDeletionsRequestValidationError:
+              $ref: "#/components/examples/PaymentCardDeletionsRequestValidationError"
+            PaymentCardDeletionsInvalidCardIdError:
+              $ref: "#/components/examples/PaymentCardDeletionsInvalidCardIdError"
+    HistoricalTransactionFootprints:
+      description: >-
+        This response code is returned when a request is accepted and
+        successfully processed. A corresponding response will be returned for
+        the API caller.
+      headers:
+        X-MC-Correlation-ID:
+          $ref: "#/components/headers/X-MC-Correlation-ID"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/HistoricalTransactionFootprints"
+          examples:
+            HistoricalTransactionFootprints:
+              $ref: "#/components/examples/HistoricalTransactionFootprints"
+    AggregateTransactionFootprints:
+      description: >-
+        This response code is returned when a request is accepted and
+        successfully processed.  A corresponding response will be returned for
+        the API caller.
+      headers:
+        X-MC-Correlation-ID:
+          $ref: "#/components/headers/X-MC-Correlation-ID"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AggregateTransactionFootprints"
+          examples:
+            WeeklyAggregateTransactionFootprints:
+              $ref: "#/components/examples/WeeklyAggregateTransactionFootprints"
+            MonthlyAggregateTransactionFootprints:
+              $ref: "#/components/examples/MonthlyAggregateTransactionFootprints"
+            MonthlyCategoryAggregateTransactionFootprints:
+              $ref: "#/components/examples/MonthlyCategoryAggregateTransactionFootprints"
+    SupportedCurrencies:
+      description: >-
+        This response code is returned when a request is accepted and
+        successfully processed. A corresponding response will be returned for
+        the API caller.
+      headers:
+        X-MC-Correlation-ID:
+          $ref: "#/components/headers/X-MC-Correlation-ID"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SupportedCurrencies"
+          examples:
+            SupportedCurrencies:
+              $ref: "#/components/examples/SupportedCurrencies"
+    SupportedMerchantCategories:
+      description: >-
+        This response code is returned when a request is accepted and
+        successfully processed. A corresponding response will be returned for
+        the API caller.
+      headers:
+        X-MC-Correlation-ID:
+          $ref: "#/components/headers/X-MC-Correlation-ID"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SupportedMerchantCategories"
+          examples:
+            SupportedMerchantCategories:
+              $ref: "#/components/examples/SupportedMerchantCategories"
+    PaymentCardReference:
+      description: >-
+        The response object that contains Payment Card information after a
+        successful registration.
+      headers:
+        X-MC-Correlation-ID:
+          $ref: "#/components/headers/X-MC-Correlation-ID"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PaymentCardReference"
+          examples:
+            PaymentCardReference:
+              $ref: "#/components/examples/PaymentCardReference"
+    ServiceProvider:
+      description: >-
+        The response object that contains the latest information of a Service
+        Provider as available on the server.
+      headers:
+        X-MC-Correlation-ID:
+          $ref: "#/components/headers/X-MC-Correlation-ID"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ServiceProvider"
+          examples:
+            ServiceProviderDetails:
+              $ref: "#/components/examples/ServiceProviderDetails"
+    UnsupportedMediaTypeError:
+      description: >-
+        This response code is returned when the MediaType in the request is other
+        than application/json.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorWrapper"
+          examples:
+            UnsupportedMediaTypeError:
+              $ref: "#/components/examples/UnsupportedMediaTypeError"
+    BadRequestError:
+      description: >-
+        This response code is returned when one or more request parameters is
+        either missing or is invalid. A caller should update his request as per
+        error details before trying again.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorWrapper"
+          examples:
+            BadRequestError:
+              $ref: "#/components/examples/BadRequestError"
+    PaymentCardByIdNotFoundError:
+      description: >-
+        This response code is returned when the server cannot find the paymentcard which
+        has been used to call this API.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            PaymentCardByIdNotFoundError:
+              $ref: '#/components/examples/PaymentCardByIdNotFoundError'
+    TransactionHistoryBadRequestError:
+      description: >-
+        This response code is returned when a request is invalid or data in the
+        request is not valid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorWrapper"
+          examples:
+            TransactionHistoryPaymentCardNotFoundError:
+              $ref: "#/components/examples/TransactionHistoryPaymentCardNotFoundError"
+            TransactionHistoryInvalidDateRangeError:
+              $ref: "#/components/examples/TransactionHistoryInvalidDateRangeError"
+            TransactionHistoryInvalidDateFormatError:
+              $ref: "#/components/examples/TransactionHistoryInvalidDateFormatError"
+    AggregateTransactionBadRequestError:
+      description: >-
+        This response code is returned when a request is invalid or data in the
+        request is not valid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorWrapper"
+          examples:
+            InvalidPaymentCardError:
+              $ref: "#/components/examples/InvalidPaymentCardError"
+            AggregateTransactionInvalidDateFormatError:
+              $ref: "#/components/examples/AggregateTransactionInvalidDateFormatError"
+            AggregateTransactionInvalidDateRangeError:
+              $ref: "#/components/examples/AggregateTransactionInvalidDateRangeError"
+            AggregateTransactionInvalidAggregateTypeError:
+              $ref: "#/components/examples/AggregateTransactionInvalidAggregateTypeError"
+    RegisterPaymentCardBadRequestError:
+      description: >-
+        This response code is returned when a request is invalid or data in the
+        request is not valid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorWrapper"
+          examples:
+            RegisterPaymentCardRequestValidationError:
+              $ref: "#/components/examples/RegisterPaymentCardRequestValidationError"
+            RegisterPaymentCardUnsupportedCardCurrencyError:
+              $ref: "#/components/examples/RegisterPaymentCardUnsupportedCardCurrencyError"
+            RegisterPaymentCardInvalidFPANError:
+              $ref: "#/components/examples/RegisterPaymentCardInvalidFPANError"
+            RegisterPaymentCardRequestDecryptionError:
+              $ref: "#/components/examples/RegisterPaymentCardRequestDecryptionError"
+    ServiceProviderNotFoundError:
+      description: >-
+        This response code is returned when the server cannot find the account which
+        has been used to call this API.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorWrapper"
+          examples:
+            ServiceProviderNotFoundError:
+              $ref: "#/components/examples/ServiceProviderNotFoundError"
+    ServiceProviderBadRequestError:
+      description: This response code is returned when either a request is invalid or data provided in the request is in invalid format.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorWrapper"
+          examples:
+            ServiceProviderInvalidRequestParameterError:
+              $ref: "#/components/examples/ServiceProviderInvalidRequestParameterError"
+            ServiceProviderDuplicateSenderIdError:
+              $ref: "#/components/examples/DuplicateSenderIdError"
+    PaymentCardDeletionsNotFoundError:
+      description: >-
+        This response code is returned when the server cannot find the account or one or more paymentcards which
+        has been used to call this API.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorWrapper"
+          examples:
+            ServiceProviderNotFoundError:
+              $ref: "#/components/examples/ServiceProviderNotFoundError"
+            PaymentCardNotFoundError:
+              $ref: "#/components/examples/PaymentCardNotFoundError"
+    ServiceProviderICAValidationError:
+      description: This response code is returned when activity ICA validation is enabled and ICA of that service provider is unvalidated.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            ServiceProviderICAValidationError:
+              $ref: '#/components/examples/ServiceProviderICAValidationError'
+    ServiceProviderUnsupportedMediaTypeError:
+      description: >-
+        This response code is returned when the value of provided Content-Type parameter is other than expected.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorWrapper"
+          examples:
+            ServiceProviderUnsupportedMediaTypeError:
+              $ref: "#/components/examples/ServiceProviderUnsupportedMediaTypeError"
+    Accepted:
+      description: Accepted
+      headers:
+        Location:
+          $ref: "#/components/headers/Location"
+    Ok:
+      description: OK
     Profile:
       description: The resulting profile.
       content:
@@ -3029,6 +3384,7 @@ components:
               $ref: '#/components/examples/UnsupportedLanguageError'
     ComparisonsResponse:
       description: >-
+        The ComparisonsResponse object defines the structure of the response returned when a request for comparison data is successfully processed.
       content:
         application/json:
           schema:
@@ -3129,7 +3485,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorWrapper'
+            $ref: "#/components/schemas/ErrorWrapper"
           examples:
             UnsupportedLanguageError:
               $ref: '#/components/examples/UnsupportedLanguageError'
@@ -3140,28 +3496,38 @@ components:
 
     PaymentCardEnrolments:
       value:
-        - bin: '545502'
+        - id: '4a737ddd-9e8e-4047-b214-8d350fb541f9'
+          bin: '545502'
           last4fpan: '8351'
           status: ACTIVE
           paymentCardId: 9f12f385-0b47-4cca-9e9d-baced21bca63
-        - bin: '545502'
+        - id: 'bba90cdd-76f1-4bfc-95f0-e938b9db528f'
+          bin: '545502'
           last4fpan: '0762'
           status: ACTIVE
           paymentCardId: f506521c-38c6-4e87-bf1a-14023ce10d4e
-        - bin: '545502'
+        - id: '7df233aa-8de3-4a2e-a9dd-382a670c907b'
+          bin: '545502'
           last4fpan: '2834'
           errorCode: PAYMENT_CARD_ALREADY_EXISTS
-        - bin: '545502'
+        - id: '243adcd2-517d-4671-b292-9cd78016f2ce'
+          bin: '545502'
           last4fpan: '2824'
           errorCode: INVALID_FPAN
     TransactionFootprintsData:
       value:
         - transactionId: ee421c25-f928-4bf6-b884-3600b76b860d
-          mcc: 3000
-          cardBrand: MA
-          scoreReference: Profile
-          carbonEmissionInGrams: 469343.47
-          carbonEmissionInOunces: 16555.62
+          mcc: 3997
+          cardBrand: OTH
+          scoreReference: MCC
+          carbonEmissionInGrams: 48.52
+          carbonEmissionInOunces: 1.71
+          category:
+            mainCategory: Leisure & Entertainment
+            subCategory: Hotels & Vacation
+            sector: 'Hotels, Motels & Resorts'
+            sectorCode: '604'
+          scoreStatus: SUCCESS
           profile:
             traits:
               knowledge: 0.65
@@ -3201,44 +3567,51 @@ components:
           carbonEmissionInGrams: 469343.47
           carbonEmissionInOunces: 16555.62
         - transactionId: fdc4626c-f51e-4ba6-9728-c79ac1d9aec8
-          mcc: 5962
+          mcc: 3000
           scoreReference: MCC
-          carbonEmissionInGrams: 11905.70
-          carbonEmissionInOunces: 419.96
+          carbonEmissionInGrams: 11941.95,
+          carbonEmissionInOunces: 421.24,
           category:
-            mainCategory: Shopping
-            subCategory: Department Store
-            sector: Specialty Retail & Services
-            sectorCode: '302'
-        - transactionId: ee421c25-f928-4bf-b8843600b76b860d
+            mainCategory: Transport
+            subCategory: Flights
+            sector: Flights
+            sectorCode: '351'
+        - transactionId: odc4626c-f51e-4ba6-9728-c79ac1d9aec9
+          mcc: 1234
+          cardBrand: OTH
+        - transactionId: odc4626c-f51e-4ba6-9728-c79ac1d9aec9
+          mcc: 3997
           scoreReference: AIIA
-          carbonEmissionInGrams: 11905.70
-          carbonEmissionInOunces: 419.96
+          carbonEmissionInGrams: 27.98
+          carbonEmissionInOunces: 0.99
           category:
             mainCategory: Shopping
             subCategory: Department Store
             sector: Specialty Retail & Services
             sectorCode: '302'
-          carbBrand: NC
+          scoreStatus: SUCCESS
     HistoricalTransactionFootprints:
       value:
         count: 2
         offset: 1
-        limit: 2
+        limit: 5
         total: 5
         items:
           - transactionMetadata:
               id: ee421c25-f928-4bf6-b884-3600b76b860d
+              traceId: 9f52386ce297173ecfeb9120aabb0805bbeeb1350ce1de640864852e800bd206
+              banknetReferenceNumber: MPL0R6B2R
+              banknetDate: '0525'
               retrievalRefNumber: MCC000100
-              processingCode: '00'
-              authCode: '52717Z'
-              dateAndTime: '2018-07-02T00:00+00:00'
+              processingCode: "00"
+              authCode: "52717Z"
+              dateAndTime: "2018-07-02T00:00+00:00"
               merchantName: ABC Store
               acquiringInstitutionCountryCode: USA
-              acquiringInstitutionCode: '12312312312'
-              amount: '25.50'
+              acquiringInstitutionCode: "12312312312"
+              amount: "25.50"
               currencyCode: USD
-              indicator: AT
+              indicator: CL
             transactionFootPrint:
               mcc: 3997
               carbonEmissionInGrams: 48.52
@@ -3246,18 +3619,22 @@ components:
               category:
                 mainCategory: Leisure & Entertainment
                 subCategory: Hotels & Vacation
-                sector: 'Hotels, Motels & Resorts'
-                sectorCode: '604'
+                sector: "Hotels, Motels & Resorts"
+                sectorCode: "604"
+              scoreReference: MCC
           - transactionMetadata:
               id: fdc4626c-f51e-4ba6-9728-c79ac1d9aec8
+              traceId: gf55386ce297173ecfeb9120aabb0805bbeeb1350ce1de640864852e8002343
+              banknetReferenceNumber: MPL0B6B23
+              banknetDate: '0725'
               retrievalRefNumber: MCC000480
-              processingCode: '01'
-              authCode: 'K3C161'
-              dateAndTime: '2019-12-25T00:00+00:00'
+              processingCode: "01"
+              authCode: "K3C161"
+              dateAndTime: "2019-12-25T00:00+00:00"
               merchantName: ABC Store
               acquiringInstitutionCountryCode: USA
-              acquiringInstitutionCode: '23423423423'
-              amount: '30.00'
+              acquiringInstitutionCode: "23423423423"
+              amount: "30.00"
               currencyCode: USD
               indicator: CL
             transactionFootPrint:
@@ -3268,7 +3645,34 @@ components:
                 mainCategory: Shopping
                 subCategory: Department Store
                 sector: Specialty Retail & Services
-                sectorCode: '302'
+                sectorCode: "302"
+              scoreReference: MCC
+          - transactionMetadata:
+              id: "9000010131662"
+              traceId: af55386ce297173ecfeb9120aabb0805bbeeb1350ce1de640864852e800bd854
+              banknetReferenceNumber: MPL0R8C2A
+              banknetDate: '0624'
+              retrievalRefNumber: "801220"
+              processingCode: "00"
+              authCode: "16"
+              dateAndTime: 2022-01-26T00:00+00:00
+              merchantName: Test Sandbox Merchant
+              acquiringInstitutionCountryCode: USA
+              acquiringInstitutionCode: "12311878333"
+              amount: 20
+              currencyCode: GBP
+              indicator: RFT
+            transactionFootprint:
+              carbonEmissionInGrams: -3398.54
+              carbonEmissionInOunces: -119.88
+              transactionId: "9000010131662"
+              mcc: "9311"
+              category:
+                mainCategory: Government Services
+                subCategory: Public Services
+                sector: Government Services
+                sectorCode: "801"
+              scoreReference: MCC
 
     WeeklyAggregateTransactionFootprints:
       value:
@@ -3292,10 +3696,10 @@ components:
         crossPANAggregation:
           - carbonEmissionInGrams: 284.16
             carbonEmissionInOunces: 14.16
-            aggregateValue: 'Week-26|2019'
+            aggregateValue: "Week-26|2019"
           - carbonEmissionInGrams: 360.98
             carbonEmissionInOunces: 14.13
-            aggregateValue: 'Week-25|2019'
+            aggregateValue: "Week-25|2019"
 
     MonthlyAggregateTransactionFootprints:
       value:
@@ -3376,75 +3780,78 @@ components:
             mainCategory: Shopping
             subCategory: Department Store
             sector: Department Stores
-            sectorCode: '201'
+            sectorCode: "201"
         - mcc: 11
           category:
             mainCategory: Shopping
             subCategory: Clothes & Fashion
             sector: Variety Stores
-            sectorCode: '305'
+            sectorCode: "305"
         - mcc: 12
           category:
             mainCategory: Food & Beverages
             subCategory: Groceries
             sector: Grocery Stores & Supermarkets
-            sectorCode: '101'
+            sectorCode: "101"
         - mcc: 3860
           category:
             mainCategory: Leisure & Entertainment
             subCategory: Hotels & Vacation
-            sector: 'Hotels, Motels & Resorts'
-            sectorCode: '604'
+            sector: "Hotels, Motels & Resorts"
+            sectorCode: "604"
         - mcc: 3861
           category:
             mainCategory: Leisure & Entertainment
             subCategory: Hotels & Vacation
-            sector: 'Hotels, Motels & Resorts'
-            sectorCode: '604'
+            sector: "Hotels, Motels & Resorts"
+            sectorCode: "604"
         - mcc: 3620
           category:
             mainCategory: Leisure & Entertainment
             subCategory: Hotels & Vacation
-            sector: 'Hotels, Motels & Resorts'
-            sectorCode: '604'
+            sector: "Hotels, Motels & Resorts"
+            sectorCode: "604"
         - mcc: 3862
           category:
             mainCategory: Leisure & Entertainment
             subCategory: Hotels & Vacation
-            sector: 'Hotels, Motels & Resorts'
-            sectorCode: '604'
+            sector: "Hotels, Motels & Resorts"
+            sectorCode: "604"
         - mcc: 3621
           category:
             mainCategory: Leisure & Entertainment
             subCategory: Hotels & Vacation
-            sector: 'Hotels, Motels & Resorts'
-            sectorCode: '604'
+            sector: "Hotels, Motels & Resorts"
+            sectorCode: "604"
         - mcc: 3863
           category:
             mainCategory: Leisure & Entertainment
             subCategory: Hotels & Vacation
-            sector: 'Hotels, Motels & Resorts'
-            sectorCode: '604'
+            sector: "Hotels, Motels & Resorts"
+            sectorCode: "604"
         - mcc: 5800
           category:
             mainCategory: Shopping
             subCategory: Department Store
             sector: Specialty Retail & Services
-            sectorCode: '302'
+            sectorCode: "302"
     PaymentCardReference:
       value:
         paymentCardId: c5d88571-ac15-465a-a0d8-1ad1327b9a06
-        bin: '534403'
-        last4fpan: '9750'
+        bin: "534403"
+        last4fpan: "9750"
         status: ACTIVE
     ServiceProviderDetails:
       value:
         clientId: fjl2fxzsYl1OpvxkBItC9nVw1PSQc_b-eQMcmQFg011ab4b5
-        customerId: ''
+        customerId: ""
         customerName: ABC Bank
-        supportedAccountRange: '534403, 518145, 518152, 5403, 5424'
+        supportedAccountRange: "534403, 518145, 518152, 5403, 5424"
         email: John.Doe@mail.com
         status: ACTIVE
+        senderId: cc-fp@anz
+        ica: "24528"
+        cardHolderBase: '9900000'
     BadRequestError:
       value:
         Errors:
@@ -3455,14 +3862,14 @@ components:
                 One of the request parameters is invalid, try again with the correct
                 request.
               Recoverable: false
-              Details: 'transactions[0].mcc size must be between 1 and 4'
+              Details: "footprintsByTransactionData.transactionData[0].mcc: size must be between 1 and 4"
             - Source: Carbon-Calculator
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: >-
                 One of the request parameters is invalid, try again with the correct
                 request.
               Recoverable: false
-              Details: 'transactions[0].mcc must match "^\d{1,4}"'
+              Details: 'footprintsByTransactionData.transactionData[0].mcc: must match "^\d{1,4}"'
     UnsupportedMediaTypeError:
       value:
         Errors:
@@ -3473,171 +3880,179 @@ components:
                 Requested media type is not supported, try again with the supported
                 media type.
               Recoverable: false
-              Details: ''
+              Details: ""
     TransactionHistoryPaymentCardNotFoundError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: INVALID_REQUEST_PARAMETER
-              Description: Payment card is not registered.
+              Description: Payment card id - c2c76ec0-4056-44ba-b14f-6654c9ba5722 is/are invalid or not found. Please try again with valid payment card id.
               Recoverable: false
-              Details: ''
+              Details: ""
     TransactionHistoryInvalidDateRangeError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: INVALID_DATE_RANGE
               Description: >-
                 Requested date range is either invalid or exceeds one year
                 limits. Try again with a valid date range.
               Recoverable: false
-              Details: ''
+              Details: ""
+    TransactionHistoryInvalidDateFormatError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider-Mgmt
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: One of the request parameters is invalid, try again with correct request.
+              Recoverable: false
+              Details: 'getPaymentCardTransactionHistory.fromDate: must match "^((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$"'
+            - Source: Service-Provider-Mgmt
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: One of the request parameters is invalid, try again with correct request..
+              Recoverable: false
+              Details: "getPaymentCardTransactionHistory.fromDate: size must be between 10 and 10"
     AggregateTransactionInvalidDateRangeError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: INVALID_DATE_RANGE
               Description: >-
                 Requested date range is either invalid or exceeds supported limit (i.e. 26 weeks for weekly aggregate and 12 months for monthly aggregate).
               Recoverable: false
-              Details: ''
-    InvalidDateFormatError:
+              Details: ""
+    AggregateTransactionInvalidDateFormatError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: INVALID_REQUEST_PARAMETER
-              Description: Invalid date format. Kindly use date format as YYYY-MM-DD.
+              Description: One of the request parameters is invalid, try again with correct request.
               Recoverable: false
-              Details: ''
+              Details: 'fromDate must match "^((?:19|20)[0-9][0-9])-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$"'
+            - Source: Service-Provider-Mgmt
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: One of the request parameters is invalid, try again with correct request.
+              Recoverable: false
+              Details: "fromDate size must be between 10 and 10"
     InvalidPaymentCardError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: >-
                 Payment card id -
                 [b86fd2ba-c095-4acb-b9df-f3805655ba24,d30f6223-b15d-4663-8e6a-247475c596dd
                 ] is/are invalid or not found. Please try again with a valid
-                payment card ID.
+                payment card id.
               Recoverable: false
-              Details: ''
+              Details: ""
     AggregateTransactionInvalidAggregateTypeError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: One of the request parameters is invalid, try again with correct request.
               Recoverable: false
-              Details: ''
+              Details: "aggregateType must be less than or equal to 3"
     RegisterPaymentCardRequestValidationError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: >-
                 One of the request parameters is invalid, try again with the correct
                 request.
               Recoverable: false
-              Details: ''
+              Details: ""
     RegisterPaymentCardRequestDecryptionError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: CRYPTO_ERROR
               Description: >-
                 We are unable to decipher your request, kindly verify your
                 request before trying again. If the problem persists then reach
                 out to your Mastercard associate.
               Recoverable: false
-              Details: ''
+              Details: ""
     RegisterPaymentCardUnsupportedCardCurrencyError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: UNSUPPORTED_CURRENCY
               Description: >-
                 The currency in the request is not supported, try again with a
                 different one.
               Recoverable: false
-              Details: ''
+              Details: ""
     RegisterPaymentCardInvalidFPANError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: INVALID_FPAN
               Description: >-
                 The card number in the request is either invalid or it does not
                 match with your currently supported account range. Try again
                 with a valid card number or update the supported account range.
               Recoverable: false
-              Details: ''
-    RegisterPaymentCardAlreadyRegisteredError:
-      value:
-        Errors:
-          Error:
-            - Source: Service-Provider
-              ReasonCode: ALREADY_REGISTERED
-              Description: >-
-                The card number in the request is already registered on the
-                server, try again with a different one.
-              Recoverable: false
-              Details: ''
+              Details: ""
     PaymentCardDeletionsRequestValidationError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: >-
                 One of the request parameters is invalid, try again with the correct
                 request.
               Recoverable: false
-              Details: ''
+              Details: ""
     PaymentCardDeletionsInvalidCardIdError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: INVALID_REQUEST_PARAMETER
               Description: >-
                 One or more payment card IDs in the request are invalid, try
                 again by sending valid Ids.
               Recoverable: false
-              Details: ''
+              Details: 'paymentCardId must match "^[0-9A-Fa-f\-]{36}"'
     ServiceProviderNotFoundError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: ACCOUNT_NOT_FOUND
               Description: >-
                 We cannot find the account which you are using to access this
                 service. Kindly register your account or contact your Mastercard
                 associate if you have already registered with us earlier.
               Recoverable: false
-              Details: ''
+              Details: ""
     ServiceProviderInvalidRequestParameterError:
       value:
         Errors:
           Error:
-            - Source: 'Service-Provider'
-              ReasonCode: 'INVALID_REQUEST_PARAMETER'
-              Description: 'One of the request parameters is either invalid or is missing, try again with the correct request.'
+            - Source: Service-Provider-Mgmt
+              ReasonCode: "INVALID_REQUEST_PARAMETER"
+              Description: "One of the request parameters is either invalid or is missing, try again with the correct request."
               Recoverable: false
               Details: 'supportedAccountRange must match "^[\d\,]{1,}"'
-            - Source: 'Service-Provider'
-              ReasonCode: 'INVALID_REQUEST_PARAMETER'
-              Description: 'One of the request parameters is either invalid or is missing, try again with the correct request.'
+            - Source: Service-Provider-Mgmt
+              ReasonCode: "INVALID_REQUEST_PARAMETER"
+              Description: "One of the request parameters is either invalid or is missing, try again with the correct request."
               Recoverable: false
               Details: 'customerName must match "^[\w\s]{1,200}"'
     ServiceProviderICAValidationError:
@@ -3649,50 +4064,25 @@ components:
               Description: 'Your activity ICA is either pending or not validated. Kindly reach out to support team.'
               Recoverable: false
               Details: ''
-    PaymentCardByIdNotFoundError:
+    DuplicateSenderIdError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
-              ReasonCode: PAYMENT_CARD_NOT_FOUND
-              Description: >-
-                Paymentcard Not Found for the given payment card id in the path.
+            - Source: Service-Provider-Mgmt
+              ReasonCode: "SENDER_ID_ALREADY_EXISTS"
+              Description: "The sender id in the request is already registered on the server, try again with a different one."
               Recoverable: false
-              Details: ''
+              Details: ""
     PaymentCardNotFoundError:
       value:
         Errors:
           Error:
-            - Source: Service-Provider
+            - Source: Service-Provider-Mgmt
               ReasonCode: PAYMENT_CARD_NOT_FOUND
               Description: >-
                 Paymentcards not found for the given payment card ids.
               Recoverable: false
-              Details: ''
-    ScoreRequestDetails:
-      value:
-        transactions:
-          - id: ee421c25-f928-4bf6-b884-3600b76b860d
-            mcc: 3997
-            amount:
-              currencyCode: USD
-              value: 123
-            cardBrand: OTH
-    CarbonScoreDetails:
-      value:
-        transactions:
-          - id: ee421c25-f928-4bf6-b884-3600b76b860d
-            mcc: 3997
-            cardBrand: OTH
-            scoreReference: MCC
-            carbonEmissionInGrams: 48.52
-            carbonEmissionInOunces: 1.71
-            category:
-              mainCategory: Leisure & Entertainment
-              subCategory: Hotels & Vacation
-              sector: 'Hotels, Motels & Resorts'
-              sectorCode: '604'
-            scoreStatus: SUCCESS
+              Details: ""
     SurveyResponseData:
       value:
         language: en
@@ -4034,6 +4424,32 @@ components:
               Description: "One of the request parameters is invalid, try again with correct request"
               Recoverable: false
               Details: "profile.traits must not be null"
+    ScoreRequestDetails:
+      value:
+        transactions:
+          - id: ee421c25-f928-4bf6-b884-3600b76b860d
+            mcc: 3997
+            amount:
+              currencyCode: USD
+              value: 123
+            cardBrand: OTH
+    CarbonScoreDetails:
+      value:
+        transactions:
+          - id: ee421c25-f928-4bf6-b884-3600b76b860d
+            mcc: 3997
+            cardBrand: OTH
+            scoreReference: MCC
+            carbonEmissionInGrams: 48.52
+            carbonEmissionInOunces: 1.71
+            category:
+              mainCategory: Leisure & Entertainment
+              subCategory: Hotels & Vacation
+              sector: 'Hotels, Motels & Resorts'
+              sectorCode: '604'
+            scoreStatus: SUCCESS
+
+
     InsightsByIdResponse:
       value:
         id: T101
@@ -4181,4 +4597,136 @@ components:
             title: "Climate Focused"
             description: Individuals confident in understanding about climate changes.
         total: 5
+    ServiceProviderUnsupportedMediaTypeError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider-Mgmt
+              ReasonCode: UNSUPPORTED_MEDIA_TYPE
+              Description: >-
+                Requested media type is not supported, try again with the supported
+                media type.
+              Recoverable: false
+              Details: ""
+    PaymentCardByIdNotFoundError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider
+              ReasonCode: PAYMENT_CARD_NOT_FOUND
+              Description: >-
+                Paymentcard Not Found for the given payment card id in the path.
+              Recoverable: false
+              Details: ''
 
+    CardClimateProfile:
+      value:
+        profile:
+          traits:
+            knowledge: 0
+            lifestyle: 0.683
+            motivated: 0.3
+          userAttributes:
+            demo: 34
+            diet: 16399
+            lifestyle: 16
+            energy: 0
+            transport: 0
+            country: AF
+          created: '2024-01-19T09:31:08.065Z'
+          surveys:
+            key1:
+              key2: 1
+              key3: 2
+          persona: '5'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+    PaymentCardProfile:
+      value:
+        paymentCardId: "c5d88571-ac15-465a-a0d8-1ad1327b9a06"
+        profile:
+          traits:
+            knowledge: 0
+            lifestyle: 0.683
+            motivated: 0.3
+          userAttributes:
+            demo: 34
+            diet: 16399
+            lifestyle: 16
+            energy: 0
+            transport: 0
+            country: AF
+          created: '2024-01-19T09:31:08.065Z'
+          surveys:
+            key1:
+              key2: 1
+              key3: 2
+          persona: '5'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+    PaymentCardInactiveError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider-Mgmt
+              ReasonCode: PAYMENT CARD ID INACTIVE
+              Description: "Payment card id is - c2c76ec0-4056-44ba-b14f-6654c9ba5722 INACTIVE . Please try again with ACTIVE payment card id."
+              Recoverable: false
+              Details: ""
+    CardClimateProfilePayloadBadRequestError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider-Mgmt
+              ReasonCode: INVALID_REQUEST_PARAMETER
+              Description: "One of the request parameters is invalid, try again with correct request."
+              Recoverable: false
+              Details: "paymentCardId must match \"^[0-9A-Fa-f\\-]{36}\""
+    ProfilePaymentCardNotFoundError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider-Mgmt
+              ReasonCode: PAYMENT_CARD_NOT_FOUND
+              Description: Payment-card not found for the given payment card id.
+              Recoverable: false
+              Details: ""
+    ProfileServiceProviderNotFoundError:
+      value:
+        Errors:
+          Error:
+            - Source: Service-Provider-Mgmt
+              ReasonCode: ACCOUNT_NOT_FOUND
+              Description: "We cannot find the account which you are using to access this
+                            service. Kindly register your account or contact your Mastercard
+                            associate if you have already registered with us earlier."
+              Recoverable: false
+              Details: ""
+    InsightsByIdRequest:
+      value:
+        profile:
+          traits:
+            knowledge: 0.65
+            lifestyle: 0.445
+            motivated: 0.683
+          userAttributes:
+            demo: 66
+            diet: 256
+            lifestyle: 4
+            energy: 12288
+            transport: 36933
+            country: US
+          created: '2024-01-31T10:57:36.161Z'
+          surveys:
+            viewed:
+              onboardingVersion: 1
+          persona: '3'
+          benchmarks:
+            key1:
+              key2: 1
+              key3: 2
+          version: '1.0'

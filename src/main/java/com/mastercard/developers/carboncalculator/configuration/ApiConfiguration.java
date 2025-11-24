@@ -18,11 +18,9 @@ package com.mastercard.developers.carboncalculator.configuration;
 import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
 import com.mastercard.developer.utils.AuthenticationUtils;
 import org.openapitools.client.ApiClient;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 
 import java.security.PrivateKey;
@@ -49,10 +47,6 @@ public class ApiConfiguration {
     @Value("${mastercard.api.environment.base-path}")
     private String basePath;
 
-    @Value("${mastercard.api.environment.base-path-engagement}")
-    private String basePathEngagement;
-
-
     @Value("${mastercard.api.encryption.key-file}")
     private Resource encryptionKeyFile;
 
@@ -72,28 +66,11 @@ public class ApiConfiguration {
     }
 
     @Bean
-    @Primary
     public ApiClient setupApiClient() {
         var apiClient = new ApiClient();
 
+
         apiClient.setBasePath(basePath);
-        apiClient.setHttpClient(
-                apiClient.getHttpClient()
-                        .newBuilder()
-                        .addInterceptor(new OkHttpOAuth1Interceptor(consumerKey, getSigningKey()))
-                        .build()
-        );
-        apiClient.setDebugging(false);
-
-        return apiClient;
-    }
-    @Bean
-    @SuppressWarnings("java:S6831")
-    @Qualifier("apiClientEngagement")
-    public ApiClient setupApiClientEngagement() {
-        var apiClient = new ApiClient();
-
-        apiClient.setBasePath(basePathEngagement);
         apiClient.setHttpClient(
                 apiClient.getHttpClient()
                         .newBuilder()

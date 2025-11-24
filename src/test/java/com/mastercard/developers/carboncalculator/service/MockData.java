@@ -16,7 +16,6 @@ public class MockData {
     private static final String SOURCE = "Carbon-Calculator";
 
     public static List<TransactionData> transactions() {
-//        List<TransactionData> mcTransactions = new ArrayList<>();
         TransactionData transactionFootprint = (TransactionData) new TransactionData().transactionId("TX-1")
                 .mcc("3000").amount(
                         new Amount().currencyCode("EUR").value(new BigDecimal(150)));
@@ -129,7 +128,7 @@ public class MockData {
 
     public static AggregateTransactionFootprints aggregateTransactionFootprint() {
 
-        FootprintAggregation footprintAggregation = new FootprintAggregation().aggregateValue("2");
+        FootprintAggregation footprintAggregation = new FootprintAggregation();
         footprintAggregation.carbonEmissionInGrams(BigDecimal.valueOf(205688.73)).carbonEmissionInOunces(
                 BigDecimal.valueOf(7255.46));
 
@@ -139,7 +138,7 @@ public class MockData {
         aggregateTransactionFootprint.paymentCardId("testPaymentCardId").addFootprintAggregationsItem(
                 footprintAggregation);
         listAggregateTransactionFootprint.add(aggregateTransactionFootprint);
-        aggregateTransactionFootprints.setAggregateTransactionFootprint(listAggregateTransactionFootprint);
+        aggregateTransactionFootprints.setAggregateTransactionFootprints(listAggregateTransactionFootprint);
         return aggregateTransactionFootprints;
     }
 
@@ -192,9 +191,9 @@ public class MockData {
         return paymentCardEnrolment;
     }
 
-    public static List<PaymentCard> listPaymentCardReference() {
-        List<PaymentCard> paymentCards = new ArrayList<>();
-        paymentCards.add(new PaymentCard().fpan("5344035171229750").cardBaseCurrency("EUR"));
+    public static List<PaymentCards> listPaymentCardReference() {
+        List<PaymentCards> paymentCards = new ArrayList<>();
+        paymentCards.add(new PaymentCards().id("2875e003-1264-4f68-a198-a363ff957bdd").fpan("5344035171229750").cardBaseCurrency("EUR"));
         return paymentCards;
     }
     
@@ -381,4 +380,53 @@ public class MockData {
         return insightsData;
     }
 
+
+    public static PaymentCardProfile getMockPaymentCardProfilesResponse() {
+        PaymentCardProfile paymentCardProfile = new PaymentCardProfile();
+        org.openapitools.client.model.ClimateProfile climateProfile = new org.openapitools.client.model.ClimateProfile();
+        ClimateProfileUserAttributes userAttributes = new ClimateProfileUserAttributes();
+        userAttributes.setCountry("AX");
+        userAttributes.setDemo(new BigDecimal("34"));
+        userAttributes.setEnergy(new BigDecimal("34"));
+        userAttributes.setDiet(new BigDecimal("34"));
+        userAttributes.setTransport(new BigDecimal("34"));
+        userAttributes.setLifestyle(new BigDecimal("34"));
+
+        climateProfile.setUserAttributes(userAttributes);
+        climateProfile.setBenchmarks(Map.of("Benchmark", "Test"));
+        climateProfile.setCreated(OffsetDateTime.parse("2024-05-04T18:45:35.943Z"));
+        climateProfile.setTraits(new ClimateProfileTraits());
+        climateProfile.setPersona("2");
+        climateProfile.setSurveys(new HashMap<String, Object>());
+
+        paymentCardProfile.setPaymentCardId("73c0711e-1851-4771-950a-055dded7f162");
+        paymentCardProfile.setProfile(climateProfile);
+        return paymentCardProfile;
+    }
+
+    public static CardClimateProfile getMockPaymentCardProfilesRequest() {
+        CardClimateProfile cardClimateProfile = new CardClimateProfile();
+        ClimateProfile climateProfile = new ClimateProfile();
+        ClimateProfileUserAttributes userAttributes = new ClimateProfileUserAttributes();
+        ClimateProfileTraits climateProfileTraits = new ClimateProfileTraits();
+        userAttributes.setCountry("AX");
+        userAttributes.setDemo(new BigDecimal("34"));
+        userAttributes.setEnergy(new BigDecimal("34"));
+        userAttributes.setDiet(new BigDecimal("34"));
+        userAttributes.setTransport(new BigDecimal("34"));
+        userAttributes.setLifestyle(new BigDecimal("34"));
+
+        climateProfile.setUserAttributes(userAttributes);
+        climateProfile.setBenchmarks(Map.of("Benchmark", "Test"));
+        climateProfile.setCreated(OffsetDateTime.parse("2024-05-04T18:45:35.943Z"));
+        climateProfileTraits.knowledge(BigDecimal.valueOf(0.575));
+        climateProfileTraits.lifestyle(BigDecimal.valueOf(0.324));
+        climateProfileTraits.motivated(BigDecimal.valueOf(0.617));
+        climateProfile.setTraits(climateProfileTraits);
+        climateProfile.setPersona("2");
+        climateProfile.setSurveys(new HashMap<String, Object>());
+
+        cardClimateProfile.setProfile(climateProfile);
+        return cardClimateProfile;
+    }
 }

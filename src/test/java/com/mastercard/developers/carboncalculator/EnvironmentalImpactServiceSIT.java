@@ -187,6 +187,7 @@ class EnvironmentalImpactServiceSIT {
 
     }
 
+
     private static List<TransactionData> mockTransactions() {
         List<TransactionData> mcTransactions = new ArrayList<>();
         mcTransactions.add((TransactionData) new TransactionData().transactionId("TX-1")

@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 
 @Service
 public class EngagementService {
@@ -24,32 +26,32 @@ public class EngagementService {
         engagementServicesApi = new EngagementServicesApi(apiClient);
     }
 
-    public Surveys getSurveys() throws ApiException {
+    public Surveys getSurvey() throws ApiException {
         LOGGER.info("Calling Get Surveys API");
         Surveys surveys = engagementServicesApi.getSurvey();
         LOGGER.info("Returning Doconomy Engagement Surveys.");
         return surveys;
     }
 
-    public Profile updateUserProfile(Profiles profilesRequest) throws ApiException {
+    public Profile userProfile(Profiles profilesRequest) throws ApiException {
         LOGGER.info("Updating Doconomy Engagement Profile API");
-        Profile profileResponse = engagementServicesApi.updateUserProfile(profilesRequest);
+        Profile profileResponse = engagementServicesApi.userProfile(profilesRequest);
         LOGGER.info("Returning updated Doconomy Engagement Profile");
         return profileResponse;
     }
 
 
-    public InsightsData updateUserInsights(InsightsRequestPayload insightsRequestPayload, String branding, Boolean heading, String pageSize, String page, String version, String language) throws ApiException {
+    public InsightsData userInsights(InsightsRequestPayload insightsRequestPayload) throws ApiException {
         LOGGER.info("Updating Doconomy Engagement Insights API");
-        InsightsData insightsData = engagementServicesApi.updateUserInsights(insightsRequestPayload, branding, heading, pageSize, page, version, language);
+        InsightsData insightsData = engagementServicesApi.userInsights(insightsRequestPayload);
         LOGGER.info("Returning updated Doconomy Engagement Insights");
         return insightsData;
     }
 
 
-    public InsightsResponseById getInsightsById(String id, InsightsByIdRequestPayload insightsByIdRequestPayload, String branding, String language, String version) throws ApiException {
+    public InsightsResponseById getInsightsById(String id, String branding, String language) throws ApiException {
         LOGGER.info("Calling Doconomy Engagement Insights by Id API");
-        InsightsResponseById insightsResponseById = engagementServicesApi.getInsightsById(id, insightsByIdRequestPayload, branding, language, version);
+        InsightsResponseById insightsResponseById = engagementServicesApi.getInsightsById(id, branding, language);
         LOGGER.info("Returning Doconomy Engagement Insights by Id");
         return insightsResponseById;
     }
@@ -60,18 +62,19 @@ public class EngagementService {
         LOGGER.info("Returning Doconomy Engagement Benchmarks");
         return benchmark;
     }
-    public Personas getPersonas(String branding, String language, String pageSize, String page) throws ApiException
+    public Personas getPersonas(String branding, String language) throws ApiException
     {
         LOGGER.info("Calling Doconomy Engagement Personas API");
-        Personas personas = engagementServicesApi.getPersonas(branding, language, pageSize, page);
+        Personas personas = engagementServicesApi.getPersonas(branding, language);
         LOGGER.info("Returning Doconomy Engagement Personas");
         return personas;
     }
 
-    public Comparison getComparisons( String branding,String  language,String  version,String  mainCategory,String  spendingAreaId,String  tonne) throws ApiException
+
+    public Comparison getComparisons(String branding, String  language, String  mainCategory, String  spendingAreaId, BigDecimal tonne) throws ApiException
     {
         LOGGER.info("Calling Doconomy Engagement Comparisons API");
-        Comparison comparison = engagementServicesApi.getComparisons(branding, language, version, mainCategory, spendingAreaId, tonne);
+        Comparison comparison = engagementServicesApi.getComparisons(branding, language, mainCategory, spendingAreaId, tonne);
         LOGGER.info("Returning Doconomy Engagement Comparisons");
         return comparison;
     }

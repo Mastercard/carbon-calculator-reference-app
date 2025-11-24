@@ -69,6 +69,7 @@ public class ApiConfiguration {
     public ApiClient setupApiClient() {
         var apiClient = new ApiClient();
 
+
         apiClient.setBasePath(basePath);
         apiClient.setHttpClient(
                 apiClient.getHttpClient()

@@ -28,8 +28,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         logger.error("Exception", ex);
 
-        String error = StringUtils.substringBefore(ex.getMessage(), ":");
-
+        String error = "";
+        if(ex.getMessage().contains("JSON parse error: Cannot deserialize value of type `java.lang.Boolean`"))
+        {
+            error="heading must be a `boolean` type";
+        }
+        else {
+            error = StringUtils.substringBefore(ex.getMessage(), ":");
+        }
         List<String> errors = new ArrayList<>();
         errors.add((error != null) ? (error) : (ex.getMessage()));
         return new ResponseEntity<>(getBadRequestError(errors), headers, HttpStatus.BAD_REQUEST);

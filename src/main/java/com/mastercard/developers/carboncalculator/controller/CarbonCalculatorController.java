@@ -224,10 +224,11 @@ public class CarbonCalculatorController {
         try {
             paymentCardProfile = environmentalImpactService.addProfileToPaymentCard(paymentCardId, cardClimateProfile);
         } catch (ApiException exception) {
-            LOGGER.error("transaction-footprints apiException : {}", exception.getResponseBody());
+            LOGGER.error("service-providers-payment-cards-profiles apiException : {}", exception.getResponseBody());
             return getErrorObjectResponseEntity(exception);
         }
         return ResponseEntity.ok(paymentCardProfile);
-
     }
+
+
 }

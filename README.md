@@ -108,19 +108,19 @@ Allows a registered Service Provider to add list of new Payment Cards under its 
 Calculates carbon footprints for various indices. It selects the most relevant index based on input data and calculates the carbon footprint accordingly. This API is applicable for **India region** only.
 
 12. **Get Survey Questions** <br/>
-The Survey API offers essential features for seamless onboarding onto the Engagement Services platform, enabling integration with diverse surveys designed to fine-tune a Climate Profile.
+The Surveys service offers the issuer essential features for seamless onboarding onto the engagement services platform, enabling integration with diverse surveys designed to fine-tune a climate profile.
 
-13. **Update Profiles** <br/>
-The Profile Service calculates a climate profile based on the answers from a Survey obtained from the Surveys Service.
+13. **Profiles** <br/>
+The profile service calculates a climate profile based on the answers from a survey obtained from the surveys service.
 
-14. **Update Insights** <br/>
-The Insights Service delivers insights and other suggestions that can inform you about what you can do in order to reduce your footprint.
+14. **Insights** <br/>
+The Insights service delivers insights and other suggestions that can inform you about what you can do to reduce your footprint.
 
 15. **Get Insights by ID** <br/>
-Fetches a given Insight and marks it as viewed in your profile. Issuer has to save the profile locally and send it in future communication with Engagement Services.
+The insights by id service delivers specific insight that can inform you about what you can do in order to reduce your footprint.
 
 16. **Get Benchmarks** <br/>
-Returns a benchmark for a specific country for the year 2020, monthly or yearly.
+Returns a consumption-based emissions benchmark for a specific country based on the available data for the year 2020, by month or yearly.
 
 17. **Get Personas** <br/>
 A persona is a type of character described based on the answers a user has given to survey questions. There is a list of personas, and one of them is assigned to the profile during profile creation.
@@ -159,9 +159,9 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
                 - POST <Host>/demo/service-providers/payment-cards 
                 - POST <Host>/demo/payment-cards/{payment_card_id}/profiles
                 - GET <Host>/demo/surveys <br>
-                - PUT <Host>/demo/profiles <br>
-                - PUT <Host>/demo/insights <br>
-                - PUT <Host>/demo/insights/{id} <br>
+                - POST <Host>/demo/profiles <br>
+                - POST <Host>/demo/insights <br>
+                - GET <Host>/demo/insights/{id} <br>
                 - GET <Host>/demo/benchmarks        
                 - GET <Host>/demo/personas
                 - GET <Host>/demo/comparisons

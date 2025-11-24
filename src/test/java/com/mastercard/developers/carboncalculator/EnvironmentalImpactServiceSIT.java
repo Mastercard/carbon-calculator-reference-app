@@ -16,6 +16,7 @@
 package com.mastercard.developers.carboncalculator;
 
 import com.mastercard.developers.carboncalculator.service.EnvironmentalImpactService;
+import com.mastercard.developers.carboncalculator.service.MockData;
 import com.mastercard.developers.carboncalculator.service.SupportedParametersService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -166,6 +167,24 @@ class EnvironmentalImpactServiceSIT {
             LOGGER.error(AGGREGATE_API_CALL_FAILED_WITH_ERROR_MSG, e.getResponseBody());
             Assertions.fail(e.getMessage());
         	}
+    }
+
+    @Test
+    @DisplayName("Add profile to payment card")
+    void addProfileToPaymentCard() {
+
+        try {
+            PaymentCardProfile paymentCardProfile = environmentalImpactService.addProfileToPaymentCard("89eff262-840d-4e47-9ab3-0eb4de390815", MockData.getMockPaymentCardProfilesRequest());
+
+
+            assertNotNull(paymentCardProfile);
+
+            LOGGER.info("{}", paymentCardProfile);
+        } catch (ApiException e) {
+            LOGGER.info(e.getResponseBody());
+            Assertions.fail(e.getMessage());
+        }
+
     }
 
     private static List<TransactionData> mockTransactions() {

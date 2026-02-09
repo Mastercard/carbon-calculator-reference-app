@@ -545,6 +545,7 @@ class CarbonCalculatorControllerTest {
 
     }
 
+
     private CarbonScoreDetails getInvalidMccResponse(){
         CarbonScoreDetails scoreResponse = new CarbonScoreDetails();
 

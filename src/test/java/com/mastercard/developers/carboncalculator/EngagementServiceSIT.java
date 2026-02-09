@@ -13,8 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 class EngagementServiceSIT {
@@ -27,7 +28,7 @@ class EngagementServiceSIT {
     void getSurveysTest() {
         Surveys surveys;
         try {
-            surveys = engagementService.getSurveys();
+            surveys = engagementService.getSurvey();
             assertNotNull(surveys);
         } catch (ApiException e) {
             LOGGER.info("Get Surveys API call failed with error msg {}", e.getResponseBody());
@@ -37,13 +38,12 @@ class EngagementServiceSIT {
     }
 
     @Test
-    @DisplayName("Update User Profile")
-    void updateUserProfileTest() {
-
+    @DisplayName("User Profile")
+    void userProfileTest() {
         try {
             Profiles profiles;
             profiles = MockData.getMockProfilesRequest();
-            Profile profile = engagementService.updateUserProfile(profiles);
+            Profile profile = engagementService.userProfile(profiles);
 
             LOGGER.info("{}", profile);
 
@@ -57,14 +57,18 @@ class EngagementServiceSIT {
     }
 
     @Test
-    @DisplayName("Update User Insights")
-    void updateUserInsightsTest() {
+    @DisplayName("User Insights")
+    void userInsightsTest() {
 
         try {
+
             InsightsRequestPayload insightsRequestPayload = new InsightsRequestPayload();
-
-            var insightsData = engagementService.updateUserInsights(insightsRequestPayload, any(), false, "20", "2", "1.1", "en");
-
+            insightsRequestPayload.setMainCategory("shopping");
+            insightsRequestPayload.subCategory("clothes");
+            insightsRequestPayload.setMain("shopping");
+            insightsRequestPayload.setDocc("60101");
+            insightsRequestPayload.setSpendingAreaId("10");
+            var insightsData = engagementService.userInsights(insightsRequestPayload);
             LOGGER.info("{}", insightsData);
 
             assertNotNull(insightsData);
@@ -82,12 +86,8 @@ class EngagementServiceSIT {
     void getInsightsByIdTest() {
 
         try {
-            InsightsByIdRequestPayload insightsByIdRequestPayload;
 
-            insightsByIdRequestPayload =  MockData.getMockInsightsByIdRequest();
-
-            var insightsResponseById = engagementService.getInsightsById("T101",insightsByIdRequestPayload,"","en","1.1");
-            LOGGER.info("{}", insightsResponseById);
+            var insightsResponseById = engagementService.getInsightsById("T101","","en");
 
             assertNotNull(insightsResponseById);
 
@@ -116,7 +116,7 @@ class EngagementServiceSIT {
     void getPersonasTest() {
         Personas personas;
         try {
-            personas = engagementService.getPersonas("", "en", "1", "1");
+            personas = engagementService.getPersonas("", "en");
             assertNotNull(personas);
         } catch (ApiException e) {
             LOGGER.info("Get Personas API call failed with error msg {}", e.getResponseBody());
@@ -129,7 +129,7 @@ class EngagementServiceSIT {
     void getComparisonsTest() {
         Comparison comparison;
         try {
-            comparison = engagementService.getComparisons("", "en", "1.0", null, null, "1");
+            comparison = engagementService.getComparisons("", "en", null, null, BigDecimal.valueOf(1));
             assertNotNull(comparison);
         } catch (ApiException e) {
             LOGGER.info("Get Comparisons API call failed with error msg {}", e.getResponseBody());

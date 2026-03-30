@@ -132,7 +132,7 @@ Fetches comparisons data by comparing tonnes of Co2 with any day to day life exa
 The climate profile of user will be stored with the provided payment card.
 
 
-More details can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/use-cases/).    
+More details can be found [here](https://developer.mastercard.com/carbon-calculator/documentation/use-cases/).    
 
 
 ## Execute the Use-Cases   <a name="execute-the-use-cases"></a>
@@ -170,11 +170,11 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/c
                                                                                
 ## Service Documentation <a name="documentation"></a>
 
-Carbon Calculator documentation can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/).
+Carbon Calculator documentation can be found [here](https://developer.mastercard.com/carbon-calculator/documentation).
 
 
 ## API Reference <a name="api-reference"></a>
-The Swagger API specification can be found [here](https://stage.developer.mastercard.com/drafts/carbon-calculator/staging/documentation/api-reference/).
+The Swagger API specification can be found [here](https://developer.mastercard.com/carbon-calculator/documentation/api-reference/).
 
 ## Support <a name="support"></a>
 Please send an email to **apisupport@mastercard.com** with any questions or feedback you may have.

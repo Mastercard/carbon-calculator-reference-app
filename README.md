@@ -75,7 +75,7 @@ See also:
 
 ## Use-Cases <a name="use-cases"></a>
 1. **Calculate Transaction Footprints**   
-Calculates carbon emission based on payment transactions.
+Calculates carbon emission based on payment transactions. Optionally accepts `countryISOCode` (ISO 3166-1 alpha-3) and `date` (DD-MM-YYYY) on each transaction to apply localized (fuel & energy) and inflation adjusted scoring for increased precision. When supplied, these values are echoed back in the transaction footprint response.
 
 2. **Supported Currencies**    
 Provides a list of Currencies supported by the application.

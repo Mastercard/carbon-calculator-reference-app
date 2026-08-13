@@ -805,6 +805,32 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdditionalInformation'
+        countryISOCode:
+          $ref: '#/components/schemas/CountryISOCode'
+        date:
+          $ref: '#/components/schemas/TransactionDate'
+    CountryISOCode:
+      type: string
+      minLength: 3
+      maxLength: 3
+      pattern: '^[A-Za-z]{3}$'
+      example: POL
+      description: >-
+        ISO 3166-1 alpha-3 country code of the payment transaction. When provided
+        together with `date`, localized data (energy & fuel) or inflation adjusted
+        scoring are applied to increase score precision using the relevant regional
+        context. Optional field.
+    TransactionDate:
+      type: string
+      minLength: 10
+      maxLength: 10
+      pattern: '^(0?[1-9]|[12][0-9]|3[01])-(0?[1-9]|1[012])-((?:19|20)[0-9][0-9])$'
+      example: 01-09-2025
+      description: >-
+        Date of the payment transaction in `DD-MM-YYYY` format. When provided
+        together with `countryISOCode`, localized data (energy & fuel) or inflation
+        adjusted scoring are applied using the country-specific data relevant for
+        that date. Optional field.
 
     mcc:
       type: string
@@ -868,6 +894,10 @@ components:
       properties:
         cardBrand:
           $ref: '#/components/schemas/CardBrand'
+        countryISOCode:
+          $ref: '#/components/schemas/CountryISOCode'
+        date:
+          $ref: '#/components/schemas/TransactionDate'
         scoreStatus:
           type: string
           example: SUCCESS

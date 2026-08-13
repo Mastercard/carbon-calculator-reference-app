@@ -22,6 +22,14 @@ public class MockData {
         return Collections.singletonList(transactionFootprint);
     }
 
+    public static List<TransactionData> localizedScoringRequest() {
+        TransactionData transactionFootprint = (TransactionData) new TransactionData().cardBrand("MA")
+                .transactionId("TX-1").mcc("3857").amount(
+                        new Amount().currencyCode("EUR").value(new BigDecimal(100)))
+                .countryISOCode("POL").date("01-09-2025");
+        return Collections.singletonList(transactionFootprint);
+    }
+
     public static ScoreRequestDetails carbonScoreRequest() {
         ScoreRequestDetails scoreRequestDetails = new ScoreRequestDetails();
         TransactionDetails transactionDetails  = new TransactionDetails();

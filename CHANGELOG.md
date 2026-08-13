@@ -3,6 +3,10 @@ All notable changes to the Application should be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [9.0.0] - August 2026
+### Updates
+- Updated the app to support localized (fuel & energy) and inflation adjusted scoring in the Calculate Transaction Footprints API by introducing optional `countryISOCode` and `date` fields in the request and response.
+
 ## [8.0.0] - January 2024
 ### Updates
 - BD Fixes - Java 17 & SpringBoot 3.3.3  chanegs and resolving exception hadling issues to provide valid error responses.

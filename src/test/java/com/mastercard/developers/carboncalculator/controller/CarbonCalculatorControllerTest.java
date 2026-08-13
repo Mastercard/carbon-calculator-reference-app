@@ -33,6 +33,7 @@ import java.util.List;
 
 import static com.mastercard.developers.carboncalculator.service.MockData.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -111,6 +112,31 @@ class CarbonCalculatorControllerTest {
         String response = mvcResult.getResponse().getContentAsString();
         assertNotNull(response);
 
+    }
+
+    @Test
+    void calculateFootprintsWithLocalizedScoringRequest() throws Exception {
+
+        when(environmentalImpactService.calculateFootprints(any())).thenReturn(
+                transactionFootprints());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonContent = objectMapper.writeValueAsString(localizedScoringRequest());
+
+        MvcResult mvcResult = this.mockMvc.perform(post("/demo/transaction-footprints").contentType(
+                MediaType.APPLICATION_JSON).content(
+                jsonContent)).andExpect(
+                status().isOk()).andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        assertNotNull(response);
+
+    }
+
+    @Test
+    void localizedScoringFieldsSerializeAsExpected() {
+        String json = new org.openapitools.client.JSON().serialize(localizedScoringRequest());
+        assertTrue(json.contains("\"countryISOCode\":\"POL\""));
+        assertTrue(json.contains("\"date\":\"01-09-2025\""));
     }
     
     @Test

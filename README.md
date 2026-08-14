@@ -104,31 +104,28 @@ Allows a registered Service Provider to delete one or more Payment Cards from it
 10. **Bulk Enroll FPAN**  
 Allows a registered Service Provider to add list of new Payment Cards under its profile
 
-11. **Calculate Carbon Scores** <br/>
-Calculates carbon footprints for various indices. It selects the most relevant index based on input data and calculates the carbon footprint accordingly. This API is applicable for **India region** only.
-
-12. **Get Survey Questions** <br/>
+11. **Get Survey Questions** <br/>
 The Surveys service offers the issuer essential features for seamless onboarding onto the engagement services platform, enabling integration with diverse surveys designed to fine-tune a climate profile.
 
-13. **Profiles** <br/>
+12. **Profiles** <br/>
 The profile service calculates a climate profile based on the answers from a survey obtained from the surveys service.
 
-14. **Insights** <br/>
+13. **Insights** <br/>
 The Insights service delivers insights and other suggestions that can inform you about what you can do to reduce your footprint.
 
-15. **Get Insights by ID** <br/>
+14. **Get Insights by ID** <br/>
 The insights by id service delivers specific insight that can inform you about what you can do in order to reduce your footprint.
 
-16. **Get Benchmarks** <br/>
+15. **Get Benchmarks** <br/>
 Returns a consumption-based emissions benchmark for a specific country based on the available data for the year 2020, by month or yearly.
 
-17. **Get Personas** <br/>
+16. **Get Personas** <br/>
 A persona is a type of character described based on the answers a user has given to survey questions. There is a list of personas, and one of them is assigned to the profile during profile creation.
 
-18. **Get Comparisons** <br/>
+17. **Get Comparisons** <br/>
 Fetches comparisons data by comparing tonnes of Co2 with any day to day life examples.
 
-19. **Add profile to payment card** <br/>
+18. **Add profile to payment card** <br/>
 The climate profile of user will be stored with the provided payment card.
 
 
@@ -165,8 +162,6 @@ More details can be found [here](https://developer.mastercard.com/carbon-calcula
                 - GET <Host>/demo/benchmarks        
                 - GET <Host>/demo/personas
                 - GET <Host>/demo/comparisons
-          - APIs exposed on India Region:
-                - POST <Host>/demo/carbon-scores
                                                                                
 ## Service Documentation <a name="documentation"></a>
 

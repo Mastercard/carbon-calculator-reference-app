@@ -51,18 +51,6 @@ public class EnvironmentalImpactService {
 
     }
 
-    public CarbonScoreDetails calculateCarbonScoreFootprints(ScoreRequestDetails scoreRequestDetails, String clientId, String channel, String origMcApiClientId) throws ApiException {
-
-        LOGGER.info("Calling Calculate Carbon-Scores API");
-
-        CarbonScoreDetails footprints = environmentalImpactApi.carbonScoresByTransactionData(clientId, scoreRequestDetails, channel, origMcApiClientId);
-
-        LOGGER.info("Calculated Carbon-Scores API call successful, returning Transaction Footprints.");
-
-        return footprints;
-
-    }
-
 
     public AggregateTransactionFootprints getPaymentCardAggregateTransactions(String clientId,
         AggregateSearchCriteria aggregateSearchCriteria, String channel, String origMcApiClientId) throws ApiException {

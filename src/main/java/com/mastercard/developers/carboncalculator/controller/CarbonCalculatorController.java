@@ -81,20 +81,6 @@ public class CarbonCalculatorController {
 
     }
 
-    @PostMapping("/carbon-scores")
-    public ResponseEntity<Object> calculateCarbonScoreFootprints(@RequestHeader("x-openapi-clientid") String clientId, @RequestBody ScoreRequestDetails scoreRequestDetails, String channel, String origMcApiClientId) {
-
-        CarbonScoreDetails footprintData = null;
-        try {
-            footprintData = environmentalImpactService.calculateCarbonScoreFootprints(scoreRequestDetails, clientId, channel, origMcApiClientId);
-        } catch (ApiException exception) {
-            LOGGER.error("carbon-scores apiException : {}", exception.getResponseBody());
-            return getErrorObjectResponseEntity(exception);
-        }
-        return ResponseEntity.ok(footprintData);
-
-    }
-
     @GetMapping("/supported-currencies")
     public ResponseEntity<Object> getSupportedCurrencies() {
         List<Currency> currencyList = null;
